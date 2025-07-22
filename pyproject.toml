@@ -1,0 +1,9 @@
+[project]
+name = "aviso_client"
+version = "0.1.0"
+
+[tool.setuptools]
+package-dir = {"" = "aviso_client"}
+
+[tool.setuptools.packages.find]
+where = ["aviso_client"]

@@ -1,0 +1,48 @@
+import numpy as np
+from catalogue_parser import catalogue_client
+
+
+def test_fetch_catalogue():
+    catalogue = catalogue_client.fetch_catalogue()
+    assert len(catalogue.products) == 12
+
+
+def test_get_details():
+    product = catalogue_client.get_details(
+        'Wind & Wave product SWOT Level-3 WindWave - Light')
+    assert product.title == 'Wind & Wave product SWOT Level-3 WindWave - Light'
+    assert product.id == '15f25d0b-5a41-4335-85f2-874e9b2e5cd0'
+    assert product.tds_catalogue_url == 'https://tds%40odatis-ocean.fr:odatis@tds-odatis.aviso.altimetry.fr/thredds/catalog/L3/SWOT_KARIN-L3_LR_WIND_WAVE.html'
+
+    product = catalogue_client.get_details(
+        'Altimetry product SWOT Level-3 Low Rate SSH - Basic')
+    assert product.title == 'Altimetry product SWOT Level-3 Low Rate SSH - Basic'
+    assert product.id == 'aa2927ad-d1d6-4867-89d3-1311bc11e6bb'
+    assert product.tds_catalogue_url == 'https://tds%40odatis-ocean.fr:odatis@tds-odatis.aviso.altimetry.fr/thredds/catalog/L3/SWOT_KARIN-L3_LR_SSH.html'
+
+    product = catalogue_client.get_details(
+        'Altimetry product SWOT Level-2 KaRIn Low Rate SSH - Basic')
+    assert product.title == 'Altimetry product SWOT Level-2 KaRIn Low Rate SSH - Basic'
+    assert product.id == '2652e825-9ade-435c-afdd-eb920d01b018'
+    assert product.tds_catalogue_url == 'https://tds.aviso.altimetry.fr/thredds/L2/L2-SWOT-DATA/L2-SWOT.html'
+
+
+def test_search_granules():
+    granules = catalogue_client.search_granules(
+        'Wind & Wave product SWOT Level-3 WindWave - Light',
+        time=(np.datetime64('2024-05-08'), np.datetime64('2024-05-08')))
+    g = granules[0]
+    assert g.dataset == 'SWOT_L3_LR_WIND_WAVE_015_018_20240508T223932_20240508T233015_v2.0.nc'
+    assert g.catalogue == '/thredds/catalog/dataset-l3-swot-karin-wind-wave/v2_0/Light/cycle_015/catalog.html'
+    assert g.data_size == 2555509
+    assert g.file_path == 'dataset-l3-swot-karin-wind-wave/v2_0/Light/cycle_015/SWOT_L3_LR_WIND_WAVE_015_018_20240508T223932_20240508T233015_v2.0.nc'
+
+    granules = catalogue_client.search_granules(
+        'Altimetry product SWOT Level-3 Low Rate SSH - Basic',
+        cycle_number=21,
+        pass_number=range[20, 25])
+    g = granules[0]
+    assert g.dataset == 'SWOT_L3_LR_SSH_Basic_021_020_20240911T045252_20240911T054418_v2.0.1.nc'
+    assert g.catalogue == '/thredds/catalog/dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v2_0_1/Basic/cycle_021/catalog.html'
+    assert g.data_size == 3541878
+    assert g.file_path == 'dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v2_0_1/Basic/cycle_021/SWOT_L3_LR_SSH_Basic_021_020_20240911T045252_20240911T054418_v2.0.1.nc'
