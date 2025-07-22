@@ -35,7 +35,7 @@ def test_get(tmp_path):
         output_dir=tmp_path,
         cycle_number=21,
         pass_number=20)
-    
+
     assert local_files[0] == os.path.join(
         tmp_path,
         'SWOT_L3_LR_SSH_Basic_021_020_20240911T045252_20240911T054418_v2.0.1.nc'

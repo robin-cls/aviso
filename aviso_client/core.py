@@ -1,7 +1,7 @@
-from tds_client import http_download
 from catalogue_parser.catalogue_client import (fetch_catalogue, get_details,
                                                search_granules)
 from catalogue_parser.models import AvisoCatalogue, AvisoProduct
+from tds_client import http_download
 
 
 def summary() -> AvisoCatalogue:

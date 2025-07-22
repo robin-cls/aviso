@@ -51,7 +51,7 @@ def _parse_catalogue_response(results: dict):
         product = AvisoProduct(
             id=record['_id'],
             title=record['_source']['resourceTitleObject']['default'],
-            abstract=record['_source']['resourceAbstractObject']['default'])
+            keywords=record['_source']['resourceAbstractObject']['default'])
         products.append(product)
 
     return AvisoCatalogue(products=products)
@@ -91,10 +91,27 @@ def _parse_product_response(product_metadata: dict, product: AvisoProduct):
 
     product.tds_catalogue_url = tds_url
 
+    contentInfo = product_metadata['mdb:contentInfo']
+    if 'mrc:MD_CoverageDescription' in contentInfo.keys():
+        product.processing_level = contentInfo['mrc:MD_CoverageDescription'][
+            'mrc:processingLevelCode']['mcc:MD_Identifier']['mcc:code'][
+                'gco:CharacterString']['#text']
+    else:
+        product.processing_level = contentInfo['mrc:MI_CoverageDescription'][
+            'mrc:processingLevelCode']['mcc:MD_Identifier']['mcc:code'][
+                'gco:CharacterString']['#text']
+
+    product.abstract = product_metadata['mdb:identificationInfo'][
+        'mri:MD_DataIdentification']['mri:abstract']['gco:CharacterString'][
+            '#text']
+    product.credit = product_metadata['mdb:identificationInfo'][
+        'mri:MD_DataIdentification']['mri:credit']['gco:CharacterString'][
+            '#text']
+
     return product
 
 
 def search_granules(product_name: str, **filters) -> list[str]:
     product = _get_product(product_name)
     # search for granules
-    return filter_granules(product.tds_catalogue_url, **filters)
+    return filter_granules(product, **filters)

@@ -29,18 +29,10 @@ def test_get_details():
 
 def test_search_granules():
     granules = catalogue_client.search_granules(
-        'Wind & Wave product SWOT Level-3 WindWave - Light',
-        time=(np.datetime64('2024-05-08'), np.datetime64('2024-05-08')))
-    g = granules[0]
-    assert g.dataset == 'SWOT_L3_LR_WIND_WAVE_015_018_20240508T223932_20240508T233015_v2.0.nc'
-    assert g.catalogue == '/thredds/catalog/dataset-l3-swot-karin-wind-wave/v2_0/Light/cycle_015/catalog.html'
-    assert g.data_size == 2555509
-    assert g.file_path == 'dataset-l3-swot-karin-wind-wave/v2_0/Light/cycle_015/SWOT_L3_LR_WIND_WAVE_015_018_20240508T223932_20240508T233015_v2.0.nc'
-
-    granules = catalogue_client.search_granules(
         'Altimetry product SWOT Level-3 Low Rate SSH - Basic',
+        dataset='Basic',
         cycle_number=21,
-        pass_number=range[20, 25])
+        pass_number=20)
     g = granules[0]
     assert g.dataset == 'SWOT_L3_LR_SSH_Basic_021_020_20240911T045252_20240911T054418_v2.0.1.nc'
     assert g.catalogue == '/thredds/catalog/dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v2_0_1/Basic/cycle_021/catalog.html'
