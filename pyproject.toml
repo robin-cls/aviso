@@ -1,9 +1,56 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "aviso_client"
 version = "0.1.0"
 
-[tool.setuptools]
-package-dir = {"" = "aviso_client"}
+#authors = [
+#    {name = "TODO", email = "TODO"},
+#]
+#description = "TODO"
+#readme = "README.md"
+#keywords = ["TODO"]
+#license = "TODO"
 
-[tool.setuptools.packages.find]
-where = ["aviso_client"]
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml",
+    "requests",
+    "siphon",
+]
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "pyyaml",
+]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml"]
+
+[project.urls]
+Homepage = "TODO"
+Documentation = "TODO"
+Repository = "TODO"
+Issues = "TODO"
+Changelog = "TODO"
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+atomic = true
+combine_as_imports = true
+combine_star = true
+order_by_type = false
+skip_gitignore = true
+known_first_party = ["aviso_client"]
+
+[tool.pytest.ini_options]
+addopts=["--import-mode=importlib"]

@@ -1,6 +1,6 @@
 import os
 
-from core import details, get, summary
+from aviso_client.core import details, get, summary
 
 
 def test_summary():

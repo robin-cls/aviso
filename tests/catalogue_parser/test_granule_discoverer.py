@@ -1,5 +1,6 @@
 import numpy as np
-from catalogue_parser import granule_discoverer, models
+
+from aviso_client.catalogue_parser import granule_discoverer, models
 
 
 def test_filter_granules():

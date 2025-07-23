@@ -3,7 +3,7 @@ import os
 import yaml
 from siphon.catalog import TDSCatalog
 
-from .models import AvisoProduct, Granule, ProductLayout
+from .models import AvisoProduct, Granule
 
 TDS_CATALOGUE_BASE_URL = 'https://tds-odatis.aviso.altimetry.fr/thredds/catalog/'
 TDS_LAYOUT_CONFIG = os.path.join(os.path.dirname(__file__), 'resources',
@@ -30,7 +30,7 @@ def _get_product_layout(product: AvisoProduct) -> str:
         return tds_layout[product.id]
 
 
-def _fill_granules_path(path, **filters) -> str:
+def _fill_granules_path(path: str, **filters) -> str:
     # If there is a missing path_filters from filters, raise KeyError
     return path.format(**filters)
 

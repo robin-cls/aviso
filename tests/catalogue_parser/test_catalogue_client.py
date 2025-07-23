@@ -1,5 +1,6 @@
 import numpy as np
-from catalogue_parser import catalogue_client
+
+from aviso_client.catalogue_parser import catalogue_client
 
 
 def test_fetch_catalogue():
