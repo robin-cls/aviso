@@ -1,7 +1,19 @@
-from .models import AvisoCatalogue, AvisoProduct
+from .models import AvisoCatalog, AvisoProduct
 
 
-def parse_catalogue_response(results: dict) -> AvisoCatalogue:
+def parse_catalog_response(results: dict) -> AvisoCatalog:
+    """Parses the response of AVISO's catalog to a fetching request.
+
+    Parameters
+    ----------
+    results
+        the json response
+
+    Returns
+    -------
+    AvisoCatalog
+        the object resulting from the parsing
+    """
     products = []
     for record in results['hits']['hits']:
         product = AvisoProduct(
@@ -10,11 +22,25 @@ def parse_catalogue_response(results: dict) -> AvisoCatalogue:
             keywords=record['_source']['resourceAbstractObject']['default'])
         products.append(product)
 
-    return AvisoCatalogue(products=products)
+    return AvisoCatalog(products=products)
 
 
 def parse_product_response(product_metadata: dict,
                            product: AvisoProduct) -> AvisoProduct:
+    """Parses the response of AVISO's catalog to a product request.
+
+    Parameters
+    ----------
+    product_metadata
+        the json response
+    product
+        the product object to fill in
+
+    Returns
+    -------
+    AvisoProduct
+        the object resulting from the parsing
+    """
     transferOptions = product_metadata['mdb:distributionInfo'][
         'mrd:MD_Distribution']['mrd:transferOptions']
     if isinstance(transferOptions, list):
@@ -30,7 +56,7 @@ def parse_product_response(product_metadata: dict,
                 tds_url = online_resource['cit:CI_OnlineResource'][
                     'cit:linkage']['gco:CharacterString']['#text']
 
-    product.tds_catalogue_url = tds_url
+    product.tds_catalog_url = tds_url
 
     contentInfo = product_metadata['mdb:contentInfo']
     if 'mrc:MD_CoverageDescription' in contentInfo.keys():

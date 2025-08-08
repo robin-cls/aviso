@@ -1,22 +1,57 @@
 import pathlib as pl
 
-from .catalogue_parser.catalogue_client import (
-    fetch_catalogue,
+from .catalog_parser.catalog_client import (
+    fetch_catalog,
     get_details,
     search_granules,
 )
-from .catalogue_parser.models import AvisoCatalogue, AvisoProduct
+from .catalog_parser.models import AvisoCatalog, AvisoProduct
 from .tds_client import http_download
 
 
-def summary() -> AvisoCatalogue:
-    return fetch_catalogue()
+def summary() -> AvisoCatalog:
+    """Summarizes CDS-AVISO and SWOT products from AVISO's catalog.
+
+    Returns
+    -------
+    AvisoCatalog
+        the AVISO catalog object containing all the CDS-AVISO and SWOT products
+    """
+    return fetch_catalog()
 
 
-def details(product_name: str) -> AvisoProduct:
-    return get_details(product_name)
+def details(product_title: str) -> AvisoProduct:
+    """Details a product information from AVISO's catalog.
+
+    Parameters
+    ----------
+    product_title
+        the title of the product
+
+    Returns
+    -------
+    AvisoProduct
+        the product details
+    """
+    return get_details(product_title)
 
 
-def get(product_name: str, output_dir: str | pl.Path, **filters) -> list[str]:
-    granules = search_granules(product_name, **filters)
-    return [http_download(g.file_path, str(output_dir)) for g in granules]
+def get(product_title: str, output_dir: str | pl.Path, **filters) -> list[str]:
+    """Downloads a product from AVISO's Thredds Data Server.
+
+    Parameters
+    ----------
+    product_title
+        the title of the product
+    output_dir
+        directory to store downloaded product files
+    **filters
+        filters for files selection
+
+    Returns
+    -------
+    list[str]
+        the list of downloaded local file paths
+    """
+    granule_paths = search_granules(product_title, **filters)
+    return [http_download(path, str(output_dir)) for path in granule_paths]

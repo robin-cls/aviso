@@ -1,0 +1,10 @@
+aa2927ad-d1d6-4867-89d3-1311bc11e6bb:
+  title: Altimetry product SWOT Level-3 Low Rate SSH - Basic
+  filename_convention: SWOT_L3_LR_SSH
+  catalog_path_pattern: dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v2_0_1/{subset}/cycle_{cycle_number:03}
+  path_filters:
+    - name: subset
+      repr: {subset}
+  optional_path_filters:
+    - name: cycle_number
+      repr: cycle_{cycle_number:03}
