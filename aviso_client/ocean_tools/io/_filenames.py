@@ -8,42 +8,37 @@ import os
 import re
 import string
 import typing as tp
-from enum import Enum, auto
+from enum import auto, Enum
 
 import numpy as np
 import pandas as pda
 
 from aviso_client.ocean_tools.time import (
-    Period,
     fractional_julian_day_to_numpy,
     julian_day_to_numpy,
     numpy_to_fractional_julian_day,
     numpy_to_julian_day,
+    Period,
 )
 
 T = tp.TypeVar('T')
 
-    
-class ILayout(abc.ABC):
-    @abc.abstractmethod
-    def build_path(self, **filters):
-        pass
 
-    @abc.abstractmethod
-    def validate_path(self, path:str, filters: dict):
-        pass
-    
+class ILayout(abc.ABC):
+    pass
+
+
 class IWalkable(abc.ABC):
+
     def __init__(self, layout: ILayout):
         self.layout = layout
 
     @abc.abstractmethod
-    def walk(self):
-        """
-        Walk the structure using provided filters.
-        """
+    def walk(self, **filters):
+        """Walk the structure using provided filters."""
         pass
-    
+
+
 class FileNameField(abc.ABC, tp.Generic[T]):
 
     def __init__(self,
@@ -866,8 +861,8 @@ class RecordFilter:
                 self.references[key] = field.enum_cls[reference]
             elif isinstance(
                     reference, collections.abc.Sequence) and isinstance(
-                        field, FileNameFieldEnum
-                    ) and len(reference) > 0 and isinstance(reference[0], str):
+                        field, FileNameFieldEnum) and len(
+                            reference) > 0 and isinstance(reference[0], str):
                 self.references[key] = tuple(
                     [field.enum_cls[nested] for nested in reference])
 
@@ -883,15 +878,11 @@ class FileNameFilterer:
         a list of file names
     """
 
-    def __init__(
-        self,
-        parser: FileNameConvention,
-        walkable: IWalkable):
+    def __init__(self, parser: FileNameConvention, walkable: IWalkable):
         self.convention = parser
         self.walkable = walkable
 
-    def list(self,
-             **filters) -> pda.DataFrame:
+    def list(self, **filters) -> pda.DataFrame:
         """List files in file system.
 
         Parameters
@@ -922,9 +913,9 @@ class FileNameFilterer:
                         lambda file_match: file_match[1] is not None,
                         # Match file names
                         map(
-                            lambda file: (file,
-                                            self.convention.match(
-                                                os.path.basename(file[0]))),
+                            lambda file:
+                            (file,
+                             self.convention.match(os.path.basename(file[0]))),
                             # Walk the folder and find the files
                             self.walkable.walk(**filters))))))
 

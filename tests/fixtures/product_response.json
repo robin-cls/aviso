@@ -1,0 +1,66 @@
+{
+    "mdb:identificationInfo": {
+        "mri:MD_DataIdentification": {
+            "mri:citation": {
+                "cit:CI_Citation": {
+                    "cit:identifier": {
+                        "mcc:MD_Identifier": {
+                            "mcc:version": {
+                                "gco:CharacterString": {
+                                    "#text": "1.2.3"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "mri:abstract": {
+                "gco:CharacterString": {
+                    "#text": "This is an abstract."
+                }
+            },
+            "mri:credit": {
+                "gco:CharacterString": {
+                    "#text": "Data provided by AVISO"
+                }
+            }
+        }
+    },
+    "mdb:distributionInfo": {
+        "mrd:MD_Distribution": {
+            "mrd:transferOptions": {
+                "mrd:MD_DigitalTransferOptions": {
+                    "mrd:onLine": [
+                        {
+                            "cit:CI_OnlineResource": {
+                                "cit:description": {
+                                    "gco:CharacterString": {
+                                        "#text": "THREDDS"
+                                    }
+                                },
+                                "cit:linkage": {
+                                    "gco:CharacterString": {
+                                        "#text": "https://tds.mock/catalog.xml"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "mdb:contentInfo": {
+        "mrc:MD_CoverageDescription": {
+            "mrc:processingLevelCode": {
+                "mcc:MD_Identifier": {
+                    "mcc:code": {
+                        "gco:CharacterString": {
+                            "#text": "L2"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

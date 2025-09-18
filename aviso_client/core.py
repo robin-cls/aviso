@@ -54,4 +54,7 @@ def get(product_title: str, output_dir: str | pl.Path, **filters) -> list[str]:
         the list of downloaded local file paths
     """
     granule_paths = search_granules(product_title, **filters)
-    return [http_download(path, str(output_dir)) for path in granule_paths]
+    downloaded = [
+        http_download(path, str(output_dir)) for path in granule_paths
+    ]
+    return [f for f in downloaded if f is not None]

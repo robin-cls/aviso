@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses as dc
 import functools
 import warnings
-from enum import Enum, auto
+from enum import auto, Enum
 from typing import TYPE_CHECKING
 
 import aviso_client.ocean_tools.io as oct_io

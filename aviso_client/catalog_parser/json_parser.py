@@ -16,23 +16,41 @@ def parse_catalog_response(results: dict) -> AvisoCatalog:
     """
     products = []
     for record in results['hits']['hits']:
-        product = AvisoProduct(
-            id=record['_id'],
-            title=record['_source']['resourceTitleObject']['default'],
-            keywords=record['_source']['resourceAbstractObject']['default'])
-        products.append(product)
+        source = record['_source']
+        meta = {
+            'id': record['_id'],
+            'title': source['resourceTitleObject']['default'],
+            'keywords': source['resourceAbstractObject']['default']
+        }
+
+        for link in source['link']:
+            if 'descriptionObject' in link:
+                if link['descriptionObject']['default'] == 'THREDDS':
+                    meta = {
+                        **meta, 'tds_catalog_url': link['urlObject']['default']
+                    }
+                    if 'nameObject' in link:
+                        meta = {
+                            **meta, 'short_name': link['nameObject']['default']
+                        }
+
+            if link['protocol'] == 'DOI':
+                meta = {**meta, 'doi': link['urlObject']['default']}
+
+        meta = {**meta, 'last_update': source['resourceDate'][-1]['date']}
+
+        products.append(AvisoProduct(**meta))
 
     return AvisoCatalog(products=products)
 
 
-def parse_product_response(product_metadata: dict,
-                           product: AvisoProduct) -> AvisoProduct:
+def parse_product_response(meta: dict, product: AvisoProduct) -> AvisoProduct:
     """Parses the response of AVISO's catalog to a product request.
 
     Parameters
     ----------
-    product_metadata
-        the json response
+    meta
+        the json to parse
     product
         the product object to fill in
 
@@ -41,13 +59,19 @@ def parse_product_response(product_metadata: dict,
     AvisoProduct
         the object resulting from the parsing
     """
-    transferOptions = product_metadata['mdb:distributionInfo'][
-        'mrd:MD_Distribution']['mrd:transferOptions']
+
+    identifier = meta['mdb:identificationInfo']['mri:MD_DataIdentification'][
+        'mri:citation']['cit:CI_Citation']['cit:identifier']
+    if isinstance(identifier, list):
+        identifier = identifier[0]
+    product.last_version = identifier['mcc:MD_Identifier']['mcc:version'][
+        'gco:CharacterString']['#text']
+
+    transferOptions = meta['mdb:distributionInfo']['mrd:MD_Distribution'][
+        'mrd:transferOptions']
     if isinstance(transferOptions, list):
-        online = transferOptions[0]['mrd:MD_DigitalTransferOptions'][
-            'mrd:onLine']
-    else:
-        online = transferOptions['mrd:MD_DigitalTransferOptions']['mrd:onLine']
+        transferOptions = transferOptions[0]
+    online = transferOptions['mrd:MD_DigitalTransferOptions']['mrd:onLine']
 
     for online_resource in online:
         if online_resource is not None:
@@ -58,7 +82,7 @@ def parse_product_response(product_metadata: dict,
 
     product.tds_catalog_url = tds_url
 
-    contentInfo = product_metadata['mdb:contentInfo']
+    contentInfo = meta['mdb:contentInfo']
     if 'mrc:MD_CoverageDescription' in contentInfo.keys():
         product.processing_level = contentInfo['mrc:MD_CoverageDescription'][
             'mrc:processingLevelCode']['mcc:MD_Identifier']['mcc:code'][
@@ -68,10 +92,10 @@ def parse_product_response(product_metadata: dict,
             'mrc:processingLevelCode']['mcc:MD_Identifier']['mcc:code'][
                 'gco:CharacterString']['#text']
 
-    product.abstract = product_metadata['mdb:identificationInfo'][
+    product.abstract = meta['mdb:identificationInfo'][
         'mri:MD_DataIdentification']['mri:abstract']['gco:CharacterString'][
             '#text']
-    product.credit = product_metadata['mdb:identificationInfo'][
+    product.credit = meta['mdb:identificationInfo'][
         'mri:MD_DataIdentification']['mri:credit']['gco:CharacterString'][
             '#text']
 

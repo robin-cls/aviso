@@ -1,5 +1,6 @@
-import re
 import enum
+import re
+
 import numpy as np
 
 from aviso_client.ocean_tools.io import (
@@ -416,28 +417,3 @@ class FileNameConventionL3Nadir(FileNameConvention):
                      ' or 20Hz depending on the level and dataset considered.'
                      ))
             ])
-
-class FilenameConventionName(enum.Enum):
-    """Names of the different filename conventions."""
-    SWOT_L3_LR_SSH = "swot_l3_lr_ssh"
-    SWOT_L2_LR_SSH = "swot_l2_lr_ssh"
-    
-    @classmethod
-    def from_str(cls, s: str):
-        s = s.lower()
-        for member in cls:
-            if member.value.lower() == s:
-                return member
-        raise ValueError(f"Unknown filename convention: {s}")
-    
-    
-conventions = {
-    FilenameConventionName.SWOT_L3_LR_SSH : FileNameConventionSwotL3(),
-    FilenameConventionName.SWOT_L2_LR_SSH : FileNameConventionSwotL2()
-}
-
-class FilenameConventionLoader:
-    """Filename conventions loader."""
-
-    def load(self, convention: FilenameConventionName):
-        return conventions[convention]

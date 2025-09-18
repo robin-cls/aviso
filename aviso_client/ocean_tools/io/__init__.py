@@ -1,6 +1,5 @@
 from ._filenames import (
     CaseType,
-    FileNameFilterer,
     FileListingError,
     FileNameConvention,
     FileNameField,
@@ -13,28 +12,18 @@ from ._filenames import (
     FileNameFieldInteger,
     FileNameFieldPeriod,
     FileNameFieldString,
+    FileNameFilterer,
     FileParsingError,
-    RecordFilter,
     ILayout,
-    IWalkable
+    IWalkable,
+    RecordFilter,
 )
+
 __all__ = [
-    'FileNameField',
-    'FileNameFieldDatetime',
-    'FileNameFieldDateDelta',
-    'FileNameFieldDateJulian',
-    'FileNameFieldEnum',
-    'FileNameFieldFloat',
-    'FileNameFieldInteger',
-    'FileNameFieldString',
-    'FileNameFieldPeriod',
-    'FileNameConvention',
-    'FileParsingError',
-    'RecordFilter',
-    'FileNameFilterer',
-    'FileListingError',
-    'FileNameFieldDateJulianDelta',
-    'CaseType',
-    'ILayout',
-    'IWalkable'
+    'FileNameField', 'FileNameFieldDatetime', 'FileNameFieldDateDelta',
+    'FileNameFieldDateJulian', 'FileNameFieldEnum', 'FileNameFieldFloat',
+    'FileNameFieldInteger', 'FileNameFieldString', 'FileNameFieldPeriod',
+    'FileNameConvention', 'FileParsingError', 'RecordFilter',
+    'FileNameFilterer', 'FileListingError', 'FileNameFieldDateJulianDelta',
+    'CaseType', 'ILayout', 'IWalkable'
 ]

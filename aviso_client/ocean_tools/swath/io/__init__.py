@@ -5,16 +5,15 @@ from ._conventions import (
     FileNameConventionGriddedSLA,
     FileNameConventionL2Nadir,
     FileNameConventionL3Nadir,
+    FilenameConventionLoader,
     FileNameConventionMUR,
+    FilenameConventionName,
     FileNameConventionOHC,
     FileNameConventionS1AOWI,
     FileNameConventionSST,
     FileNameConventionSWH,
     FileNameConventionSwotL2,
     FileNameConventionSwotL3,
-    FilenameConventionLoader,
-    FilenameConventionName
-    
 )
 from ._definitions import (
     AcquisitionMode,
@@ -25,23 +24,23 @@ from ._definitions import (
     Upstream,
 )
 from ._products import (
+    build_version_parser,
     L2Version,
     L2VersionField,
     ProductSubset,
     Timeliness,
-    build_version_parser,
 )
 
 __all__ = [
-    'FileNameConventionERA5', 'ProductSubset',
-    'ProductGroup', 'FileNameConventionCHL', 'FileNameConventionGriddedSLA',
+    'FileNameConventionERA5', 'ProductSubset', 'ProductGroup',
+    'FileNameConventionCHL', 'FileNameConventionGriddedSLA',
     'FileNameConventionSST', 'FileNameConventionDAC',
     'FileNameConventionSwotL2', 'FileNameConventionSwotL3',
     'FileNameConventionOHC', 'FileNameConventionS1AOWI',
     'FileNameConventionMUR', 'FileNameConventionSWH',
-    'FileNameConventionL2Nadir', 'FileNameConventionL3Nadir',
-    'Timeliness', 'L2Version', 'L2VersionField',
-    'ProductType', 'build_version_parser', 'Upstream', 'ProductLevel',
-    'AcquisitionMode', 'S1AOWIProductType', 'Delay',
-    'S1AOWISlicePostProcessing', 'FilenameConventionLoader', 'FilenameConventionName'
+    'FileNameConventionL2Nadir', 'FileNameConventionL3Nadir', 'Timeliness',
+    'L2Version', 'L2VersionField', 'ProductType', 'build_version_parser',
+    'Upstream', 'ProductLevel', 'AcquisitionMode', 'S1AOWIProductType',
+    'Delay', 'S1AOWISlicePostProcessing', 'FilenameConventionLoader',
+    'FilenameConventionName'
 ]

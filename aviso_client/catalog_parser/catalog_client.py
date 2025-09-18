@@ -35,7 +35,7 @@ def get_details(product_title: str) -> AvisoProduct:
     AvisoProduct
         the product details
     """
-    product = _get_product(product_title)
+    product = _get_product_from_title(product_title)
     resp = _request_product(product.id)
     product = parse_product_response(resp, product)
     return product
@@ -50,26 +50,27 @@ def search_granules(product_title: str, **filters) -> list[str]:
         the title of the product
     **filters
         filters for files selection
-        
+
     Returns
     -------
     list[str]
         the urls of the granules corresponding to the provided filters
     """
-    product = _get_product(product_title)
-    # search for granules
+    product = _get_product_from_title(product_title)
     return filter_granules(product, **filters)
 
-def _get_product(product_title: str) -> AvisoProduct:
-    """ Search for a product in AVISO's catalog from its title """
+
+def _get_product_from_title(product_title: str) -> AvisoProduct:
+    """Search for a product in AVISO's catalog from its title."""
     catalog = fetch_catalog()
     for p in catalog.products:
         if p.title == product_title:
             return p
     raise ValueError(f'Invalid product title "{product_title}"')
 
+
 def _request_catalog() -> dict:
-    """ Request AVISO's catalog products: filters on CDS-AVISO and SWOT """
+    """Request AVISO's catalog products: filters on CDS-AVISO and SWOT."""
     url = os.path.join(AVISO_CATALOG_URL, 'search/records/_search')
     payload = {
         'from': 0,
@@ -93,7 +94,10 @@ def _request_catalog() -> dict:
 
 
 def _request_product(product_id: str):
-    """ Request AVISO's catalog product details """
+    """Request AVISO's catalog product details."""
     url = os.path.join(AVISO_CATALOG_URL, 'records', product_id)
+
     resp = requests.get(url, headers={'Accept': 'application/json'})
+    resp.raise_for_status()
+
     return resp.json()

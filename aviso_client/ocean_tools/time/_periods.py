@@ -41,10 +41,10 @@ class Period:
                    include_time: bool = True):
         if isinstance(times, np.datetime64):
             return (self.start <= times if
-                    (self.include_start and include_time) else self.start <
-                    times) and (times <= self.stop if
-                                (self.include_stop
-                                 and include_time) else times < self.stop)
+                    (self.include_start and include_time) else self.start
+                    < times) and (times <= self.stop if
+                                  (self.include_stop
+                                   and include_time) else times < self.stop)
 
         if self._equals(times.start):
             if self._include(times.start, times.include_start):

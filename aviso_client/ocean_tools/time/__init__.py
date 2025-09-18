@@ -6,9 +6,9 @@ import numpy as np
 
 from ._conversions import (
     CNES_DATE_REFERENCE,
-    MILLENNIUM_DATE_REFERENCE,
     fractional_julian_day_to_numpy,
     julian_day_to_numpy,
+    MILLENNIUM_DATE_REFERENCE,
     numpy_to_fractional_julian_day,
     numpy_to_julian_day,
 )

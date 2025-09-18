@@ -2,7 +2,7 @@ import dataclasses as dc
 import datetime as dt
 import functools
 from copy import deepcopy
-from enum import Enum, auto
+from enum import auto, Enum
 
 import numpy as np
 
