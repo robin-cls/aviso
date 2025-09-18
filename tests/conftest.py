@@ -1,19 +1,25 @@
-import pytest
-import os
 import json
+import os
 from unittest.mock import MagicMock
+
+import pytest
+
 
 @pytest.fixture
 def catalog_response():
-    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures', 'catalog_response.json')
+    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures',
+                                'catalog_response.json')
     with open(fixture_path, encoding='utf-8') as f:
         return json.load(f)
 
+
 @pytest.fixture
 def product_response():
-    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures', 'product_response.json')
+    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures',
+                                'product_response.json')
     with open(fixture_path, encoding='utf-8') as f:
         return json.load(f)
+
 
 @pytest.fixture(autouse=True)
 def mock_tds_catalog(mocker):
@@ -23,7 +29,9 @@ def mock_tds_catalog(mocker):
     mock_dataset1.access_urls = {'HTTPServer': 'https://tds.mock/dataset1.nc'}
 
     mock_dataset2 = MagicMock()
-    mock_dataset2.access_urls = {'HTTPServer': 'https://tds.mock/vA/dataset2.nc'}
+    mock_dataset2.access_urls = {
+        'HTTPServer': 'https://tds.mock/vA/dataset2.nc'
+    }
 
     mock_catalog_vA = MagicMock()
     mock_catalog_vA.datasets = {'ds2': mock_dataset2}
@@ -33,7 +41,9 @@ def mock_tds_catalog(mocker):
     mock_ref_vA.href = 'https://tds.mock/A/catalog.xml'
 
     mock_dataset3 = MagicMock()
-    mock_dataset3.access_urls = {'HTTPServer': 'https://tds.mock/vB/dataset3.nc'}
+    mock_dataset3.access_urls = {
+        'HTTPServer': 'https://tds.mock/vB/dataset3.nc'
+    }
 
     mock_catalog_vB = MagicMock()
     mock_catalog_vB.datasets = {'ds3': mock_dataset3}
@@ -56,6 +66,7 @@ def mock_tds_catalog(mocker):
         elif url == 'https://tds.mock/B/catalog.xml':
             return mock_catalog_vB
         else:
-            raise ValueError(f"Unexpected TDSCatalog URL: {url}")
+            raise ValueError(f'Unexpected TDSCatalog URL: {url}')
 
-    mocker.patch('aviso_client.catalog_parser.granule_discoverer.TDSCatalog', side_effect=tds_catalog_side_effect)
+    mocker.patch('aviso_client.catalog_parser.granule_discoverer.TDSCatalog',
+                 side_effect=tds_catalog_side_effect)

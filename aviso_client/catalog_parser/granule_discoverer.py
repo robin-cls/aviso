@@ -49,7 +49,7 @@ class ConventionLoader:
 
 
 class TDSIterable(ITreeIterable):
-    """List files or links in a file system.
+    """List files or links in a TDS Server.
 
     Parameters
     ----------
