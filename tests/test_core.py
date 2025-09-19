@@ -9,6 +9,8 @@ def test_summary():
 
 
 def test_details():
+    details(product_title='Bad Product')
+    
     product = details(product_title='Sample Product A')
     assert product.title == 'Sample Product A'
     assert product.id == 'productA'
