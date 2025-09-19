@@ -14,6 +14,8 @@ from ocean_tools.io import (
 import aviso_client
 from aviso_client.catalog_parser.granule_discoverer import TDSIterable
 
+# Relies on pytest-mock
+
 ############## PATCH GEONETWORK CATALOG RESPONSES
 
 

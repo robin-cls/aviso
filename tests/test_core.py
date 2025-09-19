@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from aviso_client.core import details, get, summary
 
 
@@ -9,8 +11,9 @@ def test_summary():
 
 
 def test_details():
-    details(product_title='Bad Product')
-    
+    with pytest.raises(ValueError):
+        details(product_title='Bad Product')
+
     product = details(product_title='Sample Product A')
     assert product.title == 'Sample Product A'
     assert product.id == 'productA'
@@ -23,10 +26,26 @@ def test_details():
     assert product.last_update == '2023-06-15'
 
 
-def test_get(tmp_path):
-    local_files = get(product_title='Sample Product A',
-                      filter1='A',
-                      output_dir=tmp_path,
-                      cycle_number=3)
+def test_get_error(tmp_path):
+    with pytest.raises(ValueError):
+        get(product_title='Bad Product', output_dir=tmp_path)
 
-    assert local_files[0] == os.path.join(tmp_path, 'dataset_3.nc')
+
+@pytest.mark.parametrize('product_title, filters, files', [
+    ('Sample Product A', {}, ['dataset_2.nc', 'dataset_3.nc']),
+    ('Sample Product A', {
+        'filter1': 'A',
+        'cycle_number': 3
+    }, ['dataset_3.nc']),
+    ('Sample Product B', {
+        'filter1': 'A',
+        'cycle_number': 3
+    }, []),
+    ('Sample Product B', {}, ['dataset_4.nc']),
+])
+def test_get(tmp_path, product_title, filters, files):
+    local_files = get(product_title=product_title,
+                      output_dir=tmp_path,
+                      **filters)
+
+    assert local_files == [os.path.join(tmp_path, f) for f in files]
