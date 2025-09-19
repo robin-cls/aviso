@@ -2,7 +2,6 @@ import enum
 import json
 import os
 import re
-from unittest.mock import MagicMock
 
 import pytest
 from ocean_tools.io import (
@@ -38,7 +37,7 @@ def product_response():
 def mock_post(mocker, catalog_response):
     mock_post = mocker.patch(
         'aviso_client.catalog_parser.catalog_client.requests.post')
-    mock_response = mocker.MagicMock()
+    mock_response = mocker.Mock()
     mock_response.status_code = 200
     mock_response.json.return_value = catalog_response
     mock_post.return_value = mock_response
@@ -49,7 +48,7 @@ def mock_post(mocker, catalog_response):
 def mock_get(mocker, product_response):
     mock_get = mocker.patch(
         'aviso_client.catalog_parser.catalog_client.requests.get')
-    mock_response = mocker.MagicMock()
+    mock_response = mocker.Mock()
     mock_response.content = b'fake file contents'
     mock_response.status_code = 200
     mock_response.json.return_value = product_response
@@ -126,40 +125,40 @@ def patch_all(mocker, test_layout, test_filename_convention):
 def mock_tds_catalog(mocker):
     """Recursive TDSCatalog mock with two sub-catalogs."""
 
-    mock_dataset1 = MagicMock()
+    mock_dataset1 = mocker.Mock()
     mock_dataset1.access_urls = {'HTTPServer': 'https://tds.mock/dataset_1.nc'}
 
-    mock_dataset2 = MagicMock()
+    mock_dataset2 = mocker.Mock()
     mock_dataset2.access_urls = {
         'HTTPServer': 'https://tds.mock/productA_path/dataset_2.nc'
     }
-    mock_dataset3 = MagicMock()
+    mock_dataset3 = mocker.Mock()
     mock_dataset3.access_urls = {
         'HTTPServer': 'https://tds.mock/productA_path/dataset_3.nc'
     }
 
-    mock_catalog_vA = MagicMock()
+    mock_catalog_vA = mocker.Mock()
     mock_catalog_vA.datasets = {'ds2': mock_dataset2, 'ds3': mock_dataset3}
     mock_catalog_vA.catalog_refs = {}
 
-    mock_ref_vA = MagicMock()
+    mock_ref_vA = mocker.Mock()
     mock_ref_vA.href = 'https://tds.mock/productA_path/catalog.xml'
 
-    mock_dataset4 = MagicMock()
+    mock_dataset4 = mocker.Mock()
     mock_dataset4.access_urls = {
         'HTTPServer': 'https://tds.mock/productB_path/dataset_4.nc'
     }
 
-    mock_catalog_vB = MagicMock()
+    mock_catalog_vB = mocker.Mock()
     mock_catalog_vB.datasets = {'ds4': mock_dataset4}
     mock_catalog_vB.catalog_refs = {}
 
-    mock_ref_vB = MagicMock()
+    mock_ref_vB = mocker.Mock()
     mock_ref_vB.href = 'https://tds.mock/productB_path/catalog.xml'
 
     def tds_catalog_side_effect(url):
         if url == 'https://tds.mock/catalog.xml':
-            mock_root = MagicMock()
+            mock_root = mocker.Mock()
             mock_root.datasets = {'ds1': mock_dataset1}
             mock_root.catalog_refs = {
                 'productA_path': mock_ref_vA,
