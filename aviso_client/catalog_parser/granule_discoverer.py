@@ -28,13 +28,13 @@ TDS_CATALOG_BASE_URL = 'https://tds-odatis.aviso.altimetry.fr/thredds/catalog/'
 TDS_LAYOUT_CONFIG = os.path.join(os.path.dirname(__file__), 'resources',
                                  'tds_layout.yaml')
 
-layouts = {
+PREDEFINED_LAYOUTS = {
     AvisoDataType.SWOT_L2_LR_SSH: AVISO_L2_LR_SSH_LAYOUT,
     AvisoDataType.SWOT_L3_LR_SSH: AVISO_L3_LR_SSH_LAYOUT,
     AvisoDataType.SWOT_L4: AVISO_L4_SWOT_LAYOUT
 }
 
-conventions = {
+PREDEFINED_CONVENTIONS = {
     AvisoDataType.SWOT_L2_LR_SSH: FileNameConventionSwotL2(),
     AvisoDataType.SWOT_L3_LR_SSH: FileNameConventionSwotL3(),
     AvisoDataType.SWOT_L4: FileNameConventionGriddedSLA(),
@@ -45,7 +45,8 @@ class ConventionLoader:
     """Convention and layout loader."""
 
     def load(self, data_type: AvisoDataType):
-        return (conventions[data_type], layouts[data_type])
+        return (PREDEFINED_CONVENTIONS[data_type],
+                PREDEFINED_LAYOUTS[data_type])
 
 
 class TDSIterable(ITreeIterable):

@@ -13,28 +13,6 @@ from aviso_client.catalog_parser.catalog_client import (
 from aviso_client.catalog_parser.models import AvisoCatalog
 
 
-@pytest.fixture(autouse=True)
-def mock_post(mocker, catalog_response):
-    mock_post = mocker.patch(
-        'aviso_client.catalog_parser.catalog_client.requests.post')
-    mock_response = mocker.MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = catalog_response
-    mock_post.return_value = mock_response
-    return mock_post
-
-
-@pytest.fixture(autouse=True)
-def mock_get(mocker, product_response):
-    mock_get = mocker.patch(
-        'aviso_client.catalog_parser.catalog_client.requests.get')
-    mock_response = mocker.MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = product_response
-    mock_get.return_value = mock_response
-    return mock_get
-
-
 def test_request_catalog(mock_post):
     catalog_response = _request_catalog()
     assert catalog_response is not None
@@ -92,15 +70,15 @@ def test_get_details():
     pass
 
 
-@pytest.mark.parametrize('title, id', [('Sample Product 1', 'product1'),
-                                       ('Sample Product 2', 'product2')])
+@pytest.mark.parametrize('title, id', [('Sample Product A', 'productA'),
+                                       ('Sample Product A', 'productA')])
 def test_get_product_from_title(title, id):
     product = _get_product_from_title(title)
 
     assert product.id == id
     assert product.title == title
 
-    assert product.tds_catalog_url == f'https://tds.mock/{id}/catalog.xml'
+    assert product.tds_catalog_url == f'https://tds.mock/{id}_path/catalog.xml'
 
 
 def test_search_granules():

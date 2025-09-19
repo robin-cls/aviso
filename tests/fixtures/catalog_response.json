@@ -2,13 +2,13 @@
     "hits": {
       "hits": [
         {
-          "_id": "product1",
+          "_id": "productA",
           "_source": {
             "resourceTitleObject": {
-              "default": "Sample Product 1"
+              "default": "Sample Product A"
             },
             "resourceAbstractObject": {
-              "default": ["keyword1", "keyword2"]
+              "default": ["keywordA", "keywordAA"]
             },
             "link": [
               {
@@ -16,17 +16,17 @@
                   "default": "THREDDS"
                 },
                 "urlObject": {
-                  "default": "https://tds.mock/product1/catalog.xml"
+                  "default": "https://tds.mock/productA_path/catalog.xml"
                 },
                 "nameObject": {
-                  "default": "prod1_short"
+                  "default": "prodA_short"
                 },
                 "protocol": "HTTP"
               },
               {
                 "protocol": "DOI",
                 "urlObject": {
-                  "default": "https://doi.org/10.1234/product1"
+                  "default": "https://doi.org/10.1234/productA"
                 }
               }
             ],
@@ -37,13 +37,13 @@
           }
         },
         {
-          "_id": "product2",
+          "_id": "productB",
           "_source": {
             "resourceTitleObject": {
-              "default": "Sample Product 2"
+              "default": "Sample Product B"
             },
             "resourceAbstractObject": {
-              "default": ["keywordA"]
+              "default": ["keywordB"]
             },
             "link": [
               {
@@ -51,7 +51,7 @@
                   "default": "THREDDS"
                 },
                 "urlObject": {
-                  "default": "https://tds.mock/product2/catalog.xml"
+                  "default": "https://tds.mock/productB_path/catalog.xml"
                 },
                 "protocol": "HTTP"
               }
