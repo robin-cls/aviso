@@ -33,8 +33,8 @@ def test_http_download(mocker, tmp_path):
         assert f.read() == fake_data
 
 
-def test_http_download_error_msg(mocker, tmp_path, caplog):
-    url = 'https://bad_url'
+def test_http_download_error_msg(mocker, tmp_path):
+    bad_url = 'https://bad_url'
 
     fake_response = mocker.MagicMock()
     fake_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
@@ -45,6 +45,6 @@ def test_http_download_error_msg(mocker, tmp_path, caplog):
                  return_value=('user', 'pass'))
     mocked_logger = mocker.patch('aviso_client.tds_client.logger')
 
-    result = http_download(url, tmp_path)
+    result = http_download(bad_url, tmp_path)
     mocked_logger.error.assert_called_once()
     assert result is None

@@ -62,19 +62,31 @@ def mock_get(mocker, product_response):
 
 
 @pytest.fixture
+def test_filename_convention():
+    return FileNameConvention(re.compile(r'dataset_(?P<a_number>\d{2}).nc'),
+                              [FileNameFieldInteger('a_number')],
+                              'dataset_{a_number:0>2d}.nc')
+
+
+@pytest.fixture
 def test_layout():
     return Layout([
         FileNameConvention(re.compile('product(?P<filter1>.*)_path'),
                            [FileNameFieldString('filter1')],
-                           'product{filter1!f}_path')
+                           'product{filter1!f}_path'),
+        FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
+                           [FileNameFieldInteger('filter2')],
+                           '{filter2!f}_filter')
     ])
 
 
 @pytest.fixture
-def test_filename_convention():
-    return FileNameConvention(re.compile(r'dataset_(?P<cycle_number>\d{1})'),
-                              [FileNameFieldInteger('cycle_number')],
-                              'dataset_{cycle_number!f}')
+def test_layout_product():
+    return Layout([
+        FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
+                           [FileNameFieldInteger('filter2')],
+                           '{filter2!f}_filter')
+    ])
 
 
 @pytest.fixture
@@ -83,7 +95,7 @@ def tds_iterable(test_layout):
 
 
 @pytest.fixture(autouse=True)
-def patch_all(mocker, test_layout, test_filename_convention):
+def patch_all(mocker, test_layout_product, test_filename_convention):
 
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.TDS_LAYOUT_CONFIG',
@@ -106,7 +118,7 @@ def patch_all(mocker, test_layout, test_filename_convention):
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.PREDEFINED_LAYOUTS', {
             aviso_client.catalog_parser.granule_discoverer.AvisoDataType.TEST_TYPE:
-            test_layout
+            test_layout_product
         })
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.PREDEFINED_CONVENTIONS',
@@ -125,35 +137,76 @@ def patch_all(mocker, test_layout, test_filename_convention):
 
 @pytest.fixture(autouse=True)
 def mock_tds_catalog(mocker):
-    """Recursive TDSCatalog mock with two sub-catalogs."""
+    """Recursive TDSCatalog mock with two sub-catalogs.
 
-    mock_dataset1 = mocker.Mock()
-    mock_dataset1.access_urls = {'HTTPServer': 'https://tds.mock/dataset_1.nc'}
+    Test's tree structure:
+    / -> https://tds.mock/catalog.xml
+    - dataset_01.nc
+    /productA_path/ -> https://tds.mock/productA_path/catalog.xml
+        /2_filter/  -> https://tds.mock/productA_path/2_filter/catalog.xml
+            - dataset_02.nc
+            - dataset_22.nc
+        /3_filter/  -> https://tds.mock/productA_path/3_filter/catalog.xml
+            - dataset_03.nc
+            - dataset_33.nc
+    /productB_path/ -> https://tds.mock/productB_path/catalog.xml
+        /4_filter/  -> https://tds.mock/productB_path/4_filter/catalog.xml
+        - dataset_04.nc
+        - dataset_44.nc
+    """
 
-    mock_dataset2 = mocker.Mock()
-    mock_dataset2.access_urls = {
-        'HTTPServer': 'https://tds.mock/productA_path/dataset_2.nc'
+    def _get_dataset(path: str, nb: str):
+        mock_dataset = mocker.Mock()
+        mock_dataset.access_urls = {
+            'HTTPServer': f'https://tds.mock{path}/dataset_{nb:0>2d}.nc'
+        }
+        return mock_dataset
+
+    mock_catalog_vA_2 = mocker.Mock()
+    mock_catalog_vA_2.datasets = {
+        f'ds{nb}': _get_dataset('/productA_path/2_filter', nb)
+        for nb in [2, 22]
     }
-    mock_dataset3 = mocker.Mock()
-    mock_dataset3.access_urls = {
-        'HTTPServer': 'https://tds.mock/productA_path/dataset_3.nc'
+    mock_catalog_vA_2.catalog_refs = {}
+
+    mock_ref_vA_2 = mocker.Mock()
+    mock_ref_vA_2.href = 'https://tds.mock/productA_path/2_filter/catalog.xml'
+
+    mock_catalog_vA_3 = mocker.Mock()
+    mock_catalog_vA_3.datasets = {
+        f'ds{nb}': _get_dataset('/productA_path/3_filter', nb)
+        for nb in [3, 33]
     }
+    mock_catalog_vA_3.catalog_refs = {}
+
+    mock_ref_vA_3 = mocker.Mock()
+    mock_ref_vA_3.href = 'https://tds.mock/productA_path/3_filter/catalog.xml'
+
+    mock_catalog_vB_4 = mocker.Mock()
+    mock_catalog_vB_4.datasets = {
+        f'ds{nb}': _get_dataset('/productB_path/4_filter', nb)
+        for nb in [4, 44]
+    }
+    mock_catalog_vB_4.catalog_refs = {}
+
+    mock_ref_vB_4 = mocker.Mock()
+    mock_ref_vB_4.href = 'https://tds.mock/productB_path/4_filter/catalog.xml'
 
     mock_catalog_vA = mocker.Mock()
-    mock_catalog_vA.datasets = {'ds2': mock_dataset2, 'ds3': mock_dataset3}
-    mock_catalog_vA.catalog_refs = {}
+    mock_catalog_vA.datasets = {}
+    mock_catalog_vA.catalog_refs = {
+        '2_filter': mock_ref_vA_2,
+        '3_filter': mock_ref_vA_3,
+    }
 
     mock_ref_vA = mocker.Mock()
     mock_ref_vA.href = 'https://tds.mock/productA_path/catalog.xml'
 
-    mock_dataset4 = mocker.Mock()
-    mock_dataset4.access_urls = {
-        'HTTPServer': 'https://tds.mock/productB_path/dataset_4.nc'
-    }
-
     mock_catalog_vB = mocker.Mock()
-    mock_catalog_vB.datasets = {'ds4': mock_dataset4}
-    mock_catalog_vB.catalog_refs = {}
+    mock_catalog_vB.datasets = {}
+    mock_catalog_vB.catalog_refs = {
+        '4_filter': mock_ref_vB_4,
+    }
 
     mock_ref_vB = mocker.Mock()
     mock_ref_vB.href = 'https://tds.mock/productB_path/catalog.xml'
@@ -161,7 +214,10 @@ def mock_tds_catalog(mocker):
     def tds_catalog_side_effect(url):
         if url == 'https://tds.mock/catalog.xml':
             mock_root = mocker.Mock()
-            mock_root.datasets = {'ds1': mock_dataset1}
+            mock_root.datasets = {
+                f'ds{nb}': _get_dataset('', nb)
+                for nb in [1]
+            }
             mock_root.catalog_refs = {
                 'productA_path': mock_ref_vA,
                 'productB_path': mock_ref_vB,
@@ -169,8 +225,14 @@ def mock_tds_catalog(mocker):
             return mock_root
         elif url == 'https://tds.mock/productA_path/catalog.xml':
             return mock_catalog_vA
+        elif url == 'https://tds.mock/productA_path/2_filter/catalog.xml':
+            return mock_catalog_vA_2
+        elif url == 'https://tds.mock/productA_path/3_filter/catalog.xml':
+            return mock_catalog_vA_3
         elif url == 'https://tds.mock/productB_path/catalog.xml':
             return mock_catalog_vB
+        elif url == 'https://tds.mock/productB_path/4_filter/catalog.xml':
+            return mock_catalog_vB_4
         else:
             raise ValueError(f'Unexpected TDSCatalog URL: {url}')
 

@@ -32,16 +32,17 @@ def test_get_error(tmp_path):
 
 
 @pytest.mark.parametrize('product_title, filters, files', [
-    ('Sample Product A', {}, ['dataset_2.nc', 'dataset_3.nc']),
+    ('Sample Product A', {},
+     ['dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc', 'dataset_33.nc']),
     ('Sample Product A', {
         'filter1': 'A',
-        'cycle_number': 3
-    }, ['dataset_3.nc']),
+        'a_number': 3
+    }, ['dataset_03.nc']),
     ('Sample Product B', {
         'filter1': 'A',
-        'cycle_number': 3
+        'a_number': 3
     }, []),
-    ('Sample Product B', {}, ['dataset_4.nc']),
+    ('Sample Product B', {}, ['dataset_04.nc', 'dataset_44.nc']),
 ])
 def test_get(tmp_path, product_title, filters, files):
     local_files = get(product_title=product_title,

@@ -84,17 +84,18 @@ class TDSIterable(ITreeIterable):
         results = [d.access_urls['HTTPServer'] for d in cat.datasets.values()]
 
         for folder, ref in cat.catalog_refs.items():
-            # If name corresponds to filters, continue
-            # ex: name=v2_0_1/Basic/cycle_001
-            if self.layout.test(level, folder):
-                next_level = level + 1
+            # If name doesn't correspond to filters, continue
+            if self.layout is not None and not self.layout.test(level, folder):
+                logger.debug('Ignore folder %s', folder)
+                continue
 
-                # Each catalog_refs should have (name, ref) and it should be possible to follow ref with child = ref.follow()
-                # but there is a "name" marker missing somewhere in odatis TDS catalog.xml so it's not possible to follow a ref
-                # So we use the href and create a new TDSCatalog object with it
-                # ex: ref.href=https://tds-odatis.aviso.altimetry.fr/thredds/catalog/dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v1_0_1/Unsmoothed/cycle_001/catalog.xml
+            next_level = level + 1
 
-                results += self._find(ref.href, next_level, **filters)
+            # Each catalog_refs should have (name, ref) and it should be possible to follow ref with child = ref.follow()
+            # but there is a "name" marker missing somewhere in odatis TDS catalog.xml so it's not possible to follow a ref
+            # So we use the href and create a new TDSCatalog object with it
+            # ex: ref.href=https://tds-odatis.aviso.altimetry.fr/thredds/catalog/dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v1_0_1/Unsmoothed/cycle_001/catalog.xml
+            results += self._find(ref.href, next_level, **filters)
 
         return results
 
