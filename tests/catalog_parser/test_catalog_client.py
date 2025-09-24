@@ -65,9 +65,16 @@ def test_request_product_http_error(mock_get):
 
 
 def test_get_details():
-    # TODO
-    # product = get_details(product_title='Sample SWOT Product 1')
-    pass
+    product = get_details(product_title='Sample Product A')
+    assert product.title == 'Sample Product A'
+    assert product.id == 'productA'
+    assert product.tds_catalog_url == 'https://tds.mock/catalog.xml'
+    assert product.abstract == 'This is an abstract.'
+    assert product.last_version == '1.2.3'
+    assert product.credit == 'Data provided by AVISO'
+    assert product.processing_level == 'L2'
+    assert product.doi == 'https://doi.org/10.1234/productA'
+    assert product.last_update == '2023-06-15'
 
 
 @pytest.mark.parametrize('title, id', [('Sample Product A', 'productA'),
@@ -81,5 +88,28 @@ def test_get_product_from_title(title, id):
     assert product.tds_catalog_url == f'https://tds.mock/{id}_path/catalog.xml'
 
 
-def test_search_granules():
-    return
+@pytest.mark.parametrize('title, filters, exp_granules', [
+    ('Sample Product A', {}, [
+        'https://tds.mock/productA_path/2_filter/dataset_02.nc',
+        'https://tds.mock/productA_path/2_filter/dataset_22.nc',
+        'https://tds.mock/productA_path/3_filter/dataset_03.nc',
+        'https://tds.mock/productA_path/3_filter/dataset_33.nc'
+    ]),
+    ('Sample Product A', {
+        'filter1': 'A',
+        'a_number': 3
+    }, [
+        'https://tds.mock/productA_path/3_filter/dataset_03.nc',
+    ]),
+    ('Sample Product B', {
+        'filter1': 'A',
+        'a_number': 3
+    }, []),
+    ('Sample Product B', {}, [
+        'https://tds.mock/productB_path/4_filter/dataset_04.nc',
+        'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+    ]),
+])
+def test_search_granules(title, filters, exp_granules):
+    granules = search_granules(title, **filters)
+    assert list(granules) == exp_granules
