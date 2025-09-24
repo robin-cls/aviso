@@ -76,11 +76,25 @@ def _request_catalog() -> dict:
         'from': 0,
         'size': 20,
         'query': {
-            'match': {
-                'th_odatis_centre_donnees.default': 'CDS-AVISO'
-            },
-            'match': {
-                'platforms': 'SWOT'
+            'bool': {
+                'must': [{
+                    'match': {
+                        'th_odatis_centre_donnees.default': 'CDS-AVISO'
+                    }
+                }, {
+                    'match': {
+                        'platforms': 'SWOT'
+                    }
+                }],
+                'must_not': [{
+                    'term': {
+                        '_id': '94cd8b08-bf24-4f59-8ce5-bc27c6bd9c17'
+                    }
+                }, {
+                    'term': {
+                        '_id': 'a57da16f-330a-4927-b532-ca013b6c83da'
+                    }
+                }]
             }
         }
     }
