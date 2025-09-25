@@ -107,11 +107,21 @@ def _request_catalog() -> dict:
     return resp.json()
 
 
-def _request_product(product_id: str):
+def _request_product(product_id: str, timeout: float = 10.0):
     """Request AVISO's catalog product details."""
     url = os.path.join(AVISO_CATALOG_URL, 'records', product_id)
 
-    resp = requests.get(url, headers={'Accept': 'application/json'})
-    resp.raise_for_status()
+    try:
+        resp = requests.get(url,
+                            headers={'Accept': 'application/json'},
+                            timeout=timeout)
+        resp.raise_for_status()
+
+    except requests.Timeout:
+        raise RuntimeError(
+            f'Timeout after {timeout} seconds when requesting {url}')
+
+    except requests.RequestException as e:
+        raise RuntimeError(f'HTTP Error : {e}')
 
     return resp.json()

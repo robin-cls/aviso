@@ -1,3 +1,4 @@
+import logging
 import pathlib as pl
 
 from .catalog_parser.catalog_client import (
@@ -8,8 +9,8 @@ from .catalog_parser.catalog_client import (
 from .catalog_parser.models import AvisoCatalog, AvisoProduct
 from .tds_client import http_download
 
-import logging
 logger = logging.getLogger(__name__)
+
 
 def summary() -> AvisoCatalog:
     """Summarizes CDS-AVISO and SWOT products from AVISO's catalog.
@@ -56,11 +57,11 @@ def get(product_title: str, output_dir: str | pl.Path, **filters) -> list[str]:
         the list of downloaded local file paths
     """
     granule_paths = search_granules(product_title, **filters)
-    
-    logger.info(f"{len(granule_paths)} files to download.")
-    logger.info(f"Downloading granules: {list(granule_paths)}...")
+
+    logger.info(f'{len(granule_paths)} files to download.')
+    logger.info(f'Downloading granules: {list(granule_paths)}...')
     downloaded = [
         http_download(path, str(output_dir)) for path in granule_paths
     ]
-    
+
     return [f for f in downloaded if f is not None]

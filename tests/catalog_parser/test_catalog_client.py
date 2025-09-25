@@ -1,6 +1,7 @@
 import os
 
 import pytest
+import requests
 
 from aviso_client.catalog_parser.catalog_client import (
     _get_product_from_title,
@@ -64,6 +65,13 @@ def test_request_product_http_error(mock_get):
     mock_get.return_value = mock_response
     with pytest.raises(Exception, match='Server Error 500'):
         _request_product(product_id='record')
+
+
+def test_request_product_timeout(mocker):
+    mocker.patch('requests.get', side_effect=requests.Timeout)
+
+    with pytest.raises(RuntimeError, match='Timeout after .* seconds'):
+        _request_product('fake-id', timeout=1.0)
 
 
 def test_get_details():

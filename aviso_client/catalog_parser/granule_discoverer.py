@@ -139,12 +139,14 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
 
         tds_layout = yaml.safe_load(f)
         if not product.id in tds_layout:
-            raise KeyError(f'The product {product.title} - {product.id} is missing from the tds_layout configuration file.')
+            raise KeyError(
+                f'The product {product.title} - {product.id} is missing from the tds_layout configuration file.'
+            )
         product_layout = tds_layout[product.id]
 
         convention_obj, layout_obj = ConventionLoader().load(
             AvisoDataType.from_str(product_layout['data_type']))
-        
+
         if 'filters' not in product_layout:
             product_layout['filters'] = {}
 
