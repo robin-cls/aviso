@@ -8,6 +8,8 @@ from aviso_client.core import details, get, summary
 def test_summary():
     catalog = summary()
     assert len(catalog.products) == 2
+    assert catalog.products[0].title == 'Sample Product A'
+    assert catalog.products[1].title == 'Sample Product B'
 
 
 def test_details():
@@ -31,22 +33,41 @@ def test_get_error(tmp_path):
         get(product_title='Bad Product', output_dir=tmp_path)
 
 
-@pytest.mark.parametrize('product_title, filters, files', [
-    ('Sample Product A', {},
-     ['dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc', 'dataset_33.nc']),
-    ('Sample Product A', {
-        'filter1': 'A',
-        'a_number': 3
-    }, ['dataset_03.nc']),
-    ('Sample Product B', {
-        'filter1': 'A',
-        'a_number': 3
-    }, []),
-    ('Sample Product B', {}, ['dataset_04.nc', 'dataset_44.nc']),
-])
+@pytest.mark.parametrize(
+    'product_title, filters, files',
+    [('Sample Product A', {},
+      ['dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc', 'dataset_33.nc']),
+     ('Sample Product A', {
+         'filter2': 2,
+     }, ['dataset_02.nc', 'dataset_22.nc']),
+     ('Sample Product A', {
+         'a_number': 3
+     }, ['dataset_03.nc']),
+     ('Sample Product B', {}, ['dataset_04.nc', 'dataset_44.nc']),
+     ('Sample Product B', {
+         'other_filter': 'bad'
+     }, ['dataset_04.nc', 'dataset_44.nc'])])
 def test_get(tmp_path, product_title, filters, files):
     local_files = get(product_title=product_title,
                       output_dir=tmp_path,
                       **filters)
 
     assert local_files == [os.path.join(tmp_path, f) for f in files]
+
+
+def test_get_bad_product(tmp_path):
+    with pytest.raises(ValueError):
+        get(product_title='Bad Product', output_dir=tmp_path)
+
+
+@pytest.mark.parametrize('product_title, filters', [('Sample Product A', {
+    'filter2': 'bad',
+}), ('Sample Product A', {
+    'filter2': 2,
+    'a_number': 3
+}), ('Sample Product B', {
+    'a_number': 55
+})])
+def test_get_bad_filter(tmp_path, product_title, filters):
+    assert get(product_title=product_title, output_dir=tmp_path,
+               **filters) == []

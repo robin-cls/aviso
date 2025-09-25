@@ -42,6 +42,8 @@ def test_fetch_catalog():
 
     assert isinstance(catalog, AvisoCatalog)
     assert len(catalog.products) == 2
+    assert catalog.products[0].title == 'Sample Product A'
+    assert catalog.products[1].title == 'Sample Product B'
 
 
 def test_request_product(mock_get):
@@ -65,6 +67,9 @@ def test_request_product_http_error(mock_get):
 
 
 def test_get_details():
+    with pytest.raises(ValueError):
+        get_details(product_title='Bad Product')
+
     product = get_details(product_title='Sample Product A')
     assert product.title == 'Sample Product A'
     assert product.id == 'productA'
@@ -88,28 +93,60 @@ def test_get_product_from_title(title, id):
     assert product.tds_catalog_url == f'https://tds.mock/{id}_path/catalog.xml'
 
 
-@pytest.mark.parametrize('title, filters, exp_granules', [
-    ('Sample Product A', {}, [
+def test_get_product_from_title_error():
+    with pytest.raises(ValueError):
+        _get_product_from_title('Bad Product')
+
+
+@pytest.mark.parametrize(
+    'title, filters, exp_granules',
+    [('Sample Product A', {}, [
         'https://tds.mock/productA_path/2_filter/dataset_02.nc',
         'https://tds.mock/productA_path/2_filter/dataset_22.nc',
         'https://tds.mock/productA_path/3_filter/dataset_03.nc',
         'https://tds.mock/productA_path/3_filter/dataset_33.nc'
     ]),
-    ('Sample Product A', {
-        'filter1': 'A',
-        'a_number': 3
-    }, [
-        'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-    ]),
-    ('Sample Product B', {
-        'filter1': 'A',
-        'a_number': 3
-    }, []),
-    ('Sample Product B', {}, [
-        'https://tds.mock/productB_path/4_filter/dataset_04.nc',
-        'https://tds.mock/productB_path/4_filter/dataset_44.nc'
-    ]),
-])
+     ('Sample Product A', {
+         'filter2': 2,
+     }, [
+         'https://tds.mock/productA_path/2_filter/dataset_02.nc',
+         'https://tds.mock/productA_path/2_filter/dataset_22.nc',
+     ]),
+     ('Sample Product A', {
+         'a_number': 3,
+     }, ['https://tds.mock/productA_path/3_filter/dataset_03.nc']),
+     ('Sample Product B', {}, [
+         'https://tds.mock/productB_path/4_filter/dataset_04.nc',
+         'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+     ]),
+     ('Sample Product B', {
+         'other_filter': 'bad'
+     }, [
+         'https://tds.mock/productB_path/4_filter/dataset_04.nc',
+         'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+     ])])
 def test_search_granules(title, filters, exp_granules):
     granules = search_granules(title, **filters)
     assert list(granules) == exp_granules
+
+
+def test_search_granules_error():
+    with pytest.raises(ValueError):
+        search_granules(product_title='Bad Product')
+
+
+@pytest.mark.parametrize('title, filters', [
+    ('Sample Product A', {
+        'filter2': 'bad',
+    }),
+    ('Sample Product A', {
+        'filter2': 2,
+        'a_number': 3,
+    }),
+    ('Sample Product B', {
+        'a_number': 55
+    }),
+])
+def test_search_granules_bad_filter(title, filters):
+    granules = search_granules(title, **filters)
+    assert list(granules) == []

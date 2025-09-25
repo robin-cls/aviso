@@ -21,3 +21,44 @@ de48c5b5-18f7-4829-ba0e-78f3dff047ac:
   filters:
     version: 2.0.1
     subset: Unsmoothed
+
+96d932e6-07d0-447f-858a-90ff1ce53087:
+  title: 'Experimental Products: Multimission Gridded (with SWOT) Level-4 Sea Surface Heights and Velocities'
+  data_type: SWOT_L4
+  catalog_path: dataset-duacs-experimental-dt-phy-grids-nadirs-and-wide-swath
+  filters:
+    version: 2.0.1
+    subset: miost
+    phase: science
+
+2652e825-9ade-435c-afdd-eb920d01b018:
+  title: Altimetry product SWOT Level-2 KaRIn Low Rate SSH - Basic
+  data_type: SWOT_L2_LR_SSH
+  catalog_path: dataset-l2-swot-karin-lr-ssh-validated
+  filters:
+    version: PID0
+    subset: Basic
+
+83cca913-392b-4b65-ae34-d9d69d043e46:
+  title: Altimetry product SWOT Level-2 KaRIn Low Rate SSH - Expert
+  data_type: SWOT_L2_LR_SSH
+  catalog_path: dataset-l2-swot-karin-lr-ssh-validated
+  filters:
+    version: PID0
+    subset: Expert
+
+63866260-7062-44fd-b202-66c9ea81a683:
+  title: Altimetry product SWOT Level-2 KaRIn Low Rate SSH - Unsmoothed
+  data_type: SWOT_L2_LR_SSH
+  catalog_path: dataset-l2-swot-karin-lr-ssh-validated
+  filters:
+    version: PID0
+    subset: Unsmoothed
+
+681332a5-4b44-48cb-a28c-023962b21d83:
+  title: Altimetry product SWOT Level-2 KaRIn Low Rate SSH - WindWave
+  data_type: SWOT_L2_LR_SSH
+  catalog_path: dataset-l2-swot-karin-lr-ssh-validated
+  filters:
+    version: PID0
+    subset: WindWave

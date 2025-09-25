@@ -10,6 +10,7 @@ from ocean_tools.io import (
     FileNameFieldString,
     Layout,
 )
+from requests.exceptions import ProxyError
 
 import aviso_client
 from aviso_client.catalog_parser.granule_discoverer import TDSIterable
@@ -234,7 +235,9 @@ def mock_tds_catalog(mocker):
         elif url == 'https://tds.mock/productB_path/4_filter/catalog.xml':
             return mock_catalog_vB_4
         else:
-            raise ValueError(f'Unexpected TDSCatalog URL: {url}')
+            raise ProxyError(
+                f"HTTPSConnectionPool(host='{url}', port=443): Max retries exceeded with url: /L2-SWOT.html (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 503 Service Unavailable'))"
+            )
 
     mocker.patch('aviso_client.catalog_parser.granule_discoverer.TDSCatalog',
                  side_effect=tds_catalog_side_effect)

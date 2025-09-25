@@ -1,4 +1,5 @@
 import pytest
+from requests.exceptions import ProxyError
 
 import aviso_client
 from aviso_client.catalog_parser.granule_discoverer import (
@@ -68,11 +69,15 @@ class Test_TDSIterable:
              'https://tds.mock/dataset_01.nc',
              'https://tds.mock/productB_path/4_filter/dataset_04.nc',
              'https://tds.mock/productB_path/4_filter/dataset_44.nc'
-         ]),
-         ({
-             'filter1': 'B',
-             'filter2': 6
-         }, ['https://tds.mock/dataset_01.nc'])])
+         ]), ({
+             'filter1': 'C'
+         }, [
+             'https://tds.mock/dataset_01.nc',
+         ]), ({
+             'filter2': '6'
+         }, [
+             'https://tds.mock/dataset_01.nc',
+         ])])
     def test_find(self, tds_iterable, filter, exp_urls):
         urls = tds_iterable.find('https://tds.mock/catalog.xml', **filter)
 
@@ -97,6 +102,13 @@ class Test_TDSIterable:
         ):
             urls = tds_iterable.find('https://tds.mock/catalog.xml', **filter)
             assert urls == exp_urls
+
+    def test_find_bad_url(self, tds_iterable):
+        with pytest.raises(ProxyError) as exc_info:
+            tds_iterable.find('https://bad_url/catalog.xml')
+
+        assert "HTTPSConnectionPool(host='https://bad_url/catalog.xml', port=443): Max retries exceeded with url: /L2-SWOT.html (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 503 Service Unavailable'))" in str(
+            exc_info.value)
 
 
 def test_filter_granules():
