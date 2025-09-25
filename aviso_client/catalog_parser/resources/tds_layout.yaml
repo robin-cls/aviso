@@ -26,10 +26,6 @@ de48c5b5-18f7-4829-ba0e-78f3dff047ac:
   title: 'Experimental Products: Multimission Gridded (with SWOT) Level-4 Sea Surface Heights and Velocities'
   data_type: SWOT_L4
   catalog_path: dataset-duacs-experimental-dt-phy-grids-nadirs-and-wide-swath
-  filters:
-    version: 2.0.1
-    subset: miost
-    phase: science
 
 2652e825-9ade-435c-afdd-eb920d01b018:
   title: Altimetry product SWOT Level-2 KaRIn Low Rate SSH - Basic
