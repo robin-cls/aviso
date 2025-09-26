@@ -1,3 +1,4 @@
+import netrc
 from pathlib import Path
 from unittest.mock import mock_open
 
@@ -18,7 +19,7 @@ def fake_netrc_path(tmp_path, mocker):
     return path
 
 
-def test_get_credentials_found(fake_netrc_path, mocker):
+def test_get_credentials(fake_netrc_path, mocker):
     fake_netrc_path.write_text("""
         machine example.com login testuser password testpass
     """)
@@ -37,12 +38,13 @@ def test_get_credentials_netrc_not_exist(mocker):
     assert creds is None
 
 
-def test_get_credentials_netrc_invalid(mocker, fake_netrc_path):
+def test_get_credentials_netrc_invalid(mocker, caplog):
     mocker.patch('aviso_client.auth.netrc.netrc',
-                 side_effect=Exception('Invalid netrc'))
+                 side_effect=netrc.NetrcParseError('Invalid netrc'))
 
     creds = _get_credentials('example.com')
     assert creds is None
+    assert 'Syntax error' in caplog.text
 
 
 def test_prompt_and_save_credentials(mocker, fake_netrc_path):

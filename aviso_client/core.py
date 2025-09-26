@@ -58,8 +58,8 @@ def get(product_title: str, output_dir: str | pl.Path, **filters) -> list[str]:
     """
     granule_paths = search_granules(product_title, **filters)
 
-    logger.info(f'{len(granule_paths)} files to download.')
-    logger.info(f'Downloading granules: {list(granule_paths)}...')
+    logger.info('%d files to download.', len(granule_paths))
+    logger.info('Downloading granules: %s...', list(granule_paths))
     downloaded = [
         http_download(path, str(output_dir)) for path in granule_paths
     ]

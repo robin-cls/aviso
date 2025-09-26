@@ -2,6 +2,7 @@ import logging
 import os
 import typing as tp
 import warnings
+from pathlib import Path
 
 import yaml
 from ocean_tools.io import FileDiscoverer, ITreeIterable, Layout
@@ -25,8 +26,7 @@ logger = logging.getLogger(__name__)
 
 TDS_CATALOG_BASE_URL = 'https://tds-odatis.aviso.altimetry.fr/thredds/catalog/'
 
-TDS_LAYOUT_CONFIG = os.path.join(os.path.dirname(__file__), 'resources',
-                                 'tds_layout.yaml')
+TDS_LAYOUT_CONFIG = Path(__file__).parent / 'resources' / 'tds_layout.yaml'
 
 PREDEFINED_LAYOUTS = {
     AvisoDataType.SWOT_L2_LR_SSH: AVISO_L2_LR_SSH_LAYOUT,

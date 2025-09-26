@@ -29,7 +29,7 @@ def http_download(url: str, output_dir: str | pl.Path) -> str:
     """
     (username, password) = ensure_credentials(TDS_HOST)
 
-    logger.debug(f'Downloading {url}...')
+    logger.debug('Downloading %s...', url)
 
     filename = os.path.basename(url)
     local_filepath = os.path.join(str(output_dir), filename)
@@ -41,14 +41,14 @@ def http_download(url: str, output_dir: str | pl.Path) -> str:
         with open(local_filepath, 'wb') as f:
             f.write(response.content)
 
-        logger.info(f'File {local_filepath} downloaded.')
+        logger.info('File %s downloaded.', local_filepath)
 
         return local_filepath
 
     except requests.exceptions.HTTPError as e:
-        logger.error(f'HTTP error : {e}')
+        logger.error('HTTP error : %s', e)
 
     except requests.exceptions.RequestException as e:
-        logger.error(f'Error : {e}')
+        logger.error('Error : %s', e)
 
     return

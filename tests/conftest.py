@@ -2,6 +2,7 @@ import enum
 import json
 import os
 import re
+from pathlib import Path
 
 import pytest
 from ocean_tools.io import (
@@ -22,16 +23,14 @@ from aviso_client.catalog_parser.granule_discoverer import TDSIterable
 
 @pytest.fixture
 def catalog_response():
-    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures',
-                                'catalog_response.json')
+    fixture_path = Path(__file__).parent / 'fixtures' / 'catalog_response.json'
     with open(fixture_path, encoding='utf-8') as f:
         return json.load(f)
 
 
 @pytest.fixture
 def product_response():
-    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures',
-                                'product_response.json')
+    fixture_path = Path(__file__).parent / 'fixtures' / 'product_response.json'
     with open(fixture_path, encoding='utf-8') as f:
         return json.load(f)
 
@@ -100,7 +99,7 @@ def patch_all(mocker, test_layout_product, test_filename_convention):
 
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.TDS_LAYOUT_CONFIG',
-        os.path.join(os.path.dirname(__file__), 'fixtures', 'tds_layout.yaml'))
+        Path(__file__).parent / 'fixtures' / 'tds_layout.yaml')
 
     class FakeAvisoDataType(enum.Enum):
         TEST_TYPE = 'test_type'

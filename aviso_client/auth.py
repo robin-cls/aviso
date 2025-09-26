@@ -4,8 +4,6 @@ import netrc
 import os
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
-
 NETRC_PATH = Path.home() / '.netrc'
 
 
@@ -26,8 +24,12 @@ def _get_credentials(host: str):
         login, _, password = auth_data.authenticators(host)
         if login and password:
             return login, password
+    except netrc.NetrcParseError as e:
+        logging.error('Syntax error in .netrc file: %s', e)
+    except (TypeError, AttributeError) as e:
+        logging.error('Error reading credentials for %s', e)
     except Exception as e:
-        logging.error(f'Error reading .netrc : {e}')
+        logging.error('Error reading .netrc : %s', e)
 
     return None
 
