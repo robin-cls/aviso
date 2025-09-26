@@ -1,16 +1,18 @@
-productA:
-  title: Sample Product A
-  data_type: TEST_TYPE
-  catalog_path: productA_path
-  filters:
-    filter1: A
+products:
 
-productB:
-  title: Sample Product B
-  data_type: TEST_TYPE
-  catalog_path: productB_path
-  filters:
-    filter1: B
+  productA:
+    title: Sample Product A
+    data_type: TEST_TYPE
+    catalog_path: productA_path
+    filters:
+      filter1: A
+
+  productB:
+    title: Sample Product B
+    data_type: TEST_TYPE
+    catalog_path: productB_path
+    filters:
+      filter1: B
 
 granule_discovery:
   TEST_TYPE: [FileNameConventionSwotL3, AVISO_L3_LR_SSH_LAYOUT]
