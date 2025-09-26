@@ -9,7 +9,7 @@ import yaml
 from ocean_tools.io import FileDiscoverer, ITreeIterable, Layout
 from siphon.catalog import TDSCatalog
 
-from .models import (
+from .models.dataclasses import (
     AvisoProduct,
     ProductLayoutConfig,
 )

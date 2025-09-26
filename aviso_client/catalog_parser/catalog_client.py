@@ -4,7 +4,7 @@ import requests
 
 from .catalog_response_parser import parse_catalog_response, parse_product_response
 from .granule_discoverer import filter_granules
-from .models import AvisoCatalog, AvisoProduct
+from .models.dataclasses import AvisoCatalog, AvisoProduct
 
 AVISO_CATALOG_URL = 'https://sextant.ifremer.fr/geonetwork/srv/api'
 

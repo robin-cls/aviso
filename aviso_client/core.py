@@ -6,7 +6,7 @@ from .catalog_parser.catalog_client import (
     get_details,
     search_granules,
 )
-from .catalog_parser.models import AvisoCatalog, AvisoProduct
+from .catalog_parser.models.dataclasses import AvisoCatalog, AvisoProduct
 from .tds_client import http_download
 
 logger = logging.getLogger(__name__)

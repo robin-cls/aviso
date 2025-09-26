@@ -7,7 +7,7 @@ from aviso_client.catalog_parser.granule_discoverer import (
     _parse_tds_layout,
     filter_granules,
 )
-from aviso_client.catalog_parser.models import (
+from aviso_client.catalog_parser.models.dataclasses import (
     AvisoProduct,
     ProductLayoutConfig,
 )

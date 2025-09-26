@@ -11,7 +11,7 @@ from aviso_client.catalog_parser.catalog_client import (
     get_details,
     search_granules,
 )
-from aviso_client.catalog_parser.models import AvisoCatalog
+from aviso_client.catalog_parser.models.dataclasses import AvisoCatalog
 
 
 def test_request_catalog(mock_post):
