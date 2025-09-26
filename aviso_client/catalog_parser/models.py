@@ -48,18 +48,3 @@ class ProductLayoutConfig:
     layout: Layout
     catalog_path: str
     default_filters: dict
-
-
-class AvisoDataType(enum.Enum):
-    """Different types of data available on AVISO."""
-    SWOT_L2_LR_SSH = 'swot_l2_lr_ssh'
-    SWOT_L3_LR_SSH = 'swot_l3_lr_ssh'
-    SWOT_L4 = 'swot_l4'
-
-    @classmethod
-    def from_str(cls, s: str):
-        s = s.lower()
-        for member in cls:
-            if member.value.lower() == s:
-                return member
-        raise ValueError(f'Unknown type: {s}')

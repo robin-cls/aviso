@@ -11,3 +11,6 @@ productB:
   catalog_path: productB_path
   filters:
     filter1: B
+
+granule_discovery:
+  TEST_TYPE: [FileNameConventionSwotL3, AVISO_L3_LR_SSH_LAYOUT]

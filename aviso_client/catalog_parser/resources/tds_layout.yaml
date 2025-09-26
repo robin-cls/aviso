@@ -58,3 +58,8 @@ de48c5b5-18f7-4829-ba0e-78f3dff047ac:
   filters:
     version: PID0
     subset: WindWave
+
+granule_discovery:
+  SWOT_L2_LR_SSH: [FileNameConventionSwotL2, AVISO_L2_LR_SSH_LAYOUT]
+  SWOT_L3_LR_SSH: [FileNameConventionSwotL3, AVISO_L3_LR_SSH_LAYOUT]
+  SWOT_L4: [FileNameConventionGriddedSLA, AVISO_L4_SWOT_LAYOUT]

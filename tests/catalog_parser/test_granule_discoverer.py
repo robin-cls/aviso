@@ -3,25 +3,14 @@ from requests.exceptions import ProxyError
 
 import aviso_client
 from aviso_client.catalog_parser.granule_discoverer import (
+    _load_convention_layout,
     _parse_tds_layout,
-    ConventionLoader,
     filter_granules,
 )
 from aviso_client.catalog_parser.models import (
     AvisoProduct,
     ProductLayoutConfig,
 )
-
-
-class Test_ConventionLoader:
-
-    def testload(self, test_layout_product, test_filename_convention):
-        convention, layout = ConventionLoader().load(
-            aviso_client.catalog_parser.granule_discoverer.AvisoDataType.
-            TEST_TYPE)
-
-        assert layout == test_layout_product
-        assert convention == test_filename_convention
 
 
 class Test_TDSIterable:
@@ -125,11 +114,22 @@ def test_filter_granules():
     ]
 
 
+def test_load_convention_layout(patch_some, test_layout,
+                                test_filename_convention):
+    conf = {
+        'TEST_TYPE': ['FileNameConventionSwotL3', 'AVISO_L3_LR_SSH_LAYOUT']
+    }
+
+    conv, layout = _load_convention_layout(conf, 'TEST_TYPE')
+    assert type(conv) == type(test_filename_convention)
+    assert layout == test_layout
+
+
 @pytest.mark.parametrize('_id, title, filter1',
                          [('productA', 'Sample Product A', 'A'),
                           ('productB', 'Sample Product B', 'B')])
-def test_parse_tds_layout(test_layout_product, test_filename_convention, _id,
-                          title, filter1):
+def test_parse_tds_layout(patch_some, test_layout, test_filename_convention,
+                          _id, title, filter1):
     pl_conf = _parse_tds_layout(AvisoProduct(id=_id))
     assert isinstance(pl_conf, ProductLayoutConfig)
 
@@ -137,5 +137,5 @@ def test_parse_tds_layout(test_layout_product, test_filename_convention, _id,
     assert pl_conf.default_filters == {'filter1': filter1}
     assert pl_conf.catalog_path == f'{_id}_path'
     assert pl_conf.title == title
-    assert pl_conf.layout == test_layout_product
-    assert pl_conf.convention == test_filename_convention
+    assert pl_conf.layout == test_layout
+    assert type(pl_conf.convention) == type(test_filename_convention)

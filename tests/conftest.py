@@ -1,9 +1,8 @@
-import enum
 import json
-import os
 import re
 from pathlib import Path
 
+import ocean_tools.swath.io
 import pytest
 from ocean_tools.io import (
     FileNameConvention,
@@ -59,34 +58,41 @@ def mock_get(mocker, product_response):
 
 
 ############## PATCH GRANULES DISCOVERING
+class FileNameConventionTest(FileNameConvention):
+
+    def __init__(self):
+        super().__init__(regex=re.compile(r'dataset_(?P<a_number>\d{2}).nc'),
+                         fields=[FileNameFieldInteger('a_number')],
+                         generation_string='dataset_{a_number:0>2d}.nc')
+
+
+TEST_LAYOUT = Layout([
+    FileNameConvention(re.compile('product(?P<filter1>.*)_path'),
+                       [FileNameFieldString('filter1')],
+                       'product{filter1!f}_path'),
+    FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
+                       [FileNameFieldInteger('filter2')], '{filter2!f}_filter')
+])
+
+TEST_PRODUCT_LAYOUT = Layout([
+    FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
+                       [FileNameFieldInteger('filter2')], '{filter2!f}_filter')
+])
 
 
 @pytest.fixture
 def test_filename_convention():
-    return FileNameConvention(re.compile(r'dataset_(?P<a_number>\d{2}).nc'),
-                              [FileNameFieldInteger('a_number')],
-                              'dataset_{a_number:0>2d}.nc')
+    return FileNameConventionTest()
 
 
 @pytest.fixture
 def test_layout():
-    return Layout([
-        FileNameConvention(re.compile('product(?P<filter1>.*)_path'),
-                           [FileNameFieldString('filter1')],
-                           'product{filter1!f}_path'),
-        FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
-                           [FileNameFieldInteger('filter2')],
-                           '{filter2!f}_filter')
-    ])
+    return TEST_LAYOUT
 
 
 @pytest.fixture
-def test_layout_product():
-    return Layout([
-        FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
-                           [FileNameFieldInteger('filter2')],
-                           '{filter2!f}_filter')
-    ])
+def test_product_layout():
+    return TEST_PRODUCT_LAYOUT
 
 
 @pytest.fixture
@@ -94,38 +100,22 @@ def tds_iterable(test_layout):
     return TDSIterable(test_layout)
 
 
+@pytest.fixture()
+def patch_some(mocker):
+    mocker.patch('ocean_tools.swath.io.AVISO_L3_LR_SSH_LAYOUT', TEST_LAYOUT)
+
+
 @pytest.fixture(autouse=True)
-def patch_all(mocker, test_layout_product, test_filename_convention):
+def patch_all(mocker):
+    mocker.patch('ocean_tools.swath.io.FileNameConventionSwotL3',
+                 FileNameConventionTest)
+
+    mocker.patch('ocean_tools.swath.io.AVISO_L3_LR_SSH_LAYOUT',
+                 TEST_PRODUCT_LAYOUT)
 
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.TDS_LAYOUT_CONFIG',
         Path(__file__).parent / 'fixtures' / 'tds_layout.yaml')
-
-    class FakeAvisoDataType(enum.Enum):
-        TEST_TYPE = 'test_type'
-
-        @classmethod
-        def from_str(cls, s: str):
-            s = s.lower()
-            for member in cls:
-                if member.value.lower() == s:
-                    return member
-            raise ValueError(f'Unknown type: {s}')
-
-    mocker.patch(
-        'aviso_client.catalog_parser.granule_discoverer.AvisoDataType',
-        new=FakeAvisoDataType)
-    mocker.patch(
-        'aviso_client.catalog_parser.granule_discoverer.PREDEFINED_LAYOUTS', {
-            aviso_client.catalog_parser.granule_discoverer.AvisoDataType.TEST_TYPE:
-            test_layout_product
-        })
-    mocker.patch(
-        'aviso_client.catalog_parser.granule_discoverer.PREDEFINED_CONVENTIONS',
-        {
-            aviso_client.catalog_parser.granule_discoverer.AvisoDataType.TEST_TYPE:
-            test_filename_convention
-        })
 
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.TDS_CATALOG_BASE_URL',

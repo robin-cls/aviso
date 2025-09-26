@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 import typing as tp
@@ -6,18 +7,9 @@ from pathlib import Path
 
 import yaml
 from ocean_tools.io import FileDiscoverer, ITreeIterable, Layout
-from ocean_tools.swath.io import (
-    AVISO_L2_LR_SSH_LAYOUT,
-    AVISO_L3_LR_SSH_LAYOUT,
-    AVISO_L4_SWOT_LAYOUT,
-    FileNameConventionGriddedSLA,
-    FileNameConventionSwotL2,
-    FileNameConventionSwotL3,
-)
 from siphon.catalog import TDSCatalog
 
 from .models import (
-    AvisoDataType,
     AvisoProduct,
     ProductLayoutConfig,
 )
@@ -27,26 +19,6 @@ logger = logging.getLogger(__name__)
 TDS_CATALOG_BASE_URL = 'https://tds-odatis.aviso.altimetry.fr/thredds/catalog/'
 
 TDS_LAYOUT_CONFIG = Path(__file__).parent / 'resources' / 'tds_layout.yaml'
-
-PREDEFINED_LAYOUTS = {
-    AvisoDataType.SWOT_L2_LR_SSH: AVISO_L2_LR_SSH_LAYOUT,
-    AvisoDataType.SWOT_L3_LR_SSH: AVISO_L3_LR_SSH_LAYOUT,
-    AvisoDataType.SWOT_L4: AVISO_L4_SWOT_LAYOUT
-}
-
-PREDEFINED_CONVENTIONS = {
-    AvisoDataType.SWOT_L2_LR_SSH: FileNameConventionSwotL2(),
-    AvisoDataType.SWOT_L3_LR_SSH: FileNameConventionSwotL3(),
-    AvisoDataType.SWOT_L4: FileNameConventionGriddedSLA(),
-}
-
-
-class ConventionLoader:
-    """Convention and layout loader."""
-
-    def load(self, data_type: AvisoDataType):
-        return (PREDEFINED_CONVENTIONS[data_type],
-                PREDEFINED_LAYOUTS[data_type])
 
 
 class TDSIterable(ITreeIterable):
@@ -68,9 +40,9 @@ class TDSIterable(ITreeIterable):
              **filters: tp.Any) -> tp.Iterator[str | dict[str, str]]:
 
         if len(filters) > 0 and self.layout is None:
-            msg = (f'Filters {filters.keys()} have been defined for the file '
+            msg = ('Filters %s have been defined for the file '
                    'system tree walk, but no layout is configured. These '
-                   'filters will be ignored')
+                   'filters will be ignored', filters.keys())
             warnings.warn(msg)
 
         if self.layout is not None:
@@ -133,6 +105,19 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     return granules.filename
 
 
+def _load_convention_layout(granule_discovery, data_type):
+    if not data_type in granule_discovery:
+        raise KeyError(
+            f'The data type {data_type} is missing from the tds_layout|granule_discovery configuration.'
+        )
+    convention, layout = granule_discovery[data_type]
+
+    module = importlib.import_module('ocean_tools.swath.io')
+    convention_obj, layout_obj = getattr(module, convention)(), getattr(
+        module, layout)
+    return convention_obj, layout_obj
+
+
 def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
     """Parse resources/tds_layout.yaml to retrieve the layout information."""
     with open(TDS_LAYOUT_CONFIG) as f:
@@ -144,8 +129,10 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
             )
         product_layout = tds_layout[product.id]
 
-        convention_obj, layout_obj = ConventionLoader().load(
-            AvisoDataType.from_str(product_layout['data_type']))
+        granule_discovery = tds_layout['granule_discovery']
+        data_type = product_layout['data_type']
+        convention_obj, layout_obj = _load_convention_layout(
+            granule_discovery, data_type)
 
         if 'filters' not in product_layout:
             product_layout['filters'] = {}

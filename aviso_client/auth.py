@@ -8,6 +8,16 @@ NETRC_PATH = Path.home() / '.netrc'
 
 
 def ensure_credentials(host: str):
+    """Ensure credentials are present in a .netrc, and prompt otherwise.
+
+    Args:
+        host (str):
+            host for which credentials are needed
+
+    Returns:
+        tuple(str, str):
+            (username, password) tuple
+    """
     creds = _get_credentials(host)
     if creds:
         return creds
@@ -16,6 +26,7 @@ def ensure_credentials(host: str):
 
 
 def _get_credentials(host: str):
+    """Get credentials stored in .netrc."""
     if not NETRC_PATH.exists():
         return None
 
@@ -35,6 +46,7 @@ def _get_credentials(host: str):
 
 
 def _prompt_and_save_credentials(host: str):
+    """Prompt and save credentials."""
     logging.info(f'Credentials required for {host}')
     login = input('Username : ')
     password = getpass.getpass('Password : ')
