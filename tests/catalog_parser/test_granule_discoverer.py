@@ -1,7 +1,6 @@
 import pytest
 from requests.exceptions import ProxyError
 
-import aviso_client
 from aviso_client.catalog_parser.granule_discoverer import (
     _load_convention_layout,
     _parse_tds_layout,

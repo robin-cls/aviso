@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import pytest
 
@@ -25,7 +26,7 @@ def test_details():
     assert product.credit == 'Data provided by AVISO'
     assert product.processing_level == 'L2'
     assert product.doi == 'https://doi.org/10.1234/productA'
-    assert product.last_update == '2023-06-15'
+    assert product.last_update == datetime(2023, 6, 15, 0, 0)
 
 
 def test_get_error(tmp_path):

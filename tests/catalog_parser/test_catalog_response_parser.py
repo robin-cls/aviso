@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aviso_client.catalog_parser.catalog_response_parser import (
     parse_catalog_response,
     parse_product_response,
@@ -17,13 +19,13 @@ def test_parse_catalog_response(catalog_response):
     assert p1.tds_catalog_url == 'https://tds.mock/productA_path/catalog.xml'
     assert p1.short_name == 'prodA_short'
     assert p1.doi == 'https://doi.org/10.1234/productA'
-    assert p1.last_update == '2023-06-15'
+    assert p1.last_update == datetime(2023, 6, 15, 0, 0)
 
     p2 = catalog.products[1]
     assert p2.id == 'productB'
     assert p2.title == 'Sample Product B'
     assert p2.keywords == ['keywordB']
-    assert p2.last_update == '2022-05-20'
+    assert p2.last_update == datetime(2022, 5, 20, 0, 0)
 
 
 def test_parse_product_response(product_response):

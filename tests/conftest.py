@@ -2,7 +2,6 @@ import json
 import re
 from pathlib import Path
 
-import ocean_tools.swath.io
 import pytest
 from ocean_tools.io import (
     FileNameConvention,
@@ -11,8 +10,8 @@ from ocean_tools.io import (
     Layout,
 )
 from requests.exceptions import ProxyError
+from resources.catalog_resp_model import AvisoCatalogModel
 
-import aviso_client
 from aviso_client.catalog_parser.granule_discoverer import TDSIterable
 
 # Relies on pytest-mock
@@ -22,14 +21,16 @@ from aviso_client.catalog_parser.granule_discoverer import TDSIterable
 
 @pytest.fixture
 def catalog_response():
-    fixture_path = Path(__file__).parent / 'fixtures' / 'catalog_response.json'
+    fixture_path = Path(
+        __file__).parent / 'resources' / 'catalog_response.json'
     with open(fixture_path, encoding='utf-8') as f:
         return json.load(f)
 
 
 @pytest.fixture
 def product_response():
-    fixture_path = Path(__file__).parent / 'fixtures' / 'product_response.json'
+    fixture_path = Path(
+        __file__).parent / 'resources' / 'product_response.json'
     with open(fixture_path, encoding='utf-8') as f:
         return json.load(f)
 
@@ -115,11 +116,15 @@ def patch_all(mocker):
 
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.TDS_LAYOUT_CONFIG',
-        Path(__file__).parent / 'fixtures' / 'tds_layout.yaml')
+        Path(__file__).parent / 'resources' / 'tds_layout.yaml')
 
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.TDS_CATALOG_BASE_URL',
         'https://tds.mock/')
+
+    mocker.patch(
+        'aviso_client.catalog_parser.catalog_response_parser.AvisoCatalogModel',
+        AvisoCatalogModel)
 
 
 ############## PATCH TDS CATALOG CONTENT

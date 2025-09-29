@@ -1,9 +1,8 @@
-from __future__ import annotations
-
+from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
-from datetime import datetime
+
 
 class FieldShards(BaseModel):
     total: int
@@ -393,25 +392,23 @@ class ThHttpinspireeceuropaeuthemeTheme(BaseModel):
 
 
 class AllKeywords(BaseModel):
-    th_otherKeywords_: ThOtherKeywords | None = Field(None, alias='th_otherKeywords-')
+    th_otherKeywords_: ThOtherKeywords | None = Field(
+        None, alias='th_otherKeywords-')
     th_odatis_centre_donnees: ThOdatisCentreDonnees
     th_GCMDparameter: ThGCMDparameter
     th_NVS_OD1: ThNVSOD1 = Field(..., alias='th_NVS-OD1')
     th_myocean_processing_level: ThMyoceanProcessingLevel | None = Field(
-        None, alias='th_myocean-processing-level'
-    )
+        None, alias='th_myocean-processing-level')
     th_type_jeux_donnee: ThTypeJeuxDonnee
     th_odatis_variables: ThOdatisVariables | None = None
     th_otherKeywords_platform: ThOtherKeywordsPlatform | None = Field(
-        None, alias='th_otherKeywords-platform'
-    )
+        None, alias='th_otherKeywords-platform')
     th_cersat_latency: ThCersatLatency | None = None
     th_cersat_parameter: ThCersatParameter | None = None
     th_cersat_processing_level: ThCersatProcessingLevel | None = None
     th_cersat_project: ThCersatProject | None = None
     th_httpinspireeceuropaeutheme_theme: ThHttpinspireeceuropaeuthemeTheme | None = (
-        Field(None, alias='th_httpinspireeceuropaeutheme-theme')
-    )
+        Field(None, alias='th_httpinspireeceuropaeutheme-theme'))
 
 
 class ThOdatisCentreDonneesTree(BaseModel):
@@ -711,9 +708,9 @@ class FieldSource(BaseModel):
     contactForResource: list[ContactForResourceItem]
     funderOrgForResourceObject: FunderOrgForResourceObject | None = None
     pointOfContactOrgForResourceObject: PointOfContactOrgForResourceObject
-    originatorOrgForResourceObject: (
-        OriginatorOrgForResourceObject | list[OriginatorOrgForResourceObjectItem] | None
-    ) = None
+    originatorOrgForResourceObject: (OriginatorOrgForResourceObject
+                                     | list[OriginatorOrgForResourceObjectItem]
+                                     | None) = None
     resourceCreditObject: list[ResourceCreditObjectItem]
     hasOverview: str
     resourceLanguage: list[str] | None = None
@@ -723,12 +720,12 @@ class FieldSource(BaseModel):
     tagNumber: str
     isOpenData: str
     keywordType_theme: list[KeywordTypeThemeItem] = Field(
-        ..., alias='keywordType-theme'
-    )
-    keywordType_processing_level: list[KeywordTypeProcessingLevelItem] | None = Field(
-        None, alias='keywordType-processing-level'
-    )
-    th_otherKeywords_Number: str | None = Field(None, alias='th_otherKeywords-Number')
+        ..., alias='keywordType-theme')
+    keywordType_processing_level: list[
+        KeywordTypeProcessingLevelItem] | None = Field(
+            None, alias='keywordType-processing-level')
+    th_otherKeywords_Number: str | None = Field(
+        None, alias='th_otherKeywords-Number')
     th_otherKeywords_: list | None = Field(None, alias='th_otherKeywords-')
     th_odatis_centre_donneesNumber: str
     th_odatis_centre_donnees: list[ThOdatisCentreDonnee]
@@ -737,11 +734,10 @@ class FieldSource(BaseModel):
     th_NVS_OD1Number: str = Field(..., alias='th_NVS-OD1Number')
     th_NVS_OD1: list[ThNVSOD1Item] = Field(..., alias='th_NVS-OD1')
     th_myocean_processing_levelNumber: str | None = Field(
-        None, alias='th_myocean-processing-levelNumber'
-    )
-    th_myocean_processing_level: list[ThMyoceanProcessingLevelItem] | None = Field(
-        None, alias='th_myocean-processing-level'
-    )
+        None, alias='th_myocean-processing-levelNumber')
+    th_myocean_processing_level: list[
+        ThMyoceanProcessingLevelItem] | None = Field(
+            None, alias='th_myocean-processing-level')
     th_type_jeux_donneeNumber: str
     th_type_jeux_donnee: list[ThTypeJeuxDonneeItem]
     th_odatis_variablesNumber: str | None = None
@@ -750,23 +746,19 @@ class FieldSource(BaseModel):
     th_odatis_centre_donnees_tree: ThOdatisCentreDonneesTree
     th_GCMDparameter_tree: ThGCMDparameterTree
     th_myocean_processing_level_tree: ThMyoceanProcessingLevelTree | None = Field(
-        None, alias='th_myocean-processing-level_tree'
-    )
+        None, alias='th_myocean-processing-level_tree')
     cl_topic: list[ClTopicItem]
     resolutionDistance: list[str]
     spatialRepresentationType: str
     MD_LegalConstraintsOtherConstraintsObject: list[
-        MDLegalConstraintsOtherConstraintsObjectItem
-    ]
+        MDLegalConstraintsOtherConstraintsObjectItem]
     MD_LegalConstraintsUseLimitationObject: list[
-        MDLegalConstraintsUseLimitationObjectItem
-    ]
+        MDLegalConstraintsUseLimitationObjectItem]
     licenseObject: list[LicenseObjectItem]
     geom: list[GeomItem]
     location: str
-    resourceTemporalExtentDateRange: (
-        list[ResourceTemporalExtentDateRangeItem] | None
-    ) = None
+    resourceTemporalExtentDateRange: (list[ResourceTemporalExtentDateRangeItem]
+                                      | None) = None
     resourceTemporalExtentDetails: list[ResourceTemporalExtentDetail]
     featureTypes: list
     lineageObject: LineageObject | None = None
@@ -792,14 +784,14 @@ class FieldSource(BaseModel):
     draft: str
     changeDate: str
     valid_schematron_rules_datacite: str = Field(
-        ..., alias='valid_schematron-rules-datacite'
-    )
+        ..., alias='valid_schematron-rules-datacite')
     id: str
     valid_xsd: str
     createDate: str
     isPublishedToIntranet: str | list[bool]
     owner: str
-    valid_schematron_rules_iso: str = Field(..., alias='valid_schematron-rules-iso')
+    valid_schematron_rules_iso: str = Field(...,
+                                            alias='valid_schematron-rules-iso')
     groupOwner: str
     logo: str
     hasxlinks: str
@@ -834,16 +826,14 @@ class FieldSource(BaseModel):
     inspireAnnexForFirstTheme: str | None = None
     inspireThemeUri: list[str] | None = None
     inspireAnnex: list[str] | None = None
-    keywordType_platform: list | None = Field(None, alias='keywordType-platform')
+    keywordType_platform: list | None = Field(None,
+                                              alias='keywordType-platform')
     keywordType_place: list[KeywordTypePlaceItem] | None = Field(
-        None, alias='keywordType-place'
-    )
+        None, alias='keywordType-place')
     th_otherKeywords_platformNumber: str | None = Field(
-        None, alias='th_otherKeywords-platformNumber'
-    )
+        None, alias='th_otherKeywords-platformNumber')
     th_otherKeywords_platform: list | None = Field(
-        None, alias='th_otherKeywords-platform'
-    )
+        None, alias='th_otherKeywords-platform')
     th_cersat_latencyNumber: str | None = None
     th_cersat_latency: list[ThCersatLatencyItem] | None = None
     th_cersat_parameterNumber: str | None = None
@@ -853,16 +843,15 @@ class FieldSource(BaseModel):
     th_cersat_projectNumber: str | None = None
     th_cersat_project: list[ThCersatProjectItem] | None = None
     th_httpinspireeceuropaeutheme_themeNumber: str | None = Field(
-        None, alias='th_httpinspireeceuropaeutheme-themeNumber'
-    )
+        None, alias='th_httpinspireeceuropaeutheme-themeNumber')
     th_httpinspireeceuropaeutheme_theme: (
-        list[ThHttpinspireeceuropaeuthemeThemeItem] | None
-    ) = Field(None, alias='th_httpinspireeceuropaeutheme-theme')
+        list[ThHttpinspireeceuropaeuthemeThemeItem] | None) = Field(
+            None, alias='th_httpinspireeceuropaeutheme-theme')
     th_cersat_parameter_tree: ThCersatParameterTree | None = None
     th_cersat_processing_level_tree: ThCersatProcessingLevelTree | None = None
     th_httpinspireeceuropaeutheme_theme_tree: (
-        ThHttpinspireeceuropaeuthemeThemeTree | None
-    ) = Field(None, alias='th_httpinspireeceuropaeutheme-theme_tree')
+        ThHttpinspireeceuropaeuthemeThemeTree | None) = Field(
+            None, alias='th_httpinspireeceuropaeutheme-theme_tree')
     th_NVS_OD1_tree: ThNVSOD1Tree | None = Field(None, alias='th_NVS-OD1_tree')
     th_type_jeux_donnee_tree: ThTypeJeuxDonneeTree | None = None
     extentIdentifierObject: list[ExtentIdentifierObjectItem] | None = None
@@ -873,14 +862,11 @@ class FieldSource(BaseModel):
     contactForDistribution: list[ContactForDistributionItem] | None = None
     recordLink: list[RecordLinkItem] | None = None
     recordLink_siblingsassociationTypecrossReference_initiativeType: (
-        str | list[str] | None
-    ) = None
+        str | list[str] | None) = None
     recordLink_siblingsassociationTypecrossReference_initiativeType_uuid: (
-        str | list[str] | None
-    ) = None
+        str | list[str] | None) = None
     recordLink_siblingsassociationTypecrossReference_initiativeType_url: (
-        str | list[str] | None
-    ) = None
+        str | list[str] | None) = None
     agg_associated: str | list[str] | None = None
     agg_associated_crossReference: str | list[str] | None = None
     op2: str | list[str] | None = None
@@ -899,14 +885,11 @@ class FieldSource(BaseModel):
     linkUrlProtocolnull: str | list[str] | None = None
     cl_initiativeType: list[ClInitiativeTypeItem] | None = None
     recordLink_siblingsassociationTypecrossReference_initiativeTypecollection: (
-        str | None
-    ) = None
+        str | None) = None
     recordLink_siblingsassociationTypecrossReference_initiativeTypecollection_uuid: (
-        str | None
-    ) = None
+        str | None) = None
     recordLink_siblingsassociationTypecrossReference_initiativeTypecollection_url: (
-        str | None
-    ) = None
+        str | None) = None
 
 
 class Hit(BaseModel):
