@@ -21,29 +21,16 @@ def parse_catalog_response(results: dict) -> AvisoCatalog:
     adapter = TypeAdapter(AvisoCatalogModel)
     catalog = adapter.validate_python(results)
 
-    products = []
-    for record in catalog.hits.hits:
-        product = AvisoProduct(
-            id=record.field_id,
-            title=record.field_source.resourceTitleObject.default,
-            keywords=record.field_source.resourceAbstractObject.default)
-
-        for link in record.field_source.link:
-            if link.descriptionObject is not None:
-                if link.descriptionObject.default == 'THREDDS':
-                    product.tds_catalog_url = link.urlObject.default
-
-                    if link.nameObject is not None:
-                        product.short_name = link.nameObject.default
-
-            if link.protocol == 'DOI':
-                product.doi = link.urlObject.default
-
-        product.last_update = record.field_source.resourceDate[-1].date
-
-        products.append(product)
-
-    return AvisoCatalog(products=products)
+    return AvisoCatalog(products=[
+        AvisoProduct(id=record.get_product_id(),
+                     title=record.get_product_title(),
+                     keywords=record.get_product_keywords(),
+                     tds_catalog_url=record.get_product_tds_catalog_url(),
+                     short_name=record.get_product_short_name(),
+                     doi=record.get_product_doi(),
+                     last_update=record.get_product_last_update())
+        for record in catalog.hits.hits
+    ])
 
 
 def parse_product_response(meta: dict,

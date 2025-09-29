@@ -8,7 +8,7 @@
               "default": "Sample Product A"
             },
             "resourceAbstractObject": {
-              "default": ["keywordA", "keywordAA"]
+              "default": "keywordA, keywordAA"
             },
             "link": [
               {
@@ -43,7 +43,7 @@
               "default": "Sample Product B"
             },
             "resourceAbstractObject": {
-              "default": ["keywordB"]
+              "default": "keywordB"
             },
             "link": [
               {

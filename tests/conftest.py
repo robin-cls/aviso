@@ -10,7 +10,6 @@ from ocean_tools.io import (
     Layout,
 )
 from requests.exceptions import ProxyError
-from resources.catalog_resp_model import AvisoCatalogModel
 
 from aviso_client.catalog_parser.granule_discoverer import TDSIterable
 
@@ -121,10 +120,6 @@ def patch_all(mocker):
     mocker.patch(
         'aviso_client.catalog_parser.granule_discoverer.TDS_CATALOG_BASE_URL',
         'https://tds.mock/')
-
-    mocker.patch(
-        'aviso_client.catalog_parser.catalog_response_parser.AvisoCatalogModel',
-        AvisoCatalogModel)
 
 
 ############## PATCH TDS CATALOG CONTENT

@@ -15,7 +15,7 @@ def test_parse_catalog_response(catalog_response):
     p1 = catalog.products[0]
     assert p1.id == 'productA'
     assert p1.title == 'Sample Product A'
-    assert p1.keywords == ['keywordA', 'keywordAA']
+    assert p1.keywords == 'keywordA, keywordAA'
     assert p1.tds_catalog_url == 'https://tds.mock/productA_path/catalog.xml'
     assert p1.short_name == 'prodA_short'
     assert p1.doi == 'https://doi.org/10.1234/productA'
@@ -24,7 +24,7 @@ def test_parse_catalog_response(catalog_response):
     p2 = catalog.products[1]
     assert p2.id == 'productB'
     assert p2.title == 'Sample Product B'
-    assert p2.keywords == ['keywordB']
+    assert p2.keywords == 'keywordB'
     assert p2.last_update == datetime(2022, 5, 20, 0, 0)
 
 
