@@ -1,8 +1,12 @@
-from pydantic import TypeAdapter
+import logging
+
+from pydantic import TypeAdapter, ValidationError
 
 from .models.catalog_resp_model import AvisoCatalogModel
 from .models.dataclasses import AvisoCatalog, AvisoProduct
 from .models.product_resp_model import AvisoProductModel
+
+logger = logging.getLogger(__name__)
 
 
 def parse_catalog_response(results: dict) -> AvisoCatalog:
@@ -50,12 +54,20 @@ def parse_product_response(meta: dict,
         the object resulting from the parsing
     """
     adapter = TypeAdapter(AvisoProductModel)
-    product = adapter.validate_python(meta)
 
-    aviso_product.last_version = product.get_last_version()
-    aviso_product.tds_catalog_url = product.get_tds_url()
-    aviso_product.processing_level = product.get_processing_level()
-    aviso_product.abstract = product.get_abstract()
-    aviso_product.credit = product.get_credit()
+    try:
+        product = adapter.validate_python(meta)
+
+        aviso_product.last_version = product.get_last_version()
+        aviso_product.tds_catalog_url = product.get_tds_url()
+        aviso_product.processing_level = product.get_processing_level()
+        aviso_product.abstract = product.get_abstract()
+        aviso_product.credit = product.get_credit()
+
+    except ValidationError as e:
+        for err in e.errors():
+            logger.error(
+                "A validation error happened when parsing AVISO's catalog response for product: %s.\n%s",
+                aviso_product.id, err)
 
     return aviso_product
