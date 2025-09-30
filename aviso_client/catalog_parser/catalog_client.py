@@ -22,32 +22,32 @@ def fetch_catalog() -> AvisoCatalog:
     return catalog
 
 
-def get_details(product_title: str) -> AvisoProduct:
+def get_details(product_short_name: str) -> AvisoProduct:
     """Details a product information from AVISO's catalog.
 
     Parameters
     ----------
-    product_title
-        the title of the product
+    product_short_name
+        the short name of the product
 
     Returns
     -------
     AvisoProduct
         the product details
     """
-    product = _get_product_from_title(product_title)
+    product = _get_product_from_short_name(product_short_name)
     resp = _request_product(product.id)
     product = parse_product_response(resp, product)
     return product
 
 
-def search_granules(product_title: str, **filters) -> list[str]:
+def search_granules(product_short_name: str, **filters) -> list[str]:
     """Search for granules of a product in AVISO's Thredds Data Server.
 
     Parameters
     ----------
-    product_title
-        the title of the product
+    product_short_name
+        the short name of the product
     **filters
         filters for files selection
 
@@ -56,17 +56,17 @@ def search_granules(product_title: str, **filters) -> list[str]:
     list[str]
         the urls of the granules corresponding to the provided filters
     """
-    product = _get_product_from_title(product_title)
+    product = _get_product_from_short_name(product_short_name)
     return filter_granules(product, **filters)
 
 
-def _get_product_from_title(product_title: str) -> AvisoProduct:
-    """Search for a product in AVISO's catalog from its title."""
+def _get_product_from_short_name(product_short_name: str) -> AvisoProduct:
+    """Search for a product in AVISO's catalog from its short name."""
     catalog = fetch_catalog()
     for p in catalog.products:
-        if p.title == product_title:
+        if p.short_name == product_short_name:
             return p
-    raise ValueError(f'Invalid product title "{product_title}"')
+    raise ValueError(f'Invalid product short_name "{product_short_name}"')
 
 
 def _request_catalog() -> dict:

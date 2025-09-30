@@ -23,29 +23,30 @@ def summary() -> AvisoCatalog:
     return fetch_catalog()
 
 
-def details(product_title: str) -> AvisoProduct:
+def details(product_short_name: str) -> AvisoProduct:
     """Details a product information from AVISO's catalog.
 
     Parameters
     ----------
-    product_title
-        the title of the product
+    product_short_name
+        the short name of the product
 
     Returns
     -------
     AvisoProduct
         the product details
     """
-    return get_details(product_title)
+    return get_details(product_short_name)
 
 
-def get(product_title: str, output_dir: str | pl.Path, **filters) -> list[str]:
+def get(product_short_name: str, output_dir: str | pl.Path,
+        **filters) -> list[str]:
     """Downloads a product from AVISO's Thredds Data Server.
 
     Parameters
     ----------
-    product_title
-        the title of the product
+    product_short_name
+        the short name of the product
     output_dir
         directory to store downloaded product files
     **filters
@@ -56,7 +57,7 @@ def get(product_title: str, output_dir: str | pl.Path, **filters) -> list[str]:
     list[str]
         the list of downloaded local file paths
     """
-    granule_paths = search_granules(product_title, **filters)
+    granule_paths = search_granules(product_short_name, **filters)
 
     logger.info('%d files to download.', len(granule_paths))
     logger.info('Downloading granules: %s...', list(granule_paths))

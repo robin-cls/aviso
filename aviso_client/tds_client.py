@@ -124,7 +124,7 @@ def http_bulk_download(urls: list[str],
                                                            backoff=backoff)
             yield local_path
         except Exception as e:
-            warnings.warn('Failed to download {}: {}'.format(url, e))
+            warnings.warn(f'Failed to download {url}: {e}')
 
 
 def http_bulk_download_parallel(
@@ -160,7 +160,7 @@ def http_bulk_download_parallel(
             return http_single_download_with_retries(url, output_dir, retries,
                                                      backoff)
         except Exception as e:
-            warnings.warn('Failed to download {}: {}'.format(url, e))
+            warnings.warn(f'Failed to download {url}: {e}')
         return
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:

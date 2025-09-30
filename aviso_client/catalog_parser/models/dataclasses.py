@@ -1,4 +1,3 @@
-import enum
 from dataclasses import dataclass
 
 import numpy as np
@@ -45,7 +44,7 @@ class ProductLayoutConfig:
     Contains the product metadata.
     """
     id: str
-    title: str
+    short_name: str
     convention: FileNameConvention
     layout: Layout
     catalog_path: str

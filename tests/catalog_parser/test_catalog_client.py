@@ -5,7 +5,7 @@ import pytest
 import requests
 
 from aviso_client.catalog_parser.catalog_client import (
-    _get_product_from_title,
+    _get_product_from_short_name,
     _request_catalog,
     _request_product,
     fetch_catalog,
@@ -44,8 +44,8 @@ def test_fetch_catalog():
 
     assert isinstance(catalog, AvisoCatalog)
     assert len(catalog.products) == 2
-    assert catalog.products[0].title == 'Sample Product A'
-    assert catalog.products[1].title == 'Sample Product B'
+    assert catalog.products[0].short_name == 'sample_product_a'
+    assert catalog.products[1].short_name == 'sample_product_b'
 
 
 def test_request_product(mock_get):
@@ -77,10 +77,11 @@ def test_request_product_timeout(mocker):
 
 def test_get_details():
     with pytest.raises(ValueError):
-        get_details(product_title='Bad Product')
+        get_details(product_short_name='bad_short_name')
 
-    product = get_details(product_title='Sample Product A')
+    product = get_details(product_short_name='sample_product_a')
     assert product.title == 'Sample Product A'
+    assert product.short_name == 'sample_product_a'
     assert product.id == 'productA'
     assert product.tds_catalog_url == 'https://tds.mock/catalog.xml'
     assert product.abstract == 'This is an abstract.'
@@ -91,71 +92,71 @@ def test_get_details():
     assert product.last_update == datetime(2023, 6, 15, 0, 0)
 
 
-@pytest.mark.parametrize('title, id', [('Sample Product A', 'productA'),
-                                       ('Sample Product A', 'productA')])
-def test_get_product_from_title(title, id):
-    product = _get_product_from_title(title)
+@pytest.mark.parametrize('short_name, id', [('sample_product_a', 'productA'),
+                                            ('sample_product_b', 'productB')])
+def test_get_product_from_short_name(short_name, id):
+    product = _get_product_from_short_name(short_name)
 
     assert product.id == id
-    assert product.title == title
+    assert product.short_name == short_name
 
     assert product.tds_catalog_url == f'https://tds.mock/{id}_path/catalog.xml'
 
 
-def test_get_product_from_title_error():
+def test_get_product_from_short_name_error():
     with pytest.raises(ValueError):
-        _get_product_from_title('Bad Product')
+        _get_product_from_short_name('bad_short_name')
 
 
 @pytest.mark.parametrize(
-    'title, filters, exp_granules',
-    [('Sample Product A', {}, [
+    'short_name, filters, exp_granules',
+    [('sample_product_a', {}, [
         'https://tds.mock/productA_path/2_filter/dataset_02.nc',
         'https://tds.mock/productA_path/2_filter/dataset_22.nc',
         'https://tds.mock/productA_path/3_filter/dataset_03.nc',
         'https://tds.mock/productA_path/3_filter/dataset_33.nc'
     ]),
-     ('Sample Product A', {
+     ('sample_product_a', {
          'filter2': 2,
      }, [
          'https://tds.mock/productA_path/2_filter/dataset_02.nc',
          'https://tds.mock/productA_path/2_filter/dataset_22.nc',
      ]),
-     ('Sample Product A', {
+     ('sample_product_a', {
          'a_number': 3,
      }, ['https://tds.mock/productA_path/3_filter/dataset_03.nc']),
-     ('Sample Product B', {}, [
+     ('sample_product_b', {}, [
          'https://tds.mock/productB_path/4_filter/dataset_04.nc',
          'https://tds.mock/productB_path/4_filter/dataset_44.nc'
      ]),
-     ('Sample Product B', {
+     ('sample_product_b', {
          'other_filter': 'bad'
      }, [
          'https://tds.mock/productB_path/4_filter/dataset_04.nc',
          'https://tds.mock/productB_path/4_filter/dataset_44.nc'
      ])])
-def test_search_granules(title, filters, exp_granules):
-    granules = search_granules(title, **filters)
+def test_search_granules(short_name, filters, exp_granules):
+    granules = search_granules(short_name, **filters)
     assert list(granules) == exp_granules
 
 
 def test_search_granules_error():
     with pytest.raises(ValueError):
-        search_granules(product_title='Bad Product')
+        search_granules(product_short_name='Bad Product')
 
 
-@pytest.mark.parametrize('title, filters', [
-    ('Sample Product A', {
+@pytest.mark.parametrize('short_name, filters', [
+    ('sample_product_a', {
         'filter2': 'bad',
     }),
-    ('Sample Product A', {
+    ('sample_product_a', {
         'filter2': 2,
         'a_number': 3,
     }),
-    ('Sample Product B', {
+    ('sample_product_b', {
         'a_number': 55
     }),
 ])
-def test_search_granules_bad_filter(title, filters):
-    granules = search_granules(title, **filters)
+def test_search_granules_bad_filter(short_name, filters):
+    granules = search_granules(short_name, **filters)
     assert list(granules) == []

@@ -65,7 +65,7 @@ class Hit(BaseModel):
             if link.descriptionObject is not None:
                 if link.descriptionObject.default == 'THREDDS':
                     if link.nameObject is not None:
-                        return link.nameObject.default
+                        return link.nameObject.default.replace(' ', '_')
 
     def get_product_doi(self) -> str:
         for link in self.field_source.link:

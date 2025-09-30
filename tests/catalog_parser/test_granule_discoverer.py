@@ -124,17 +124,17 @@ def test_load_convention_layout(patch_some, test_layout,
     assert layout == test_layout
 
 
-@pytest.mark.parametrize('_id, title, filter1',
-                         [('productA', 'Sample Product A', 'A'),
-                          ('productB', 'Sample Product B', 'B')])
+@pytest.mark.parametrize('_id, short_name, filter1',
+                         [('productA', 'sample_product_a', 'A'),
+                          ('productB', 'sample_product_b', 'B')])
 def test_parse_tds_layout(patch_some, test_layout, test_filename_convention,
-                          _id, title, filter1):
+                          _id, short_name, filter1):
     pl_conf = _parse_tds_layout(AvisoProduct(id=_id))
     assert isinstance(pl_conf, ProductLayoutConfig)
 
     assert pl_conf.id == _id
     assert pl_conf.default_filters == {'filter1': filter1}
     assert pl_conf.catalog_path == f'{_id}_path'
-    assert pl_conf.title == title
+    assert pl_conf.short_name == short_name
     assert pl_conf.layout == test_layout
     assert type(pl_conf.convention) == type(test_filename_convention)

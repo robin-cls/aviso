@@ -10,15 +10,18 @@ def test_summary():
     catalog = summary()
     assert len(catalog.products) == 2
     assert catalog.products[0].title == 'Sample Product A'
+    assert catalog.products[0].short_name == 'sample_product_a'
     assert catalog.products[1].title == 'Sample Product B'
+    assert catalog.products[1].short_name == 'sample_product_b'
 
 
 def test_details():
     with pytest.raises(ValueError):
-        details(product_title='Bad Product')
+        details(product_short_name='bad_short_name')
 
-    product = details(product_title='Sample Product A')
+    product = details(product_short_name='sample_product_a')
     assert product.title == 'Sample Product A'
+    assert product.short_name == 'sample_product_a'
     assert product.id == 'productA'
     assert product.tds_catalog_url == 'https://tds.mock/catalog.xml'
     assert product.abstract == 'This is an abstract.'
@@ -31,25 +34,25 @@ def test_details():
 
 def test_get_error(tmp_path):
     with pytest.raises(ValueError):
-        get(product_title='Bad Product', output_dir=tmp_path)
+        get(product_short_name='bad_short_name', output_dir=tmp_path)
 
 
 @pytest.mark.parametrize(
-    'product_title, filters, files',
-    [('Sample Product A', {},
+    'short_name, filters, files',
+    [('sample_product_a', {},
       ['dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc', 'dataset_33.nc']),
-     ('Sample Product A', {
+     ('sample_product_a', {
          'filter2': 2,
      }, ['dataset_02.nc', 'dataset_22.nc']),
-     ('Sample Product A', {
+     ('sample_product_a', {
          'a_number': 3
      }, ['dataset_03.nc']),
-     ('Sample Product B', {}, ['dataset_04.nc', 'dataset_44.nc']),
-     ('Sample Product B', {
+     ('sample_product_b', {}, ['dataset_04.nc', 'dataset_44.nc']),
+     ('sample_product_b', {
          'other_filter': 'bad'
      }, ['dataset_04.nc', 'dataset_44.nc'])])
-def test_get(tmp_path, product_title, filters, files):
-    local_files = get(product_title=product_title,
+def test_get(tmp_path, short_name, filters, files):
+    local_files = get(product_short_name=short_name,
                       output_dir=tmp_path,
                       **filters)
 
@@ -58,17 +61,17 @@ def test_get(tmp_path, product_title, filters, files):
 
 def test_get_bad_product(tmp_path):
     with pytest.raises(ValueError):
-        get(product_title='Bad Product', output_dir=tmp_path)
+        get(product_short_name='bad_short_name', output_dir=tmp_path)
 
 
-@pytest.mark.parametrize('product_title, filters', [('Sample Product A', {
+@pytest.mark.parametrize('short_name, filters', [('sample_product_a', {
     'filter2': 'bad',
-}), ('Sample Product A', {
+}), ('sample_product_a', {
     'filter2': 2,
     'a_number': 3
-}), ('Sample Product B', {
+}), ('sample_product_b', {
     'a_number': 55
 })])
-def test_get_bad_filter(tmp_path, product_title, filters):
-    assert get(product_title=product_title, output_dir=tmp_path,
+def test_get_bad_filter(tmp_path, short_name, filters):
+    assert get(product_short_name=short_name, output_dir=tmp_path,
                **filters) == []

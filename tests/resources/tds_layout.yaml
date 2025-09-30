@@ -1,14 +1,14 @@
 products:
 
   productA:
-    title: Sample Product A
+    short_name: sample_product_a
     data_type: TEST_TYPE
     catalog_path: productA_path
     filters:
       filter1: A
 
   productB:
-    title: Sample Product B
+    short_name: sample_product_b
     data_type: TEST_TYPE
     catalog_path: productB_path
     filters:

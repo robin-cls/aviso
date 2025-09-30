@@ -19,7 +19,7 @@
                   "default": "https://tds.mock/productA_path/catalog.xml"
                 },
                 "nameObject": {
-                  "default": "prodA_short"
+                  "default": "sample_product a"
                 },
                 "protocol": "HTTP"
               },
@@ -52,6 +52,9 @@
                 },
                 "urlObject": {
                   "default": "https://tds.mock/productB_path/catalog.xml"
+                },
+                "nameObject": {
+                  "default": "sample product b"
                 },
                 "protocol": "HTTP"
               }

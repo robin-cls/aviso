@@ -131,7 +131,7 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
         products_tds_layout = tds_layout['products']
         if not product.id in products_tds_layout:
             raise KeyError(
-                f'The product {product.title} - {product.id} is missing from the tds_layout configuration file.'
+                f'The product {product.short_name} - {product.id} is missing from the tds_layout configuration file.'
             )
         product_layout = products_tds_layout[product.id]
 
@@ -144,7 +144,7 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
             product_layout['filters'] = {}
 
         return ProductLayoutConfig(id=product.id,
-                                   title=product_layout['title'],
+                                   short_name=product_layout['short_name'],
                                    convention=convention_obj,
                                    layout=layout_obj,
                                    catalog_path=product_layout['catalog_path'],
