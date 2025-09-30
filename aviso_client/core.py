@@ -7,7 +7,7 @@ from .catalog_parser.catalog_client import (
     search_granules,
 )
 from .catalog_parser.models.dataclasses import AvisoCatalog, AvisoProduct
-from .tds_client import http_download
+from .tds_client import http_bulk_download
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +60,5 @@ def get(product_title: str, output_dir: str | pl.Path, **filters) -> list[str]:
 
     logger.info('%d files to download.', len(granule_paths))
     logger.info('Downloading granules: %s...', list(granule_paths))
-    downloaded = [
-        http_download(path, str(output_dir)) for path in granule_paths
-    ]
 
-    return [f for f in downloaded if f is not None]
+    return list(http_bulk_download(list(granule_paths), output_dir))

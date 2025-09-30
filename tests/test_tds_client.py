@@ -3,38 +3,39 @@ import os
 import pytest
 import requests
 
-from aviso_client.tds_client import http_download
+from aviso_client.tds_client import (
+    http_bulk_download,
+    http_bulk_download_parallel,
+    http_single_download,
+    http_single_download_with_retries,
+)
 
 
-def test_http_download(mocker, tmp_path):
-    fake_data = b'fake file contents'
-
-    test_url = 'https://fake-server.com/data/file1.nc'
-    filename = os.path.basename(test_url)
+def test_http_single_download_success(mocker, tmp_path):
+    url = 'https://example.com/file.txt'
+    filename = os.path.basename(url)
     expected_path = tmp_path / filename
-    fake_response = mocker.MagicMock()
-    fake_response.content = fake_data
-    fake_response.raise_for_status.return_value = None
 
-    mocker.patch('requests.get', return_value=fake_response)
+    mock_response = mocker.Mock()
+    fake_data = b'dummy data'
+    mock_response.content = fake_data
+    mock_response.raise_for_status = mocker.Mock()
+
+    mocker.patch('requests.get', return_value=mock_response)
 
     mocker.patch('aviso_client.auth.ensure_credentials',
                  return_value=('user', 'pass'))
 
-    with pytest.raises(FileNotFoundError):
-        http_download(test_url, 'bad_path')
-
-    result_path = http_download(test_url, tmp_path)
+    result_path = http_single_download(url, tmp_path)
 
     assert os.path.exists(result_path)
     assert result_path == str(expected_path)
-
     with open(result_path, 'rb') as f:
         assert f.read() == fake_data
 
 
-def test_http_download_error_msg(mocker, tmp_path):
-    bad_url = 'https://bad_url'
+def test_http_single_download_error(mocker):
+    bad_url = 'https://bad_url.com/file.txt'
 
     fake_response = mocker.MagicMock()
     fake_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
@@ -43,8 +44,152 @@ def test_http_download_error_msg(mocker, tmp_path):
     mocker.patch('requests.get', return_value=fake_response)
     mocker.patch('aviso_client.auth.ensure_credentials',
                  return_value=('user', 'pass'))
-    mocked_logger = mocker.patch('aviso_client.tds_client.logger')
 
-    result = http_download(bad_url, tmp_path)
-    mocked_logger.error.assert_called_once()
-    assert result is None
+    with pytest.raises(requests.exceptions.HTTPError):
+        http_single_download(bad_url, '/tmp_path')
+
+
+def test_http_single_download_with_retries_success(mocker):
+
+    url = 'https://example.com/file.txt'
+    tmp_path = '/tmp_path'
+    filename = os.path.basename(url)
+    expected_path = os.path.join(tmp_path, filename)
+    mock_download = mocker.patch(
+        'aviso_client.tds_client.http_single_download')
+    mock_download.side_effect = [
+        requests.exceptions.RequestException('fail'),
+        str(expected_path)
+    ]
+
+    result_path = http_single_download_with_retries(url,
+                                                    tmp_path,
+                                                    retries=2,
+                                                    backoff=0)
+
+    assert result_path == str(expected_path)
+    assert mock_download.call_count == 2
+
+
+def test_http_single_download_with_retries_backoff_timing(mocker, caplog):
+    url = 'https://example.com/file.txt'
+    mock_download = mocker.patch(
+        'aviso_client.tds_client.http_single_download')
+    mock_download.side_effect = requests.exceptions.RequestException('fail')
+
+    mock_sleep = mocker.patch('aviso_client.tds_client.time.sleep')
+
+    with pytest.raises(requests.exceptions.RequestException):
+        with pytest.warns(UserWarning) as record:
+            http_single_download_with_retries(url,
+                                              '/tmp_path',
+                                              retries=3,
+                                              backoff=2)
+
+    assert mock_sleep.call_count == 2
+    mock_sleep.assert_has_calls([mocker.call(2), mocker.call(4)])
+
+    assert len(record) == 3
+    assert 'Attempt 1 failed' in str(record[0].message)
+    assert 'Attempt 2 failed' in str(record[1].message)
+    assert 'Attempt 3 failed' in str(record[2].message)
+
+    errors = [
+        record.message for record in caplog.records
+        if record.levelname == 'ERROR'
+    ]
+    assert any('All 3 attempts failed' in msg for msg in errors)
+
+
+def test_http_single_download_with_retries_fail_all(mocker):
+    bad_url = 'https://bad_url.com/file.txt'
+
+    mocker.patch(
+        'aviso_client.tds_client.http_single_download',
+        side_effect=requests.exceptions.RequestException('Network fail'))
+    with pytest.raises(requests.exceptions.RequestException):
+        http_single_download_with_retries(bad_url,
+                                          '/tmp_path',
+                                          retries=3,
+                                          backoff=0)
+
+
+def test_http_bulk_download_success_and_skip_fail(mocker, caplog):
+    mock_retry = mocker.patch(
+        'aviso_client.tds_client.http_single_download_with_retries')
+    mock_retry.side_effect = [
+        '/tmp/file1.txt',
+        requests.exceptions.RequestException('fail'), '/tmp/file3.txt'
+    ]
+
+    urls = ['https://a.com/1', 'https://a.com/2', 'https://a.com/3']
+
+    with pytest.warns(UserWarning) as record:
+        paths = list(http_bulk_download(urls, '/tmp'))
+
+    assert paths == ['/tmp/file1.txt', '/tmp/file3.txt']
+    assert mock_retry.call_count == 3
+
+    assert len(record) == 1
+    assert 'Failed to download https://a.com/2' in str(record[0].message)
+
+
+def test_http_bulk_download_all_fail(mocker, caplog):
+    mocker.patch('aviso_client.tds_client.http_single_download_with_retries',
+                 side_effect=Exception('boom'))
+    urls = ['https://fail.com/1', 'https://fail.com/2']
+
+    with pytest.warns(UserWarning) as record:
+        results = list(http_bulk_download(urls, '/tmp'))
+
+    assert results == []
+
+    assert len(record) == 2
+    assert 'Failed to download https://fail.com/1' in str(record[0].message)
+    assert 'Failed to download https://fail.com/2' in str(record[1].message)
+
+
+def test_http_bulk_download_parallel_success(mocker):
+    mock_retry = mocker.patch(
+        'aviso_client.tds_client.http_single_download_with_retries')
+    mock_retry.side_effect = lambda url, *_: f"/tmp/{url.split('/')[-1]}"
+
+    urls = ['https://x.com/a.txt', 'https://x.com/b.txt']
+    results = list(
+        http_bulk_download_parallel(urls,
+                                    '/tmp',
+                                    retries=1,
+                                    backoff=0,
+                                    max_workers=2))
+
+    assert sorted(results) == ['/tmp/a.txt', '/tmp/b.txt']
+    assert mock_retry.call_count == 2
+
+
+def test_http_bulk_download_parallel_partial_fail(mocker, caplog):
+
+    def fake_retry(url, *_):
+        if 'fail' in url:
+            raise Exception('Boom')
+        return f"/tmp/{url.split('/')[-1]}"
+
+    mocker.patch('aviso_client.tds_client.http_single_download_with_retries',
+                 side_effect=fake_retry)
+    urls = [
+        'https://x.com/ok1.txt', 'https://x.com/fail.txt',
+        'https://x.com/ok2.txt'
+    ]
+
+    with pytest.warns(UserWarning) as record:
+        results = list(
+            http_bulk_download_parallel(urls,
+                                        '/tmp',
+                                        retries=1,
+                                        backoff=0,
+                                        max_workers=3))
+
+    assert sorted(results) == ['/tmp/ok1.txt', '/tmp/ok2.txt']
+
+    assert len(record) == 1
+    assert 'Failed to download https://x.com/fail.txt' in str(
+        record[0].message)

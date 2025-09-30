@@ -17,17 +17,19 @@ class AvisoProduct:
     keywords: str | None = None
     abstract: str | None = None
     processing_level: str | None = None
-    credit: str | None = None
-    organisation: str | None = None
-    contact: str | None = None
-    tds_catalog_url: str | None = None  # https://tds%40odatis-ocean.fr:odatis@tds-odatis.aviso.altimetry.fr/thredds/catalog/L3/SWOT_KARIN-L3_LR_SSH.html
-    spatial_representation_type: str | None = None
-    resolution: str | None = None
-    geographical_extent: tuple[float, float, float, float] | None = None
-    temporal_extent: tuple[np.datetime64, np.datetime64] | None = None
+    tds_catalog_url: str | None = None
     doi: str | None = None
     last_update: str | None = None
     last_version: str | None = None
+    credit: str | None = None
+    # Not set
+    contact: str | None = None  # "aviso@altimetry.fr"
+    resolution: str | None = None  # "0.25"
+    geographical_extent: tuple[
+        float, float, float,
+        float] | None = None  # "-180.00, 180.00, -80.00, 90.00"
+    temporal_extent: tuple[np.datetime64,
+                           np.datetime64] | None = None  # "2023-03-29"/None
 
 
 @dataclass

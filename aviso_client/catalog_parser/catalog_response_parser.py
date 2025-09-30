@@ -23,18 +23,26 @@ def parse_catalog_response(results: dict) -> AvisoCatalog:
         the object resulting from the parsing
     """
     adapter = TypeAdapter(AvisoCatalogModel)
-    catalog = adapter.validate_python(results)
 
-    return AvisoCatalog(products=[
-        AvisoProduct(id=record.get_product_id(),
-                     title=record.get_product_title(),
-                     keywords=record.get_product_keywords(),
-                     tds_catalog_url=record.get_product_tds_catalog_url(),
-                     short_name=record.get_product_short_name(),
-                     doi=record.get_product_doi(),
-                     last_update=record.get_product_last_update())
-        for record in catalog.hits.hits
-    ])
+    try:
+        catalog = adapter.validate_python(results)
+
+        return AvisoCatalog(products=[
+            AvisoProduct(id=record.get_product_id(),
+                         title=record.get_product_title(),
+                         keywords=record.get_product_keywords(),
+                         tds_catalog_url=record.get_product_tds_catalog_url(),
+                         short_name=record.get_product_short_name(),
+                         doi=record.get_product_doi(),
+                         last_update=record.get_product_last_update())
+            for record in catalog.hits.hits
+        ])
+    except ValidationError as e:
+        for err in e.errors():
+            logger.error(
+                "A validation error happened when parsing AVISO's catalog response: %e",
+                err)
+        raise RuntimeError(f'{e}')
 
 
 def parse_product_response(meta: dict,
