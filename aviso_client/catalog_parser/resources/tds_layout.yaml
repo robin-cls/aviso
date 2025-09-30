@@ -34,7 +34,6 @@ products:
     data_type: SWOT_L2_LR_SSH
     catalog_path: dataset-l2-swot-karin-lr-ssh-validated
     filters:
-      version: PID0
       subset: Basic
 
   83cca913-392b-4b65-ae34-d9d69d043e46:
@@ -42,7 +41,6 @@ products:
     data_type: SWOT_L2_LR_SSH
     catalog_path: dataset-l2-swot-karin-lr-ssh-validated
     filters:
-      version: PID0
       subset: Expert
 
   63866260-7062-44fd-b202-66c9ea81a683:
@@ -50,7 +48,6 @@ products:
     data_type: SWOT_L2_LR_SSH
     catalog_path: dataset-l2-swot-karin-lr-ssh-validated
     filters:
-      version: PID0
       subset: Unsmoothed
 
   681332a5-4b44-48cb-a28c-023962b21d83:
@@ -58,7 +55,6 @@ products:
     data_type: SWOT_L2_LR_SSH
     catalog_path: dataset-l2-swot-karin-lr-ssh-validated
     filters:
-      version: PID0
       subset: WindWave
 
 granule_discovery:
