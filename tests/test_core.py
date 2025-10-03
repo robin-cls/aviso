@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 
+from aviso_client import InvalidProductError
 from aviso_client.core import details, get, summary
 
 
@@ -16,7 +17,7 @@ def test_summary():
 
 
 def test_details():
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidProductError):
         details(product_short_name='bad_short_name')
 
     product = details(product_short_name='sample_product_a')
@@ -33,7 +34,7 @@ def test_details():
 
 
 def test_get_error(tmp_path):
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidProductError):
         get(product_short_name='bad_short_name', output_dir=tmp_path)
 
 
@@ -60,7 +61,7 @@ def test_get(tmp_path, short_name, filters, files):
 
 
 def test_get_bad_product(tmp_path):
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidProductError):
         get(product_short_name='bad_short_name', output_dir=tmp_path)
 
 

@@ -116,6 +116,10 @@ def http_bulk_download(urls: list[str],
     Iterator
         an iterator over the downloaded paths, one for each download that have succeeded
     """
+    output_dir = pl.Path(output_dir)
+    if not output_dir.exists():
+        raise FileNotFoundError(f"No such file or directory '{output_dir}'.")
+
     for url in urls:
         try:
             local_path = http_single_download_with_retries(url,

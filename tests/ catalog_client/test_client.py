@@ -10,6 +10,7 @@ from aviso_client.catalog_client.client import (
     _request_product,
     fetch_catalog,
     get_details,
+    InvalidProductError,
     search_granules,
 )
 from aviso_client.catalog_client.geonetwork.models.dataclasses import AvisoCatalog
@@ -76,7 +77,7 @@ def test_request_product_timeout(mocker):
 
 
 def test_get_details():
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidProductError):
         get_details(product_short_name='bad_short_name')
 
     product = get_details(product_short_name='sample_product_a')
@@ -104,7 +105,7 @@ def test_get_product_from_short_name(short_name, id):
 
 
 def test_get_product_from_short_name_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidProductError):
         _get_product_from_short_name('bad_short_name')
 
 
@@ -141,7 +142,7 @@ def test_search_granules(short_name, filters, exp_granules):
 
 
 def test_search_granules_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidProductError):
         search_granules(product_short_name='Bad Product')
 
 

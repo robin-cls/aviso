@@ -5,21 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "aviso_client"
 version = "0.1.0"
-
-#authors = [
-#    {name = "TODO", email = "TODO"},
-#]
-#description = "TODO"
-#readme = "README.md"
-#keywords = ["TODO"]
-#license = "TODO"
-
 requires-python = ">=3.10"
 dependencies = [
     "pyyaml",
     "requests",
     "siphon",
 ]
+
+[project.scripts]
+aviso_client = "aviso_client.cli:app"
 
 [project.optional-dependencies]
 tests = [
