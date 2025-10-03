@@ -2,9 +2,10 @@ import os
 
 import requests
 
-from .catalog_response_parser import parse_catalog_response, parse_product_response
+from .geonetwork.query_builder import GeoNetworkQueryBuilder
+from .geonetwork.models.dataclasses import AvisoCatalog, AvisoProduct
+from .geonetwork.response_parser import parse_catalog_response, parse_product_response
 from .granule_discoverer import filter_granules
-from .models.dataclasses import AvisoCatalog, AvisoProduct
 
 AVISO_CATALOG_URL = 'https://sextant.ifremer.fr/geonetwork/srv/api'
 
@@ -72,32 +73,16 @@ def _get_product_from_short_name(product_short_name: str) -> AvisoProduct:
 def _request_catalog() -> dict:
     """Request AVISO's catalog products: filters on CDS-AVISO and SWOT."""
     url = os.path.join(AVISO_CATALOG_URL, 'search/records/_search')
-    payload = {
-        'from': 0,
-        'size': 20,
-        'query': {
-            'bool': {
-                'must': [{
-                    'match': {
-                        'th_odatis_centre_donnees.default': 'CDS-AVISO'
-                    }
-                }, {
-                    'match': {
-                        'platforms': 'SWOT'
-                    }
-                }],
-                'must_not': [{
-                    'term': {
-                        '_id': '94cd8b08-bf24-4f59-8ce5-bc27c6bd9c17'
-                    }
-                }, {
-                    'term': {
-                        '_id': 'a57da16f-330a-4927-b532-ca013b6c83da'
-                    }
-                }]
-            }
-        }
-    }
+    
+    builder = GeoNetworkQueryBuilder()
+    payload = (
+        builder
+        .must_match("th_odatis_centre_donnees.default", "CDS-AVISO")
+        .must_match("platforms", "SWOT")
+        .must_not_term("_id", "94cd8b08-bf24-4f59-8ce5-bc27c6bd9c17")
+        .must_not_term("_id", "a57da16f-330a-4927-b532-ca013b6c83da")
+        .build()
+    )
 
     resp = requests.post(url,
                          json=payload,

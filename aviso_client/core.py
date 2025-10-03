@@ -1,12 +1,12 @@
 import logging
 import pathlib as pl
 
-from .catalog_parser.catalog_client import (
+from .catalog_client.client import (
     fetch_catalog,
     get_details,
     search_granules,
 )
-from .catalog_parser.models.dataclasses import AvisoCatalog, AvisoProduct
+from .catalog_client.geonetwork.models.dataclasses import AvisoCatalog, AvisoProduct
 from .tds_client import http_bulk_download
 
 logger = logging.getLogger(__name__)

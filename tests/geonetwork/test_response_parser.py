@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from aviso_client.catalog_parser.catalog_response_parser import (
+from aviso_client.catalog_client.geonetwork.response_parser import (
     parse_catalog_response,
     parse_product_response,
 )
-from aviso_client.catalog_parser.models.dataclasses import AvisoCatalog, AvisoProduct
+from aviso_client.catalog_client.geonetwork.models.dataclasses import AvisoCatalog, AvisoProduct
 
 
 def test_parse_catalog_response(catalog_response):

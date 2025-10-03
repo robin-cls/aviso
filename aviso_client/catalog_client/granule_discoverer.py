@@ -4,15 +4,13 @@ import typing as tp
 import warnings
 from importlib import import_module
 from pathlib import Path
+from dataclasses import dataclass
 
 import yaml
-from ocean_tools.io import FileDiscoverer, ITreeIterable, Layout
+from ocean_tools.io import FileDiscoverer, ITreeIterable, FileNameConvention, Layout
 from siphon.catalog import TDSCatalog
 
-from .models.dataclasses import (
-    AvisoProduct,
-    ProductLayoutConfig,
-)
+from .geonetwork.models.dataclasses import AvisoProduct
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +115,19 @@ def _load_convention_layout(granule_discovery, data_type):
         module, layout)
     return convention_obj, layout_obj
 
+@dataclass
+class ProductLayoutConfig:
+    """Configuration of a product layout.
 
+    Contains the product metadata.
+    """
+    id: str
+    short_name: str
+    convention: FileNameConvention
+    layout: Layout
+    catalog_path: str
+    default_filters: dict
+    
 def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
     """Parse resources/tds_layout.yaml to retrieve the layout information.
 

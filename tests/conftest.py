@@ -11,7 +11,7 @@ from ocean_tools.io import (
 )
 from requests.exceptions import ProxyError
 
-from aviso_client.catalog_parser.granule_discoverer import TDSIterable
+from aviso_client.catalog_client.granule_discoverer import TDSIterable
 
 # Relies on pytest-mock
 
@@ -37,7 +37,7 @@ def product_response():
 @pytest.fixture(autouse=True)
 def mock_post(mocker, catalog_response):
     mock_post = mocker.patch(
-        'aviso_client.catalog_parser.catalog_client.requests.post')
+        'aviso_client.catalog_client.client.requests.post')
     mock_response = mocker.Mock()
     mock_response.status_code = 200
     mock_response.json.return_value = catalog_response
@@ -47,8 +47,7 @@ def mock_post(mocker, catalog_response):
 
 @pytest.fixture(autouse=True)
 def mock_get(mocker, product_response):
-    mock_get = mocker.patch(
-        'aviso_client.catalog_parser.catalog_client.requests.get')
+    mock_get = mocker.patch('aviso_client.catalog_client.client.requests.get')
     mock_response = mocker.Mock()
     mock_response.content = b'fake file contents'
     mock_response.status_code = 200
@@ -114,11 +113,11 @@ def patch_all(mocker):
                  TEST_PRODUCT_LAYOUT)
 
     mocker.patch(
-        'aviso_client.catalog_parser.granule_discoverer.TDS_LAYOUT_CONFIG',
+        'aviso_client.catalog_client.granule_discoverer.TDS_LAYOUT_CONFIG',
         Path(__file__).parent / 'resources' / 'tds_layout.yaml')
 
     mocker.patch(
-        'aviso_client.catalog_parser.granule_discoverer.TDS_CATALOG_BASE_URL',
+        'aviso_client.catalog_client.granule_discoverer.TDS_CATALOG_BASE_URL',
         'https://tds.mock/')
 
 
@@ -228,5 +227,5 @@ def mock_tds_catalog(mocker):
                 f"HTTPSConnectionPool(host='{url}', port=443): Max retries exceeded with url: /L2-SWOT.html (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 503 Service Unavailable'))"
             )
 
-    mocker.patch('aviso_client.catalog_parser.granule_discoverer.TDSCatalog',
+    mocker.patch('aviso_client.catalog_client.granule_discoverer.TDSCatalog',
                  side_effect=tds_catalog_side_effect)

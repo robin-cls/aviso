@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 import requests
 
-from aviso_client.catalog_parser.catalog_client import (
+from aviso_client.catalog_client.client import (
     _get_product_from_short_name,
     _request_catalog,
     _request_product,
@@ -12,7 +12,7 @@ from aviso_client.catalog_parser.catalog_client import (
     get_details,
     search_granules,
 )
-from aviso_client.catalog_parser.models.dataclasses import AvisoCatalog
+from aviso_client.catalog_client.geonetwork.models.dataclasses import AvisoCatalog
 
 
 def test_request_catalog(mock_post):

@@ -1,15 +1,13 @@
 import pytest
 from requests.exceptions import ProxyError
 
-from aviso_client.catalog_parser.granule_discoverer import (
+from aviso_client.catalog_client.granule_discoverer import (
     _load_convention_layout,
     _parse_tds_layout,
     filter_granules,
+    ProductLayoutConfig
 )
-from aviso_client.catalog_parser.models.dataclasses import (
-    AvisoProduct,
-    ProductLayoutConfig,
-)
+from aviso_client.catalog_client.geonetwork.models.dataclasses import AvisoProduct
 
 
 class Test_TDSIterable:

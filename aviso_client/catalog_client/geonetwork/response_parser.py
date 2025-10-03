@@ -53,7 +53,7 @@ def parse_product_response(meta: dict,
     ----------
     meta
         the json to parse
-    product
+    aviso_product
         the product object to fill in
 
     Returns

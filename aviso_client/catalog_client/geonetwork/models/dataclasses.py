@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 import numpy as np
-from ocean_tools.io import FileNameConvention, Layout
 
 
 @dataclass
@@ -35,17 +34,3 @@ class AvisoProduct:
 class AvisoCatalog:
     """Catalog of the AVISO/ODATIS service."""
     products: list[AvisoProduct]
-
-
-@dataclass
-class ProductLayoutConfig:
-    """Configuration of a product layout.
-
-    Contains the product metadata.
-    """
-    id: str
-    short_name: str
-    convention: FileNameConvention
-    layout: Layout
-    catalog_path: str
-    default_filters: dict
