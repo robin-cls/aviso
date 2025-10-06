@@ -53,21 +53,21 @@ products:
       subset: WindWave
 
   15f25d0b-5a41-4335-85f2-874e9b2e5cd0:
-      short_name: SWOT_L3_LR_WIND_WAVE_Light
-      data_type: SWOT_L3_LR_WIND_WAVE
-      catalog_path: dataset-l3-swot-karin-wind-wave
-      filters:
-        subset: Light
+    short_name: SWOT_L3_LR_WIND_WAVE_Light
+    data_type: SWOT_L3_LR_WIND_WAVE
+    catalog_path: dataset-l3-swot-karin-wind-wave
+    filters:
+      subset: Light
 
   d1f06620-d11c-4945-b53d-6769e909be01:
-      short_name: SWOT_L3_LR_WIND_WAVE_Extended
-      data_type: SWOT_L3_LR_WIND_WAVE
-      catalog_path: dataset-l3-swot-karin-wind-wave
-      filters:
-        subset: Extended
+    short_name: SWOT_L3_LR_WIND_WAVE_Extended
+    data_type: SWOT_L3_LR_WIND_WAVE
+    catalog_path: dataset-l3-swot-karin-wind-wave
+    filters:
+      subset: Extended
 
   96d932e6-07d0-447f-858a-90ff1ce53087:
-    short_name: 'Experimental Products: Multimission Gridded (with SWOT) Level-4 Sea Surface Heights and Velocities'
+    short_name: L4_exp_with_SWOT
     data_type: SWOT_L4
     catalog_path: dataset-duacs-experimental-dt-phy-grids-nadirs-and-wide-swath
 
