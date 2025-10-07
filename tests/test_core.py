@@ -33,22 +33,30 @@ def test_details():
     assert product.last_update == datetime(2023, 6, 15, 0, 0)
 
 
-def test_get_error(tmp_path):
-    with pytest.raises(InvalidProductError):
-        get(product_short_name='bad_short_name', output_dir=tmp_path)
-
-
 @pytest.mark.parametrize(
     'short_name, filters, files',
-    [('sample_product_a', {},
-      ['dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc', 'dataset_33.nc']),
-     ('sample_product_a', {
-         'cycle_number': 2,
-     }, ['dataset_02.nc', 'dataset_22.nc']),
-     ('sample_product_a', {
-         'pass_number': 3
-     }, ['dataset_03.nc']),
-     ('sample_product_b', {}, ['dataset_04.nc', 'dataset_44.nc'])])
+    [
+        (
+            'sample_product_a',
+            {},
+            [
+                'dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc',
+                'dataset_33.nc'
+            ],
+        ),
+        (
+            'sample_product_a',
+            {
+                'cycle_number': 2,
+            },
+            ['dataset_02.nc', 'dataset_22.nc'],
+        ),
+        ('sample_product_a', {
+            'pass_number': 3
+        }, ['dataset_03.nc']),
+        ('sample_product_b', {}, ['dataset_04.nc', 'dataset_44.nc']),
+    ],
+)
 def test_get(tmp_path, short_name, filters, files):
     local_files = get(product_short_name=short_name,
                       output_dir=tmp_path,
@@ -61,19 +69,31 @@ def test_get_error(tmp_path):
     with pytest.raises(InvalidProductError):
         get(product_short_name='bad_short_name', output_dir=tmp_path)
     with pytest.raises(TypeError):
-        get(product_short_name='sample_product_a',
+        get(
+            product_short_name='sample_product_a',
             output_dir=tmp_path,
-            other_filter='bad')
+            other_filter='bad',
+        )
 
 
-@pytest.mark.parametrize('short_name, filters', [('sample_product_a', {
-    'cycle_number': 'bad',
-}), ('sample_product_a', {
-    'cycle_number': 2,
-    'pass_number': 3
-}), ('sample_product_b', {
-    'pass_number': 55
-})])
+@pytest.mark.parametrize(
+    'short_name, filters',
+    [
+        (
+            'sample_product_a',
+            {
+                'cycle_number': 'bad',
+            },
+        ),
+        ('sample_product_a', {
+            'cycle_number': 2,
+            'pass_number': 3
+        }),
+        ('sample_product_b', {
+            'pass_number': 55
+        }),
+    ],
+)
 def test_get_bad_filter(tmp_path, short_name, filters):
     assert get(product_short_name=short_name, output_dir=tmp_path,
                **filters) == []

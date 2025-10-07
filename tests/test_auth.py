@@ -40,16 +40,20 @@ def test_get_credentials_netrc_not_exist(mocker):
 
 
 def test_get_credentials_netrc_invalid(mocker):
-    mocker.patch('aviso_client.auth.netrc.netrc',
-                 side_effect=netrc.NetrcParseError('Invalid netrc'))
+    mocker.patch(
+        'aviso_client.auth.netrc.netrc',
+        side_effect=netrc.NetrcParseError('Invalid netrc'),
+    )
 
     with pytest.raises(AuthenticationError):
         _get_credentials('example.com')
 
 
 def test_get_credentials_host_notexist(mocker):
-    mocker.patch('aviso_client.auth.netrc.netrc',
-                 side_effect=TypeError("Host doesn't exist in .netrc file."))
+    mocker.patch(
+        'aviso_client.auth.netrc.netrc',
+        side_effect=TypeError("Host doesn't exist in .netrc file."),
+    )
 
     with pytest.warns(UserWarning) as record:
         creds = _get_credentials('example.com')
@@ -86,7 +90,8 @@ def test_ensure_credentials_prompt(mocker):
                             return_value=None)
     mock_prompt = mocker.patch(
         'aviso_client.auth._prompt_and_save_credentials',
-        return_value=('user4', 'pass4'))
+        return_value=('user4', 'pass4'),
+    )
 
     creds = ensure_credentials('example.com')
     assert creds == ('user4', 'pass4')

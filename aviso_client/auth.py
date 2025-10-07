@@ -46,14 +46,14 @@ def _get_credentials(host: str):
         login, _, password = auth_data.authenticators(host)
         if login and password:
             return login, password
-    except TypeError as e:
+    except TypeError:
         msg = f"Host {host} doesn't exist in .netrc file."
         warnings.warn(msg)
         return None
     except netrc.NetrcParseError as e:
         msg = f'Syntax error in .netrc file: {e}'
         raise AuthenticationError(msg)
-    except (AttributeError, ValueError) as e:
+    except (AttributeError, ValueError):
         msg = 'An error happened when authenticating Aviso client.'
         raise AuthenticationError(msg)
 

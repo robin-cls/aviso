@@ -170,25 +170,32 @@ class AvisoProductModel(BaseModel):
     mdb_contentInfo: MdbContentInfo = Field(..., alias='mdb:contentInfo')
 
     def get_last_version(self) -> str:
-        cit_id = self.mdb_identificationInfo.mri_MD_DataIdentification.mri_citation.cit_CI_Citation.cit_identifier[
-            0]
+        cit_id = (self.mdb_identificationInfo.mri_MD_DataIdentification.
+                  mri_citation.cit_CI_Citation.cit_identifier[0])
+
         return cit_id.mcc_MD_Identifier.mcc_version.gco_CharacterString.text
 
     def get_tds_url(self) -> str:
-        transferOptions = self.mdb_distributionInfo.mrd_MD_Distribution.mrd_transferOptions[
-            0]
+        transferOptions = (self.mdb_distributionInfo.mrd_MD_Distribution.
+                           mrd_transferOptions[0])
         online = transferOptions.mrd_MD_DigitalTransferOptions.mrd_onLine
 
         for online_resource in online:
-            if online_resource.cit_CI_OnlineResource.cit_description.gco_CharacterString.text == 'THREDDS':
-                return online_resource.cit_CI_OnlineResource.cit_linkage.gco_CharacterString.text
+            if (online_resource.cit_CI_OnlineResource.cit_description.
+                    gco_CharacterString.text == 'THREDDS'):
+                return (online_resource.cit_CI_OnlineResource.cit_linkage.
+                        gco_CharacterString.text)
         return ''
 
     def get_processing_level(self) -> str:
-        return self.mdb_contentInfo.mrc_MD_CoverageDescription.mrc_processingLevelCode.mcc_MD_Identifier.mcc_code.gco_CharacterString.text
+        return (self.mdb_contentInfo.mrc_MD_CoverageDescription.
+                mrc_processingLevelCode.mcc_MD_Identifier.mcc_code.
+                gco_CharacterString.text)
 
     def get_abstract(self) -> str:
-        return self.mdb_identificationInfo.mri_MD_DataIdentification.mri_abstract.gco_CharacterString.text
+        return (self.mdb_identificationInfo.mri_MD_DataIdentification.
+                mri_abstract.gco_CharacterString.text)
 
     def get_credit(self) -> str:
-        return self.mdb_identificationInfo.mri_MD_DataIdentification.mri_credit.gco_CharacterString.text
+        return (self.mdb_identificationInfo.mri_MD_DataIdentification.
+                mri_credit.gco_CharacterString.text)

@@ -40,12 +40,14 @@ def details(product_short_name: str) -> AvisoProduct:
     return get_details(product_short_name)
 
 
-def get(product_short_name: str,
-        output_dir: str | pl.Path,
-        cycle_number: int | list[int] = None,
-        pass_number: int | list[int] = None,
-        time: tuple[np.datetime64, np.datetime64] = None,
-        version: str = None) -> list[str]:
+def get(
+    product_short_name: str,
+    output_dir: str | pl.Path,
+    cycle_number: int | list[int] = None,
+    pass_number: int | list[int] = None,
+    time: tuple[np.datetime64, np.datetime64] = None,
+    version: str = None,
+) -> list[str]:
     """Downloads a product from Aviso's Thredds Data Server.
 
     Parameters
@@ -68,13 +70,13 @@ def get(product_short_name: str,
         The list of downloaded local file paths
     """
     filters = {}
-    if not cycle_number is None:
+    if cycle_number is not None:
         filters['cycle_number'] = cycle_number
-    if not pass_number is None:
+    if pass_number is not None:
         filters['pass_number'] = pass_number
-    if not time is None:
+    if time is not None:
         filters['time'] = time
-    if not version is None:
+    if version is not None:
         filters['version'] = version
 
     granule_paths = search_granules(product_short_name, **filters)

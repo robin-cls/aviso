@@ -13,7 +13,7 @@ from requests.exceptions import ProxyError
 
 from aviso_client.catalog_client.granule_discoverer import TDSIterable
 
-############## PATCH GEONETWORK CATALOG RESPONSES
+# PATCH GEONETWORK CATALOG RESPONSES
 
 
 @pytest.fixture
@@ -54,15 +54,17 @@ def mock_get(mocker, product_response):
     return mock_get
 
 
-############## PATCH GRANULES DISCOVERING
+# PATCH GRANULES DISCOVERING
 
 
 class FileNameConventionTestOld(FileNameConvention):
 
     def __init__(self):
-        super().__init__(regex=re.compile(r'dataset_(?P<a_number>\d{2}).nc'),
-                         fields=[FileNameFieldInteger('a_number')],
-                         generation_string='dataset_{a_number:0>2d}.nc')
+        super().__init__(
+            regex=re.compile(r'dataset_(?P<a_number>\d{2}).nc'),
+            fields=[FileNameFieldInteger('a_number')],
+            generation_string='dataset_{a_number:0>2d}.nc',
+        )
 
 
 class FileNameConventionTest(FileNameConvention):
@@ -71,35 +73,50 @@ class FileNameConventionTest(FileNameConvention):
         super().__init__(
             regex=re.compile(r'dataset_(?P<pass_number>\d{2}).nc'),
             fields=[FileNameFieldInteger('pass_number')],
-            generation_string='dataset_{pass_number:0>2d}.nc')
+            generation_string='dataset_{pass_number:0>2d}.nc',
+        )
 
 
 TEST_LAYOUT_OLD = Layout([
-    FileNameConvention(re.compile('product(?P<filter1>.*)_path'),
-                       [FileNameFieldString('filter1')],
-                       'product{filter1!f}_path'),
-    FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
-                       [FileNameFieldInteger('filter2')], '{filter2!f}_filter')
+    FileNameConvention(
+        re.compile('product(?P<filter1>.*)_path'),
+        [FileNameFieldString('filter1')],
+        'product{filter1!f}_path',
+    ),
+    FileNameConvention(
+        re.compile('(?P<filter2>.*)_filter'),
+        [FileNameFieldInteger('filter2')],
+        '{filter2!f}_filter',
+    ),
 ])
 
 TEST_PRODUCT_LAYOUT_OLD = Layout([
-    FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
-                       [FileNameFieldInteger('filter2')], '{filter2!f}_filter')
+    FileNameConvention(
+        re.compile('(?P<filter2>.*)_filter'),
+        [FileNameFieldInteger('filter2')],
+        '{filter2!f}_filter',
+    )
 ])
 
 TEST_LAYOUT = Layout([
-    FileNameConvention(re.compile('product(?P<path_filter>.*)_path'),
-                       [FileNameFieldString('path_filter')],
-                       'product{path_filter!f}_path'),
-    FileNameConvention(re.compile(r'cycle_(?P<cycle_number>\d{2})'),
-                       [FileNameFieldInteger('cycle_number')],
-                       'cycle_{cycle_number:0>2d}')
+    FileNameConvention(
+        re.compile('product(?P<path_filter>.*)_path'),
+        [FileNameFieldString('path_filter')],
+        'product{path_filter!f}_path',
+    ),
+    FileNameConvention(
+        re.compile(r'cycle_(?P<cycle_number>\d{2})'),
+        [FileNameFieldInteger('cycle_number')],
+        'cycle_{cycle_number:0>2d}',
+    ),
 ])
 
 TEST_PRODUCT_LAYOUT = Layout([
-    FileNameConvention(re.compile(r'cycle_(?P<cycle_number>\d{2})'),
-                       [FileNameFieldInteger('cycle_number')],
-                       'cycle_{cycle_number:0>2d}')
+    FileNameConvention(
+        re.compile(r'cycle_(?P<cycle_number>\d{2})'),
+        [FileNameFieldInteger('cycle_number')],
+        'cycle_{cycle_number:0>2d}',
+    )
 ])
 
 
@@ -138,14 +155,16 @@ def patch_all(mocker):
 
     mocker.patch(
         'aviso_client.catalog_client.granule_discoverer.TDS_LAYOUT_CONFIG',
-        Path(__file__).parent / 'resources' / 'tds_layout.yaml')
+        Path(__file__).parent / 'resources' / 'tds_layout.yaml',
+    )
 
     mocker.patch(
         'aviso_client.catalog_client.granule_discoverer.TDS_CATALOG_BASE_URL',
-        'https://tds.mock/')
+        'https://tds.mock/',
+    )
 
 
-############## PATCH TDS CATALOG CONTENT
+# PATCH TDS CATALOG CONTENT
 
 
 @pytest.fixture(autouse=True)
@@ -248,8 +267,12 @@ def mock_tds_catalog(mocker):
             return mock_catalog_vB_4
         else:
             raise ProxyError(
-                f"HTTPSConnectionPool(host='{url}', port=443): Max retries exceeded with url: /L2-SWOT.html (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 503 Service Unavailable'))"
-            )
+                f"HTTPSConnectionPool(host='{url}', port=443): Max retries "
+                "exceeded with url: /L2-SWOT.html (Caused by ProxyError('Unable "
+                "to connect to proxy', OSError('Tunnel connection failed: 503 "
+                "Service Unavailable'))")
 
-    mocker.patch('aviso_client.catalog_client.granule_discoverer.TDSCatalog',
-                 side_effect=tds_catalog_side_effect)
+    mocker.patch(
+        'aviso_client.catalog_client.granule_discoverer.TDSCatalog',
+        side_effect=tds_catalog_side_effect,
+    )

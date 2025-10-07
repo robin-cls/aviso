@@ -56,14 +56,16 @@ class Hit(BaseModel):
 
     def get_product_tds_catalog_url(self) -> str:
         for link in self.field_source.link:
-            if link.descriptionObject is not None and link.descriptionObject.default == 'THREDDS':
+            if (link.descriptionObject is not None
+                    and link.descriptionObject.default == 'THREDDS'):
                 return link.urlObject.default
         return ''
 
     def get_product_short_name(self) -> str:
         for link in self.field_source.link:
             if link.descriptionObject is not None:
-                if link.descriptionObject.default == 'THREDDS' and link.nameObject is not None:
+                if (link.descriptionObject.default == 'THREDDS'
+                        and link.nameObject is not None):
                     return link.nameObject.default.replace(' ', '_')
         return ''
 

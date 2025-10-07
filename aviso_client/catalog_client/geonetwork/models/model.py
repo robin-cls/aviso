@@ -9,6 +9,7 @@ class AvisoProduct:
 
     Contains the product metadata.
     """
+
     id: str
     title: str | None = None
     short_name: str | None = None
@@ -23,14 +24,16 @@ class AvisoProduct:
     # Not set
     contact: str | None = None  # "aviso@altimetry.fr"
     resolution: str | None = None  # "0.25"
-    geographical_extent: tuple[
-        float, float, float,
-        float] | None = None  # "-180.00, 180.00, -80.00, 90.00"
-    temporal_extent: tuple[np.datetime64,
-                           np.datetime64] | None = None  # "2023-03-29"/None
+    geographical_extent: tuple[float, float, float, float] | None = (
+        None  # "-180.00, 180.00, -80.00, 90.00"
+    )
+    temporal_extent: tuple[np.datetime64, np.datetime64] | None = (
+        None  # "2023-03-29"/None
+    )
 
 
 @dataclass
 class AvisoCatalog:
     """Catalog of the AVISO/ODATIS service."""
+
     products: list[AvisoProduct]

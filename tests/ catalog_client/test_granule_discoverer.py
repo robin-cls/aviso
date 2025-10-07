@@ -14,78 +14,110 @@ class Test_TDSIterable:
 
     @pytest.mark.parametrize(
         'filter, exp_urls',
-        [({}, [
-            'https://tds.mock/dataset_01.nc',
-            'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
-            'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
-            'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
-            'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
-            'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
-            'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
-        ]),
-         ({
-             'cycle_number': [3, 4]
-         }, [
-             'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
-             'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
-             'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
-             'https://tds.mock/productB_path/cycle_04/dataset_44.nc',
-         ]),
-         ({
-             'path_filter': 'A'
-         }, [
-             'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
-             'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
-             'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
-             'https://tds.mock/productA_path/cycle_03/dataset_33.nc'
-         ]),
-         ({
-             'path_filter': 'A',
-             'cycle_number': 3
-         }, [
-             'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
-             'https://tds.mock/productA_path/cycle_03/dataset_33.nc'
-         ]),
-         ({
-             'path_filter': 'B'
-         }, [
-             'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
-             'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
-         ]), ({
-             'path_filter': 'C'
-         }, [
-             'https://tds.mock/dataset_01.nc',
-         ]), ({
-             'cycle_number': '6'
-         }, [
-             'https://tds.mock/dataset_01.nc',
-         ])])
+        [
+            (
+                {},
+                [
+                    'https://tds.mock/dataset_01.nc',
+                    'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+                    'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+                    'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+                    'https://tds.mock/productB_path/cycle_04/dataset_44.nc',
+                ],
+            ),
+            (
+                {
+                    'cycle_number': [3, 4]
+                },
+                [
+                    'https://tds.mock/dataset_01.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+                    'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+                    'https://tds.mock/productB_path/cycle_04/dataset_44.nc',
+                ],
+            ),
+            (
+                {
+                    'path_filter': 'A'
+                },
+                [
+                    'https://tds.mock/dataset_01.nc',
+                    'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+                    'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+                ],
+            ),
+            (
+                {
+                    'path_filter': 'A',
+                    'cycle_number': 3
+                },
+                [
+                    'https://tds.mock/dataset_01.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+                    'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+                ],
+            ),
+            (
+                {
+                    'path_filter': 'B'
+                },
+                [
+                    'https://tds.mock/dataset_01.nc',
+                    'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+                    'https://tds.mock/productB_path/cycle_04/dataset_44.nc',
+                ],
+            ),
+            (
+                {
+                    'path_filter': 'C'
+                },
+                [
+                    'https://tds.mock/dataset_01.nc',
+                ],
+            ),
+            (
+                {
+                    'cycle_number': '6'
+                },
+                [
+                    'https://tds.mock/dataset_01.nc',
+                ],
+            ),
+        ],
+    )
     def test_find(self, tds_iterable, filter, exp_urls):
         urls = tds_iterable.find('https://tds.mock/catalog.xml', **filter)
 
         assert urls == exp_urls
 
-    @pytest.mark.parametrize('filter, exp_urls', [({
-        'bad_filter': 'B'
-    }, [
-        'https://tds.mock/dataset_01.nc',
-        'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
-        'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
-        'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
-        'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
-        'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
-        'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
-    ])])
+    @pytest.mark.parametrize(
+        'filter, exp_urls',
+        [(
+            {
+                'bad_filter': 'B'
+            },
+            [
+                'https://tds.mock/dataset_01.nc',
+                'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+                'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+                'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+                'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+                'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+                'https://tds.mock/productB_path/cycle_04/dataset_44.nc',
+            ],
+        )],
+    )
     def test_find_bad_filter(self, tds_iterable, filter, exp_urls):
         with pytest.warns(
                 UserWarning,
                 match=
-                'Layout has been configured with unknown references \'{\'bad_filter\'}\'. They will be ignored.'
-        ):
+            ("Layout has been configured with unknown references '{'bad_filter'}'."
+             ' They will be ignored.')):
             urls = tds_iterable.find('https://tds.mock/catalog.xml', **filter)
             assert urls == exp_urls
 
@@ -93,8 +125,11 @@ class Test_TDSIterable:
         with pytest.raises(ProxyError) as exc_info:
             tds_iterable.find('https://bad_url/catalog.xml')
 
-        assert "HTTPSConnectionPool(host='https://bad_url/catalog.xml', port=443): Max retries exceeded with url: /L2-SWOT.html (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 503 Service Unavailable'))" in str(
-            exc_info.value)
+        assert ((
+            "HTTPSConnectionPool(host='https://bad_url/catalog.xml', port=443): "
+            'Max retries exceeded with url: /L2-SWOT.html (Caused by ProxyError'
+            "('Unable to connect to proxy', OSError('Tunnel connection failed: 503 "
+            "Service Unavailable'))") in str(exc_info.value))
 
 
 def test_filter_granules():
@@ -118,13 +153,15 @@ def test_load_convention_layout(patch_some, test_layout,
     }
 
     conv, layout = _load_convention_layout(conf, 'TEST_TYPE')
-    assert type(conv) == type(test_filename_convention)
+    assert type(conv) is type(test_filename_convention)
     assert layout == test_layout
 
 
-@pytest.mark.parametrize('_id, short_name, path_filter',
-                         [('productA', 'sample_product_a', 'A'),
-                          ('productB', 'sample_product_b', 'B')])
+@pytest.mark.parametrize(
+    '_id, short_name, path_filter',
+    [('productA', 'sample_product_a', 'A'),
+     ('productB', 'sample_product_b', 'B')],
+)
 def test_parse_tds_layout(patch_some, test_layout, test_filename_convention,
                           _id, short_name, path_filter):
     pl_conf = _parse_tds_layout(AvisoProduct(id=_id))
@@ -135,4 +172,4 @@ def test_parse_tds_layout(patch_some, test_layout, test_filename_convention,
     assert pl_conf.catalog_path == f'{_id}_path'
     assert pl_conf.short_name == short_name
     assert pl_conf.layout == test_layout
-    assert type(pl_conf.convention) == type(test_filename_convention)
+    assert type(pl_conf.convention) is type(test_filename_convention)

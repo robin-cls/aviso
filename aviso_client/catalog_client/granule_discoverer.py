@@ -61,10 +61,16 @@ class TDSIterable(ITreeIterable):
 
             next_level = level + 1
 
-            # Each catalog_refs should have (name, ref) and it should be possible to follow ref with child = ref.follow()
-            # but there is a "name" marker missing somewhere in odatis TDS catalog.xml so it's not possible to follow a ref
-            # So we use the href and create a new TDSCatalog object with it
-            # ex: ref.href=https://tds-odatis.aviso.altimetry.fr/thredds/catalog/dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v1_0_1/Unsmoothed/cycle_001/catalog.xml
+            # Each `catalog_refs` should have (name, ref), and it should be possible
+            # to follow `ref` with `child = ref.follow()`. But there is a "name"
+            # marker missing somewhere in the Odatis TDS catalog.xml, so it's not
+            # possible to follow the ref directly.
+            # Instead, we use the `href` and create a new TDSCatalog object with it.
+            # Example:
+            #   ref.href = https://tds-odatis.aviso.altimetry.fr/thredds/catalog/
+            #              dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/v1_0_1/Unsmoothed/
+            #              cycle_001/catalog.xml
+
             results += self._find(ref.href, next_level, **filters)
 
         return results
@@ -95,7 +101,8 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     # Create the file discoverer for this TDS catalog
     file_discoverer = FileDiscoverer(
         parser=product_layout_conf.convention,
-        iterable=TDSIterable(layout=product_layout_conf.layout))
+        iterable=TDSIterable(layout=product_layout_conf.layout),
+    )
 
     filters = {**product_layout_conf.default_filters, **filters}
 
@@ -106,7 +113,8 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
 
 def _load_convention_layout(granule_discovery: dict, data_type: str):
     if data_type not in granule_discovery:
-        msg = f'The data type {data_type} is missing from the tds_layout|granule_discovery configuration.'
+        msg = (f'The data type {data_type} is missing from the '
+               'tds_layout|granule_discovery configuration.')
         raise KeyError(msg)
     convention, layout = granule_discovery[data_type]
 
@@ -122,6 +130,7 @@ class ProductLayoutConfig:
 
     Contains the product metadata.
     """
+
     id: str
     short_name: str
     convention: FileNameConvention
@@ -142,7 +151,9 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
 
         products_tds_layout = tds_layout['products']
         if product.id not in products_tds_layout:
-            msg = f'The product {product.short_name} - {product.id} is missing from the tds_layout configuration file.'
+            msg = (
+                f'The product {product.short_name} - {product.id} is missing from the '
+                'tds_layout configuration file.')
             raise KeyError(msg)
         product_layout = products_tds_layout[product.id]
 
@@ -154,9 +165,11 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
         if 'filters' not in product_layout:
             product_layout['filters'] = {}
 
-        return ProductLayoutConfig(id=product.id,
-                                   short_name=product_layout['short_name'],
-                                   convention=convention_obj,
-                                   layout=layout_obj,
-                                   catalog_path=product_layout['catalog_path'],
-                                   default_filters=product_layout['filters'])
+        return ProductLayoutConfig(
+            id=product.id,
+            short_name=product_layout['short_name'],
+            convention=convention_obj,
+            layout=layout_obj,
+            catalog_path=product_layout['catalog_path'],
+            default_filters=product_layout['filters'],
+        )

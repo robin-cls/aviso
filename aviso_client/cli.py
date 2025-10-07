@@ -54,7 +54,8 @@ def details(product: str = typer.Argument(..., help="Product's short name")):
             Panel(table, title=f'[green]Product: {product}[/]', expand=False))
 
     except InvalidProductError:
-        msg = f"'{product}' doesn't exist in Aviso catalog. Please use 'summary' command to list available products."
+        msg = (f"'{product}' doesn't exist in Aviso catalog. "
+               "Please use 'summary' command to list available products.")
         raise typer.BadParameter(msg)
 
 
@@ -73,11 +74,13 @@ def get(
         None,
         '--version',
         '-v',
-        help="Product's version. By default, last version is selected"),
+        help="Product's version. By default, last version is selected",
+    ),
 ):
     """Downloads a product from Aviso's Thredds Data Server.
 
-    Example : get a_prod_short_name --output tmp_dir --cycle 7 --pass 12 --pass 13 --pass 14 --version 1.0
+    Example : get a_prod_short_name --output tmp_dir
+    --cycle 7 --pass 12 --pass 13 --pass 14 --version 1.0
     """
     if not output.exists():
         msg = f"Directory '{output}' doesn't exist."
@@ -93,7 +96,8 @@ def get(
             cycle_number=cycle_number if cycle_number else None,
             pass_number=pass_number if pass_number else None,
             time=(start, end),
-            version=version)
+            version=version,
+        )
 
         console.print(
             f'[green]Downloaded files ({len(downloaded_files)}) :[/]')
@@ -102,5 +106,6 @@ def get(
             console.print(f'- {file}')
 
     except InvalidProductError:
-        msg = f"'{product}' doesn't exist in Aviso catalog. Please use 'summary' command to list available products."
+        msg = (f"'{product}' doesn't exist in Aviso catalog."
+               "Please use 'summary' command to list available products.")
         raise typer.BadParameter(msg)

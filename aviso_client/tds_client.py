@@ -58,12 +58,14 @@ def http_single_download(url: str,
     return str(local_filepath)
 
 
-def http_single_download_with_retries(url: str,
-                                      output_dir: str | pl.Path,
-                                      retries: int = 3,
-                                      backoff: float = 1.0,
-                                      username: str = None,
-                                      password: str = None) -> str:
+def http_single_download_with_retries(
+    url: str,
+    output_dir: str | pl.Path,
+    retries: int = 3,
+    backoff: float = 1.0,
+    username: str = None,
+    password: str = None,
+) -> str:
     """Download a granule from AVISO's Thredds Data Server using HTTPS
     protocol. Retries if the download fails.
 
@@ -110,12 +112,14 @@ def http_single_download_with_retries(url: str,
     raise last_exception
 
 
-def _download_one(url: str,
-                  output_dir: str | pl.Path,
-                  retries: int = 3,
-                  backoff: float = 1.0,
-                  username: str = None,
-                  password: str = None):
+def _download_one(
+    url: str,
+    output_dir: str | pl.Path,
+    retries: int = 3,
+    backoff: float = 1.0,
+    username: str = None,
+    password: str = None,
+):
     try:
         return http_single_download_with_retries(url, output_dir, retries,
                                                  backoff, username, password)
@@ -125,12 +129,14 @@ def _download_one(url: str,
     return
 
 
-def http_bulk_download(urls: list[str],
-                       output_dir: str | pl.Path,
-                       retries: int = 3,
-                       backoff: float = 1.0,
-                       username: str = None,
-                       password: str = None) -> Generator[str, None, None]:
+def http_bulk_download(
+    urls: list[str],
+    output_dir: str | pl.Path,
+    retries: int = 3,
+    backoff: float = 1.0,
+    username: str = None,
+    password: str = None,
+) -> Generator[str, None, None]:
     """Loop on a list of urls to download each granule from AVISO's Thredds
     Data Server using HTTPS protocol. Each download as retries if it fails.
 
@@ -169,13 +175,14 @@ def http_bulk_download(urls: list[str],
 
 
 def http_bulk_download_parallel(
-        urls: Iterable[str],
-        output_dir: str | pl.Path,
-        retries: int = 3,
-        backoff: float = 1.0,
-        max_workers: int = 4,
-        username: str = None,
-        password: str = None) -> Generator[str, None, None]:
+    urls: Iterable[str],
+    output_dir: str | pl.Path,
+    retries: int = 3,
+    backoff: float = 1.0,
+    max_workers: int = 4,
+    username: str = None,
+    password: str = None,
+) -> Generator[str, None, None]:
     """Parallel download of granules from AVISO's Thredds Data Server using
     HTTPS protocol.
 

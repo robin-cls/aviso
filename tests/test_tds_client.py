@@ -60,7 +60,7 @@ def test_http_single_download_with_retries_success(mocker):
         'aviso_client.tds_client.http_single_download')
     mock_download.side_effect = [
         requests.exceptions.RequestException('fail'),
-        str(expected_path)
+        str(expected_path),
     ]
 
     result_path = http_single_download_with_retries(url,
@@ -100,7 +100,8 @@ def test_http_single_download_with_retries_fail_all(mocker):
 
     mocker.patch(
         'aviso_client.tds_client.http_single_download',
-        side_effect=requests.exceptions.RequestException('Network fail'))
+        side_effect=requests.exceptions.RequestException('Network fail'),
+    )
     with pytest.raises(requests.exceptions.RequestException):
         http_single_download_with_retries(bad_url,
                                           '/tmp_path',
@@ -113,7 +114,8 @@ def test_http_bulk_download_success_and_skip_fail(mocker):
         'aviso_client.tds_client.http_single_download_with_retries')
     mock_retry.side_effect = [
         '/tmp/file1.txt',
-        requests.exceptions.RequestException('fail'), '/tmp/file3.txt'
+        requests.exceptions.RequestException('fail'),
+        '/tmp/file3.txt',
     ]
 
     urls = ['https://a.com/1', 'https://a.com/2', 'https://a.com/3']
@@ -130,8 +132,10 @@ def test_http_bulk_download_success_and_skip_fail(mocker):
 
 
 def test_http_bulk_download_all_fail(mocker):
-    mocker.patch('aviso_client.tds_client.http_single_download_with_retries',
-                 side_effect=requests.exceptions.RequestException('boom'))
+    mocker.patch(
+        'aviso_client.tds_client.http_single_download_with_retries',
+        side_effect=requests.exceptions.RequestException('boom'),
+    )
     urls = ['https://fail.com/1', 'https://fail.com/2']
 
     with pytest.warns(UserWarning) as record:
@@ -168,8 +172,10 @@ def test_http_bulk_download_parallel_partial_fail(mocker):
             raise requests.exceptions.RequestException('Boom')
         return f"/tmp/{url.split('/')[-1]}"
 
-    mocker.patch('aviso_client.tds_client.http_single_download_with_retries',
-                 side_effect=fake_retry)
+    mocker.patch(
+        'aviso_client.tds_client.http_single_download_with_retries',
+        side_effect=fake_retry,
+    )
     urls = [
         'https://x.com/ok1.txt', 'https://x.com/fail.txt',
         'https://x.com/ok2.txt'
