@@ -47,74 +47,73 @@ def test_summary(mocker, mock_catalog):
 
 def test_details(mocker, mock_product):
     mocker.patch.object(ac_core, 'details', return_value=mock_product)
-    result = runner.invoke(app, ['details', '--product', 'prod1'])
+    result = runner.invoke(app, ['details', 'prod1'])
     assert result.exit_code == 0
     assert 'prod1' in result.output
-    assert "Product's details: prod1" in result.output
+    assert 'Product: prod1' in result.output
     assert 'keywords' in result.output
 
 
 def test_get_simple_filters(mocker, tmp_path):
     mocked_get = mocker.patch.object(ac_core,
                                      'get',
-                                     return_value=['file1.nc', 'file2.nc'])
+                                     return_value=['file_01.nc', 'file_02.nc'])
     result = runner.invoke(app, [
-        'get',
-        '--product',
-        'AVISO-SWOT',
-        '--output',
-        str(tmp_path),
-        '--filter',
-        'version=1',
-        '--filter',
-        'resolution=0.25',
+        'get', 'AVISO-SWOT', '--output',
+        str(tmp_path), '--version', '1.0', '--cycle', '1', '--cycle', '2'
     ])
+    print(result.output)
     assert result.exit_code == 0
     assert 'Downloaded files (2)' in result.output
-    assert '- file1.nc' in result.output
-    assert '- file2.nc' in result.output
+    assert '- file_01.nc' in result.output
+    assert '- file_02.nc' in result.output
 
     mocked_get.assert_called_once_with(product_short_name='AVISO-SWOT',
                                        output_dir=tmp_path,
-                                       version=1,
-                                       resolution=0.25)
+                                       version='1.0',
+                                       cycle_number=[1, 2],
+                                       pass_number=None,
+                                       time=(None, None))
 
 
 def test_get_with_start_only(mocker, tmp_path):
     mocked_get = mocker.patch.object(ac_core, 'get', return_value=['file.nc'])
-    result = runner.invoke(app, [
-        'get', '--product', 'SWOT', '--output',
-        str(tmp_path), '--filter', 'start=2023-01-01'
-    ])
+    result = runner.invoke(
+        app,
+        ['get', 'SWOT', '--output',
+         str(tmp_path), '--start', '2023-01-01'])
     assert result.exit_code == 0
     args = mocked_get.call_args.kwargs
     assert args['product_short_name'] == 'SWOT'
     assert args['output_dir'] == tmp_path
     assert args['time'] == (
-        np.datetime64('2023-01-01'),
-        np.datetime64('2023-01-01'),
+        '2023-01-01',
+        None,
     )
 
 
 def test_get_with_start_and_end(mocker, tmp_path):
     mocked_get = mocker.patch.object(ac_core, 'get', return_value=['file.nc'])
     result = runner.invoke(app, [
-        'get', '--product', 'SWOT', '--output',
-        str(tmp_path), '--filter', 'start=2023-01-01', '--filter',
-        'end=2023-01-05'
+        'get', 'SWOT', '--output',
+        str(tmp_path), '--start', '2023-01-01', '--end', '2023-01-05'
     ])
     assert result.exit_code == 0
     args = mocked_get.call_args.kwargs
     assert args['time'] == (
-        np.datetime64('2023-01-01'),
-        np.datetime64('2023-01-05'),
+        '2023-01-01',
+        '2023-01-05',
     )
 
 
-def test_get_invalid_filter_format(tmp_path):
+def test_get_bad_options(tmp_path):
+    result = runner.invoke(app, ['get', 'SWOT'])
+    assert result.exit_code != 0
+    assert "Missing option '--output' / '-o'." in result.output
+
     result = runner.invoke(app, [
-        'get', '--product', 'SWOT', '--output',
-        str(tmp_path), '--filter', 'not_a_key_value'
+        'get', 'SWOT', '--output',
+        str(tmp_path), '--bad_filter', 'bad_value'
     ])
     assert result.exit_code != 0
-    assert 'filter is not key=value' in result.output
+    assert 'No such option: --bad_filter' in result.output

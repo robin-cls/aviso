@@ -112,29 +112,29 @@ def test_get_product_from_short_name_error():
 @pytest.mark.parametrize(
     'short_name, filters, exp_granules',
     [('sample_product_a', {}, [
-        'https://tds.mock/productA_path/2_filter/dataset_02.nc',
-        'https://tds.mock/productA_path/2_filter/dataset_22.nc',
-        'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-        'https://tds.mock/productA_path/3_filter/dataset_33.nc'
+        'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+        'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+        'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+        'https://tds.mock/productA_path/cycle_03/dataset_33.nc'
     ]),
      ('sample_product_a', {
-         'filter2': 2,
+         'cycle_number': 2,
      }, [
-         'https://tds.mock/productA_path/2_filter/dataset_02.nc',
-         'https://tds.mock/productA_path/2_filter/dataset_22.nc',
+         'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+         'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
      ]),
      ('sample_product_a', {
-         'a_number': 3,
-     }, ['https://tds.mock/productA_path/3_filter/dataset_03.nc']),
+         'pass_number': 3,
+     }, ['https://tds.mock/productA_path/cycle_03/dataset_03.nc']),
      ('sample_product_b', {}, [
-         'https://tds.mock/productB_path/4_filter/dataset_04.nc',
-         'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+         'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+         'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
      ]),
      ('sample_product_b', {
          'other_filter': 'bad'
      }, [
-         'https://tds.mock/productB_path/4_filter/dataset_04.nc',
-         'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+         'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+         'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
      ])])
 def test_search_granules(short_name, filters, exp_granules):
     granules = search_granules(short_name, **filters)
@@ -148,14 +148,14 @@ def test_search_granules_error():
 
 @pytest.mark.parametrize('short_name, filters', [
     ('sample_product_a', {
-        'filter2': 'bad',
+        'cycle_number': 'bad',
     }),
     ('sample_product_a', {
-        'filter2': 2,
-        'a_number': 3,
+        'cycle_number': 2,
+        'pass_number': 3,
     }),
     ('sample_product_b', {
-        'a_number': 55
+        'pass_number': 55
     }),
 ])
 def test_search_granules_bad_filter(short_name, filters):

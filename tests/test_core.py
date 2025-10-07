@@ -43,15 +43,12 @@ def test_get_error(tmp_path):
     [('sample_product_a', {},
       ['dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc', 'dataset_33.nc']),
      ('sample_product_a', {
-         'filter2': 2,
+         'cycle_number': 2,
      }, ['dataset_02.nc', 'dataset_22.nc']),
      ('sample_product_a', {
-         'a_number': 3
+         'pass_number': 3
      }, ['dataset_03.nc']),
-     ('sample_product_b', {}, ['dataset_04.nc', 'dataset_44.nc']),
-     ('sample_product_b', {
-         'other_filter': 'bad'
-     }, ['dataset_04.nc', 'dataset_44.nc'])])
+     ('sample_product_b', {}, ['dataset_04.nc', 'dataset_44.nc'])])
 def test_get(tmp_path, short_name, filters, files):
     local_files = get(product_short_name=short_name,
                       output_dir=tmp_path,
@@ -60,18 +57,22 @@ def test_get(tmp_path, short_name, filters, files):
     assert local_files == [os.path.join(tmp_path, f) for f in files]
 
 
-def test_get_bad_product(tmp_path):
+def test_get_error(tmp_path):
     with pytest.raises(InvalidProductError):
         get(product_short_name='bad_short_name', output_dir=tmp_path)
+    with pytest.raises(TypeError):
+        get(product_short_name='sample_product_a',
+            output_dir=tmp_path,
+            other_filter='bad')
 
 
 @pytest.mark.parametrize('short_name, filters', [('sample_product_a', {
-    'filter2': 'bad',
+    'cycle_number': 'bad',
 }), ('sample_product_a', {
-    'filter2': 2,
-    'a_number': 3
+    'cycle_number': 2,
+    'pass_number': 3
 }), ('sample_product_b', {
-    'a_number': 55
+    'pass_number': 55
 })])
 def test_get_bad_filter(tmp_path, short_name, filters):
     assert get(product_short_name=short_name, output_dir=tmp_path,

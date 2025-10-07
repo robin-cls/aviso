@@ -16,51 +16,51 @@ class Test_TDSIterable:
         'filter, exp_urls',
         [({}, [
             'https://tds.mock/dataset_01.nc',
-            'https://tds.mock/productA_path/2_filter/dataset_02.nc',
-            'https://tds.mock/productA_path/2_filter/dataset_22.nc',
-            'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-            'https://tds.mock/productA_path/3_filter/dataset_33.nc',
-            'https://tds.mock/productB_path/4_filter/dataset_04.nc',
-            'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+            'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+            'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+            'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+            'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+            'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+            'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
         ]),
          ({
-             'filter2': [3, 4]
+             'cycle_number': [3, 4]
          }, [
              'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-             'https://tds.mock/productA_path/3_filter/dataset_33.nc',
-             'https://tds.mock/productB_path/4_filter/dataset_04.nc',
-             'https://tds.mock/productB_path/4_filter/dataset_44.nc',
+             'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+             'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+             'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+             'https://tds.mock/productB_path/cycle_04/dataset_44.nc',
          ]),
          ({
-             'filter1': 'A'
+             'path_filter': 'A'
          }, [
              'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productA_path/2_filter/dataset_02.nc',
-             'https://tds.mock/productA_path/2_filter/dataset_22.nc',
-             'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-             'https://tds.mock/productA_path/3_filter/dataset_33.nc'
+             'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+             'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+             'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+             'https://tds.mock/productA_path/cycle_03/dataset_33.nc'
          ]),
          ({
-             'filter1': 'A',
-             'filter2': 3
+             'path_filter': 'A',
+             'cycle_number': 3
          }, [
              'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-             'https://tds.mock/productA_path/3_filter/dataset_33.nc'
+             'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+             'https://tds.mock/productA_path/cycle_03/dataset_33.nc'
          ]),
          ({
-             'filter1': 'B'
+             'path_filter': 'B'
          }, [
              'https://tds.mock/dataset_01.nc',
-             'https://tds.mock/productB_path/4_filter/dataset_04.nc',
-             'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+             'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+             'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
          ]), ({
-             'filter1': 'C'
+             'path_filter': 'C'
          }, [
              'https://tds.mock/dataset_01.nc',
          ]), ({
-             'filter2': '6'
+             'cycle_number': '6'
          }, [
              'https://tds.mock/dataset_01.nc',
          ])])
@@ -73,12 +73,12 @@ class Test_TDSIterable:
         'bad_filter': 'B'
     }, [
         'https://tds.mock/dataset_01.nc',
-        'https://tds.mock/productA_path/2_filter/dataset_02.nc',
-        'https://tds.mock/productA_path/2_filter/dataset_22.nc',
-        'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-        'https://tds.mock/productA_path/3_filter/dataset_33.nc',
-        'https://tds.mock/productB_path/4_filter/dataset_04.nc',
-        'https://tds.mock/productB_path/4_filter/dataset_44.nc'
+        'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+        'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+        'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+        'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+        'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+        'https://tds.mock/productB_path/cycle_04/dataset_44.nc'
     ])])
     def test_find_bad_filter(self, tds_iterable, filter, exp_urls):
         with pytest.warns(
@@ -100,14 +100,14 @@ class Test_TDSIterable:
 def test_filter_granules():
     urls = filter_granules(AvisoProduct(id='productA'))
     assert list(urls) == [
-        'https://tds.mock/productA_path/2_filter/dataset_02.nc',
-        'https://tds.mock/productA_path/2_filter/dataset_22.nc',
-        'https://tds.mock/productA_path/3_filter/dataset_03.nc',
-        'https://tds.mock/productA_path/3_filter/dataset_33.nc',
+        'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+        'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+        'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+        'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
     ]
-    urls = filter_granules(AvisoProduct(id='productA'), a_number=3)
+    urls = filter_granules(AvisoProduct(id='productA'), pass_number=3)
     assert list(urls) == [
-        'https://tds.mock/productA_path/3_filter/dataset_03.nc'
+        'https://tds.mock/productA_path/cycle_03/dataset_03.nc'
     ]
 
 
@@ -122,16 +122,16 @@ def test_load_convention_layout(patch_some, test_layout,
     assert layout == test_layout
 
 
-@pytest.mark.parametrize('_id, short_name, filter1',
+@pytest.mark.parametrize('_id, short_name, path_filter',
                          [('productA', 'sample_product_a', 'A'),
                           ('productB', 'sample_product_b', 'B')])
 def test_parse_tds_layout(patch_some, test_layout, test_filename_convention,
-                          _id, short_name, filter1):
+                          _id, short_name, path_filter):
     pl_conf = _parse_tds_layout(AvisoProduct(id=_id))
     assert isinstance(pl_conf, ProductLayoutConfig)
 
     assert pl_conf.id == _id
-    assert pl_conf.default_filters == {'filter1': filter1}
+    assert pl_conf.default_filters == {'path_filter': path_filter}
     assert pl_conf.catalog_path == f'{_id}_path'
     assert pl_conf.short_name == short_name
     assert pl_conf.layout == test_layout

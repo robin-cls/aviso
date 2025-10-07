@@ -96,6 +96,7 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     file_discoverer = FileDiscoverer(
         parser=product_layout_conf.convention,
         iterable=TDSIterable(layout=product_layout_conf.layout))
+
     filters = {**product_layout_conf.default_filters, **filters}
 
     granules = file_discoverer.list(path=tds_url, **filters)

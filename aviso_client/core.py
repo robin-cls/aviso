@@ -1,6 +1,8 @@
 import logging
 import pathlib as pl
 
+import numpy as np
+
 from .catalog_client.client import (
     fetch_catalog,
     get_details,
@@ -39,9 +41,13 @@ def details(product_short_name: str) -> AvisoProduct:
     return get_details(product_short_name)
 
 
-def get(product_short_name: str, output_dir: str | pl.Path,
-        **filters) -> list[str]:
-    """Downloads a product from AVISO's Thredds Data Server.
+def get(product_short_name: str,
+        output_dir: str | pl.Path,
+        cycle_number: int | list[int] = None,
+        pass_number: int | list[int] = None,
+        time: tuple[np.datetime64, np.datetime64] = None,
+        version: str = None) -> list[str]:
+    """Downloads a product from Aviso's Thredds Data Server.
 
     Parameters
     ----------
@@ -49,14 +55,30 @@ def get(product_short_name: str, output_dir: str | pl.Path,
         the short name of the product
     output_dir
         directory to store downloaded product files
-    **filters
-        filters for files/folders selection
+    cycle_number
+        the cycle number for files/folders selection
+    pass_number
+        the pass number for files/folders selection
+    time
+        the period for files/folders selection
+    version
+        the version for files/folders selection
 
     Returns
     -------
     list[str]
         the list of downloaded local file paths
     """
+    filters = {}
+    if not cycle_number is None:
+        filters['cycle_number'] = cycle_number
+    if not pass_number is None:
+        filters['pass_number'] = pass_number
+    if not time is None:
+        filters['time'] = time
+    if not version is None:
+        filters['version'] = version
+
     granule_paths = search_granules(product_short_name, **filters)
 
     logger.info('%d files to download.', len(granule_paths))

@@ -13,8 +13,6 @@ from requests.exceptions import ProxyError
 
 from aviso_client.catalog_client.granule_discoverer import TDSIterable
 
-# Relies on pytest-mock
-
 ############## PATCH GEONETWORK CATALOG RESPONSES
 
 
@@ -57,7 +55,9 @@ def mock_get(mocker, product_response):
 
 
 ############## PATCH GRANULES DISCOVERING
-class FileNameConventionTest(FileNameConvention):
+
+
+class FileNameConventionTestOld(FileNameConvention):
 
     def __init__(self):
         super().__init__(regex=re.compile(r'dataset_(?P<a_number>\d{2}).nc'),
@@ -65,7 +65,16 @@ class FileNameConventionTest(FileNameConvention):
                          generation_string='dataset_{a_number:0>2d}.nc')
 
 
-TEST_LAYOUT = Layout([
+class FileNameConventionTest(FileNameConvention):
+
+    def __init__(self):
+        super().__init__(
+            regex=re.compile(r'dataset_(?P<pass_number>\d{2}).nc'),
+            fields=[FileNameFieldInteger('pass_number')],
+            generation_string='dataset_{pass_number:0>2d}.nc')
+
+
+TEST_LAYOUT_OLD = Layout([
     FileNameConvention(re.compile('product(?P<filter1>.*)_path'),
                        [FileNameFieldString('filter1')],
                        'product{filter1!f}_path'),
@@ -73,9 +82,24 @@ TEST_LAYOUT = Layout([
                        [FileNameFieldInteger('filter2')], '{filter2!f}_filter')
 ])
 
-TEST_PRODUCT_LAYOUT = Layout([
+TEST_PRODUCT_LAYOUT_OLD = Layout([
     FileNameConvention(re.compile('(?P<filter2>.*)_filter'),
                        [FileNameFieldInteger('filter2')], '{filter2!f}_filter')
+])
+
+TEST_LAYOUT = Layout([
+    FileNameConvention(re.compile('product(?P<path_filter>.*)_path'),
+                       [FileNameFieldString('path_filter')],
+                       'product{path_filter!f}_path'),
+    FileNameConvention(re.compile(r'cycle_(?P<cycle_number>\d{2})'),
+                       [FileNameFieldInteger('cycle_number')],
+                       'cycle_{cycle_number:0>2d}')
+])
+
+TEST_PRODUCT_LAYOUT = Layout([
+    FileNameConvention(re.compile(r'cycle_(?P<cycle_number>\d{2})'),
+                       [FileNameFieldInteger('cycle_number')],
+                       'cycle_{cycle_number:0>2d}')
 ])
 
 
@@ -126,20 +150,20 @@ def patch_all(mocker):
 
 @pytest.fixture(autouse=True)
 def mock_tds_catalog(mocker):
-    """Recursive TDSCatalog mock with two sub-catalogs.
+    """Recursive TDSCatalog mock with three sub-catalogs.
 
-    Test's tree structure:
+    Testing tree structure:
     / -> https://tds.mock/catalog.xml
     - dataset_01.nc
     /productA_path/ -> https://tds.mock/productA_path/catalog.xml
-        /2_filter/  -> https://tds.mock/productA_path/2_filter/catalog.xml
+        /cycle_02/  -> https://tds.mock/productA_path/cycle_02/catalog.xml
             - dataset_02.nc
             - dataset_22.nc
-        /3_filter/  -> https://tds.mock/productA_path/3_filter/catalog.xml
+        /cycle_03/  -> https://tds.mock/productA_path/cycle_03/catalog.xml
             - dataset_03.nc
             - dataset_33.nc
     /productB_path/ -> https://tds.mock/productB_path/catalog.xml
-        /4_filter/  -> https://tds.mock/productB_path/4_filter/catalog.xml
+        /cycle_04/  -> https://tds.mock/productB_path/cycle_04/catalog.xml
         - dataset_04.nc
         - dataset_44.nc
     """
@@ -153,39 +177,39 @@ def mock_tds_catalog(mocker):
 
     mock_catalog_vA_2 = mocker.Mock()
     mock_catalog_vA_2.datasets = {
-        f'ds{nb}': _get_dataset('/productA_path/2_filter', nb)
+        f'ds{nb}': _get_dataset('/productA_path/cycle_02', nb)
         for nb in [2, 22]
     }
     mock_catalog_vA_2.catalog_refs = {}
 
     mock_ref_vA_2 = mocker.Mock()
-    mock_ref_vA_2.href = 'https://tds.mock/productA_path/2_filter/catalog.xml'
+    mock_ref_vA_2.href = 'https://tds.mock/productA_path/cycle_02/catalog.xml'
 
     mock_catalog_vA_3 = mocker.Mock()
     mock_catalog_vA_3.datasets = {
-        f'ds{nb}': _get_dataset('/productA_path/3_filter', nb)
+        f'ds{nb}': _get_dataset('/productA_path/cycle_03', nb)
         for nb in [3, 33]
     }
     mock_catalog_vA_3.catalog_refs = {}
 
     mock_ref_vA_3 = mocker.Mock()
-    mock_ref_vA_3.href = 'https://tds.mock/productA_path/3_filter/catalog.xml'
+    mock_ref_vA_3.href = 'https://tds.mock/productA_path/cycle_03/catalog.xml'
 
     mock_catalog_vB_4 = mocker.Mock()
     mock_catalog_vB_4.datasets = {
-        f'ds{nb}': _get_dataset('/productB_path/4_filter', nb)
+        f'ds{nb}': _get_dataset('/productB_path/cycle_04', nb)
         for nb in [4, 44]
     }
     mock_catalog_vB_4.catalog_refs = {}
 
     mock_ref_vB_4 = mocker.Mock()
-    mock_ref_vB_4.href = 'https://tds.mock/productB_path/4_filter/catalog.xml'
+    mock_ref_vB_4.href = 'https://tds.mock/productB_path/cycle_04/catalog.xml'
 
     mock_catalog_vA = mocker.Mock()
     mock_catalog_vA.datasets = {}
     mock_catalog_vA.catalog_refs = {
-        '2_filter': mock_ref_vA_2,
-        '3_filter': mock_ref_vA_3,
+        'cycle_02': mock_ref_vA_2,
+        'cycle_03': mock_ref_vA_3,
     }
 
     mock_ref_vA = mocker.Mock()
@@ -194,7 +218,7 @@ def mock_tds_catalog(mocker):
     mock_catalog_vB = mocker.Mock()
     mock_catalog_vB.datasets = {}
     mock_catalog_vB.catalog_refs = {
-        '4_filter': mock_ref_vB_4,
+        'cycle_04': mock_ref_vB_4,
     }
 
     mock_ref_vB = mocker.Mock()
@@ -214,13 +238,13 @@ def mock_tds_catalog(mocker):
             return mock_root
         elif url == 'https://tds.mock/productA_path/catalog.xml':
             return mock_catalog_vA
-        elif url == 'https://tds.mock/productA_path/2_filter/catalog.xml':
+        elif url == 'https://tds.mock/productA_path/cycle_02/catalog.xml':
             return mock_catalog_vA_2
-        elif url == 'https://tds.mock/productA_path/3_filter/catalog.xml':
+        elif url == 'https://tds.mock/productA_path/cycle_03/catalog.xml':
             return mock_catalog_vA_3
         elif url == 'https://tds.mock/productB_path/catalog.xml':
             return mock_catalog_vB
-        elif url == 'https://tds.mock/productB_path/4_filter/catalog.xml':
+        elif url == 'https://tds.mock/productB_path/cycle_04/catalog.xml':
             return mock_catalog_vB_4
         else:
             raise ProxyError(
