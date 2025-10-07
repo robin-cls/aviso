@@ -3,14 +3,14 @@ import os
 import typing as tp
 import warnings
 from dataclasses import dataclass
-from importlib import import_module
 from pathlib import Path
 
+import ocean_tools.swath.io
 import yaml
 from ocean_tools.io import FileDiscoverer, FileNameConvention, ITreeIterable, Layout
 from siphon.catalog import TDSCatalog
 
-from .geonetwork.models.dataclasses import AvisoProduct
+from .geonetwork import AvisoProduct
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +38,9 @@ class TDSIterable(ITreeIterable):
              **filters: tp.Any) -> tp.Iterator[str | dict[str, str]]:
 
         if len(filters) > 0 and self.layout is None:
-            msg = ('Filters %s have been defined for the file '
+            msg = (f'Filters {filters.keys()} have been defined for the file '
                    'system tree walk, but no layout is configured. These '
-                   'filters will be ignored', filters.keys())
+                   'filters will be ignored')
             warnings.warn(msg)
 
         if self.layout is not None:
@@ -104,16 +104,15 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     return granules.filename
 
 
-def _load_convention_layout(granule_discovery, data_type):
-    if not data_type in granule_discovery:
-        raise KeyError(
-            f'The data type {data_type} is missing from the tds_layout|granule_discovery configuration.'
-        )
+def _load_convention_layout(granule_discovery: dict, data_type: str):
+    if data_type not in granule_discovery:
+        msg = f'The data type {data_type} is missing from the tds_layout|granule_discovery configuration.'
+        raise KeyError(msg)
     convention, layout = granule_discovery[data_type]
 
-    module = import_module('ocean_tools.swath.io')
-    convention_obj, layout_obj = getattr(module, convention)(), getattr(
-        module, layout)
+    convention_obj, layout_obj = getattr(ocean_tools.swath.io,
+                                         convention)(), getattr(
+                                             ocean_tools.swath.io, layout)
     return convention_obj, layout_obj
 
 
@@ -142,10 +141,9 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
         tds_layout = yaml.safe_load(f)
 
         products_tds_layout = tds_layout['products']
-        if not product.id in products_tds_layout:
-            raise KeyError(
-                f'The product {product.short_name} - {product.id} is missing from the tds_layout configuration file.'
-            )
+        if product.id not in products_tds_layout:
+            msg = f'The product {product.short_name} - {product.id} is missing from the tds_layout configuration file.'
+            raise KeyError(msg)
         product_layout = products_tds_layout[product.id]
 
         granule_discovery = tds_layout['granule_discovery']

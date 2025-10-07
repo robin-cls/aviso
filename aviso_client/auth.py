@@ -2,27 +2,38 @@ import getpass
 import logging
 import netrc
 import os
+import warnings
 from pathlib import Path
 
 NETRC_PATH = Path.home() / '.netrc'
 
 
+class AuthenticationError(Exception):
+    pass
+
+
 def ensure_credentials(host: str):
     """Ensure credentials are present in a .netrc, and prompt otherwise.
 
-    Args:
-        host (str):
-            host for which credentials are needed
+    Parameters
+    ----------
+    host: str
+        host for which credentials are needed
 
-    Returns:
-        tuple(str, str):
-            (username, password) tuple
+    Returns
+    -------
+        (username, password) tuple
+
+    Raises
+    ------
+    AuthenticationError
+        In case an exception happens when reading credentials
     """
     creds = _get_credentials(host)
     if creds:
         return creds
-    else:
-        return _prompt_and_save_credentials(host)
+
+    return _prompt_and_save_credentials(host)
 
 
 def _get_credentials(host: str):
@@ -35,19 +46,21 @@ def _get_credentials(host: str):
         login, _, password = auth_data.authenticators(host)
         if login and password:
             return login, password
+    except TypeError as e:
+        msg = f"Host {host} doesn't exist in .netrc file."
+        warnings.warn(msg)
+        return None
     except netrc.NetrcParseError as e:
-        logging.error('Syntax error in .netrc file: %s', e)
-    except (TypeError, AttributeError) as e:
-        logging.error('Error reading credentials for %s', e)
-    except Exception as e:
-        logging.error('Error reading .netrc : %s', e)
-
-    return None
+        msg = f'Syntax error in .netrc file: {e}'
+        raise AuthenticationError(msg)
+    except (AttributeError, ValueError) as e:
+        msg = 'An error happened when authenticating Aviso client.'
+        raise AuthenticationError(msg)
 
 
 def _prompt_and_save_credentials(host: str):
     """Prompt and save credentials."""
-    logging.info(f'Credentials required for {host}')
+    logging.info('Credentials required for %s', host)
     login = input('Username : ')
     password = getpass.getpass('Password : ')
 

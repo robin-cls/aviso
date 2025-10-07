@@ -8,6 +8,7 @@ import aviso_client.auth
 from aviso_client.auth import (
     _get_credentials,
     _prompt_and_save_credentials,
+    AuthenticationError,
     ensure_credentials,
 )
 
@@ -38,16 +39,27 @@ def test_get_credentials_netrc_not_exist(mocker):
     assert creds is None
 
 
-def test_get_credentials_netrc_invalid(mocker, caplog):
+def test_get_credentials_netrc_invalid(mocker):
     mocker.patch('aviso_client.auth.netrc.netrc',
                  side_effect=netrc.NetrcParseError('Invalid netrc'))
 
-    creds = _get_credentials('example.com')
+    with pytest.raises(AuthenticationError):
+        _get_credentials('example.com')
+
+
+def test_get_credentials_host_notexist(mocker):
+    mocker.patch('aviso_client.auth.netrc.netrc',
+                 side_effect=TypeError("Host doesn't exist in .netrc file."))
+
+    with pytest.warns(UserWarning) as record:
+        creds = _get_credentials('example.com')
+
     assert creds is None
-    assert 'Syntax error' in caplog.text
+    assert "Host example.com doesn't exist in .netrc file" in str(
+        record[0].message)
 
 
-def test_prompt_and_save_credentials(mocker, fake_netrc_path):
+def test_prompt_and_save_credentials(mocker):
     mocker.patch('builtins.input', return_value='user2')
     mocker.patch('getpass.getpass', return_value='pass2')
     m_open = mocker.patch('builtins.open', mock_open())

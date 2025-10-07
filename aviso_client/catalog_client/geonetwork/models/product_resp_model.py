@@ -182,6 +182,7 @@ class AvisoProductModel(BaseModel):
         for online_resource in online:
             if online_resource.cit_CI_OnlineResource.cit_description.gco_CharacterString.text == 'THREDDS':
                 return online_resource.cit_CI_OnlineResource.cit_linkage.gco_CharacterString.text
+        return ''
 
     def get_processing_level(self) -> str:
         return self.mdb_contentInfo.mrc_MD_CoverageDescription.mrc_processingLevelCode.mcc_MD_Identifier.mcc_code.gco_CharacterString.text

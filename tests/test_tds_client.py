@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -80,7 +81,7 @@ def test_http_single_download_with_retries_backoff_timing(mocker, caplog):
     mock_sleep = mocker.patch('aviso_client.tds_client.time.sleep')
 
     with pytest.raises(requests.exceptions.RequestException):
-        with pytest.warns(UserWarning) as record:
+        with caplog.at_level(logging.DEBUG):
             http_single_download_with_retries(url,
                                               '/tmp_path',
                                               retries=3,
@@ -89,16 +90,9 @@ def test_http_single_download_with_retries_backoff_timing(mocker, caplog):
     assert mock_sleep.call_count == 2
     mock_sleep.assert_has_calls([mocker.call(2), mocker.call(4)])
 
-    assert len(record) == 3
-    assert 'Attempt 1 failed' in str(record[0].message)
-    assert 'Attempt 2 failed' in str(record[1].message)
-    assert 'Attempt 3 failed' in str(record[2].message)
-
-    errors = [
-        record.message for record in caplog.records
-        if record.levelname == 'ERROR'
-    ]
-    assert any('All 3 attempts failed' in msg for msg in errors)
+    assert 'Attempt 1 failed for https://example.com/file.txt' in caplog.text
+    assert 'Attempt 2 failed for https://example.com/file.txt' in caplog.text
+    assert 'Attempt 3 failed for https://example.com/file.txt' in caplog.text
 
 
 def test_http_single_download_with_retries_fail_all(mocker):
@@ -114,7 +108,7 @@ def test_http_single_download_with_retries_fail_all(mocker):
                                           backoff=0)
 
 
-def test_http_bulk_download_success_and_skip_fail(mocker, caplog):
+def test_http_bulk_download_success_and_skip_fail(mocker):
     mock_retry = mocker.patch(
         'aviso_client.tds_client.http_single_download_with_retries')
     mock_retry.side_effect = [
@@ -127,6 +121,7 @@ def test_http_bulk_download_success_and_skip_fail(mocker, caplog):
     with pytest.warns(UserWarning) as record:
         paths = list(http_bulk_download(urls, '/tmp'))
 
+    print(paths)
     assert paths == ['/tmp/file1.txt', '/tmp/file3.txt']
     assert mock_retry.call_count == 3
 
@@ -134,9 +129,9 @@ def test_http_bulk_download_success_and_skip_fail(mocker, caplog):
     assert 'Failed to download https://a.com/2' in str(record[0].message)
 
 
-def test_http_bulk_download_all_fail(mocker, caplog):
+def test_http_bulk_download_all_fail(mocker):
     mocker.patch('aviso_client.tds_client.http_single_download_with_retries',
-                 side_effect=Exception('boom'))
+                 side_effect=requests.exceptions.RequestException('boom'))
     urls = ['https://fail.com/1', 'https://fail.com/2']
 
     with pytest.warns(UserWarning) as record:
@@ -166,11 +161,11 @@ def test_http_bulk_download_parallel_success(mocker):
     assert mock_retry.call_count == 2
 
 
-def test_http_bulk_download_parallel_partial_fail(mocker, caplog):
+def test_http_bulk_download_parallel_partial_fail(mocker):
 
     def fake_retry(url, *_):
         if 'fail' in url:
-            raise Exception('Boom')
+            raise requests.exceptions.RequestException('Boom')
         return f"/tmp/{url.split('/')[-1]}"
 
     mocker.patch('aviso_client.tds_client.http_single_download_with_retries',

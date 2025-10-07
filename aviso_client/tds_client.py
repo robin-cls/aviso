@@ -15,7 +15,10 @@ logger = logging.getLogger(__name__)
 TDS_HOST = 'tds-odatis.aviso.altimetry.fr'
 
 
-def http_single_download(url: str, output_dir: str | pl.Path) -> str:
+def http_single_download(url: str,
+                         output_dir: str | pl.Path,
+                         username: str = None,
+                         password: str = None) -> str:
     """Download a granule from AVISO's Thredds Data Server using HTTPS
     protocol.
 
@@ -24,19 +27,25 @@ def http_single_download(url: str, output_dir: str | pl.Path) -> str:
     url: str
         the url to download
     output_dir: str | pl.Path
-        existing directory to store the downloaded file.
+        existing directory to store the downloaded file
+    username: str
+        username for authentication. Retrieved from .netrc file if not provided
+    password: str
+        password for authentication. Retrieved from .netrc file if not provided
 
     Returns
     -------
-    str
         the local path to the downloaded file
     """
-    (username, password) = ensure_credentials(TDS_HOST)
+    if username is None or password is None:
+        (username, password) = ensure_credentials(TDS_HOST)
 
     logger.debug('Downloading %s...', url)
 
     filename = os.path.basename(url)
-    local_filepath = os.path.join(str(output_dir), filename)
+    if isinstance(output_dir, str):
+        output_dir = pl.Path(output_dir)
+    local_filepath = output_dir / filename
 
     response = requests.get(url, auth=(username, password))
     response.raise_for_status()
@@ -46,13 +55,15 @@ def http_single_download(url: str, output_dir: str | pl.Path) -> str:
 
     logger.info('File %s downloaded.', local_filepath)
 
-    return local_filepath
+    return str(local_filepath)
 
 
 def http_single_download_with_retries(url: str,
                                       output_dir: str | pl.Path,
                                       retries: int = 3,
-                                      backoff: float = 1.0) -> str:
+                                      backoff: float = 1.0,
+                                      username: str = None,
+                                      password: str = None) -> str:
     """Download a granule from AVISO's Thredds Data Server using HTTPS
     protocol. Retries if the download fails.
 
@@ -61,42 +72,65 @@ def http_single_download_with_retries(url: str,
     url: str
         the url to download
     output_dir: str | pl.Path
-        existing directory to store the downloaded file.
+        existing directory to store the downloaded file
     retries: int
         number of retries
     backoff: float
-        waiting time between two tries. Increases exponentially.
+        waiting time between two tries. Increases exponentially
+    username: str
+        username for authentication. Retrieved from .netrc file if not provided
+    password: str
+        password for authentication. Retrieved from .netrc file if not provided
 
     Returns
     -------
-    str
         the local path to the downloaded file
+
+    Raises
+    ------
+    RequestException
+        In case an exception happens when requesting the file on the server
     """
+    if username is None or password is None:
+        (username, password) = ensure_credentials(TDS_HOST)
+
     last_exception = None
 
     for attempt in range(1, retries + 1):
         try:
-            return http_single_download(url, output_dir)
+            return http_single_download(url, output_dir, username, password)
 
-        except requests.exceptions.HTTPError as e:
-            warnings.warn('Attempt %d failed for %s: HTTP Error: %s' %
-                          (attempt, url, e))
-
-        except requests.exceptions.RequestException as e:
-            warnings.warn('Attempt %d failed for %s: %s' % (attempt, url, e))
+        except requests.RequestException as e:
+            logger.debug('Attempt %d failed for %s: %s' % (attempt, url, e))
 
             last_exception = e
             if attempt < retries:
                 time.sleep(backoff * (2**(attempt - 1)))
 
-    logger.error('All %d attempts failed for %s.', retries, url)
     raise last_exception
+
+
+def _download_one(url: str,
+                  output_dir: str | pl.Path,
+                  retries: int = 3,
+                  backoff: float = 1.0,
+                  username: str = None,
+                  password: str = None):
+    try:
+        return http_single_download_with_retries(url, output_dir, retries,
+                                                 backoff, username, password)
+    except requests.RequestException as e:
+        msg = f'Failed to download {url}. An error happened: {e}'
+        warnings.warn(msg)
+    return
 
 
 def http_bulk_download(urls: list[str],
                        output_dir: str | pl.Path,
                        retries: int = 3,
-                       backoff: float = 1.0) -> Generator[str, None, None]:
+                       backoff: float = 1.0,
+                       username: str = None,
+                       password: str = None) -> Generator[str, None, None]:
     """Loop on a list of urls to download each granule from AVISO's Thredds
     Data Server using HTTPS protocol. Each download as retries if it fails.
 
@@ -105,30 +139,33 @@ def http_bulk_download(urls: list[str],
     urls: list[str]
         the urls to download
     output_dir: str | pl.Path
-        existing directory to store the downloaded file.
+        existing directory to store the downloaded file
     retries: int
         number of retries
     backoff: float
-        waiting time between two tries. Increases exponentially.
+        waiting time between two tries. Increases exponentially
+    username: str
+        username for authentication. Retrieved from .netrc file if not provided
+    password: str
+        password for authentication. Retrieved from .netrc file if not provided
 
     Returns
     -------
-    Iterator
-        an iterator over the downloaded paths, one for each download that have succeeded
+        An iterator over the downloaded paths, one for each download that have succeeded
     """
+    if username is None or password is None:
+        (username, password) = ensure_credentials(TDS_HOST)
+
     output_dir = pl.Path(output_dir)
     if not output_dir.exists():
-        raise FileNotFoundError(f"No such file or directory '{output_dir}'.")
+        msg = f"No such file or directory '{output_dir}'."
+        raise FileNotFoundError(msg)
 
     for url in urls:
-        try:
-            local_path = http_single_download_with_retries(url,
-                                                           output_dir,
-                                                           retries=retries,
-                                                           backoff=backoff)
-            yield local_path
-        except Exception as e:
-            warnings.warn(f'Failed to download {url}: {e}')
+        file = _download_one(url, output_dir, retries, backoff, username,
+                             password)
+        if file:
+            yield file
 
 
 def http_bulk_download_parallel(
@@ -136,7 +173,9 @@ def http_bulk_download_parallel(
         output_dir: str | pl.Path,
         retries: int = 3,
         backoff: float = 1.0,
-        max_workers: int = 4) -> Generator[str, None, None]:
+        max_workers: int = 4,
+        username: str = None,
+        password: str = None) -> Generator[str, None, None]:
     """Parallel download of granules from AVISO's Thredds Data Server using
     HTTPS protocol.
 
@@ -145,31 +184,29 @@ def http_bulk_download_parallel(
     urls: list[str]
         the urls to download
     output_dir: str | pl.Path
-        existing directory to store the downloaded file.
+        existing directory to store the downloaded file
     retries: int
         number of retries
     backoff: float
-        waiting time between two tries. Increases exponentially.
+        waiting time between two tries. Increases exponentially
     max_workers: int
         Maximum number of workers
+    username: str
+        username for authentication. Retrieved from .netrc file if not provided
+    password: str
+        password for authentication. Retrieved from .netrc file if not provided
 
     Returns
     -------
-    Iterator
-        an iterator over the downloaded paths, one for each download that have succeeded
+        An iterator over the downloaded paths, one for each download that have succeeded
     """
-
-    def download_one(url):
-        try:
-            return http_single_download_with_retries(url, output_dir, retries,
-                                                     backoff)
-        except Exception as e:
-            warnings.warn(f'Failed to download {url}: {e}')
-        return
+    if username is None or password is None:
+        (username, password) = ensure_credentials(TDS_HOST)
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_url = {
-            executor.submit(download_one, url): url
+            executor.submit(_download_one, url, output_dir, retries, backoff, username, password):
+            url
             for url in urls
         }
 

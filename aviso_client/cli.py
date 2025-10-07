@@ -2,7 +2,6 @@ import logging
 from dataclasses import asdict
 from pathlib import Path
 
-import numpy as np
 import typer
 from rich.console import Console
 from rich.logging import RichHandler
@@ -55,9 +54,8 @@ def details(product: str = typer.Argument(..., help="Product's short name")):
             Panel(table, title=f'[green]Product: {product}[/]', expand=False))
 
     except InvalidProductError:
-        raise typer.BadParameter(
-            f"'{product}' doesn't exist in Aviso catalog. Please use 'summary' command to list available products."
-        )
+        msg = f"'{product}' doesn't exist in Aviso catalog. Please use 'summary' command to list available products."
+        raise typer.BadParameter(msg)
 
 
 @app.command()
@@ -82,9 +80,11 @@ def get(
     Example : get a_prod_short_name --output tmp_dir --cycle 7 --pass 12 --pass 13 --pass 14 --version 1.0
     """
     if not output.exists():
-        raise typer.BadParameter(f"Directory '{output}' doesn't exist.")
+        msg = f"Directory '{output}' doesn't exist."
+        raise typer.BadParameter(msg)
     if not output.is_dir():
-        raise typer.BadParameter(f"'{output}' is not a valid directory.")
+        msg = f"'{output}' is not a valid directory."
+        raise typer.BadParameter(msg)
 
     try:
         downloaded_files = ac_core.get(
@@ -102,6 +102,5 @@ def get(
             console.print(f'- {file}')
 
     except InvalidProductError:
-        raise typer.BadParameter(
-            f"'{product}' doesn't exist in Aviso catalog. Please use 'summary' command to list available products."
-        )
+        msg = f"'{product}' doesn't exist in Aviso catalog. Please use 'summary' command to list available products."
+        raise typer.BadParameter(msg)

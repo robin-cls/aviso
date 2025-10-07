@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from aviso_client.catalog_client.geonetwork.models.dataclasses import (
+from aviso_client.catalog_client.geonetwork.models.model import (
     AvisoCatalog,
     AvisoProduct,
 )

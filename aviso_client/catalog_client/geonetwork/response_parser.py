@@ -3,14 +3,14 @@ import logging
 from pydantic import TypeAdapter, ValidationError
 
 from .models.catalog_resp_model import AvisoCatalogModel
-from .models.dataclasses import AvisoCatalog, AvisoProduct
+from .models.model import AvisoCatalog, AvisoProduct
 from .models.product_resp_model import AvisoProductModel
 
 logger = logging.getLogger(__name__)
 
 
 def parse_catalog_response(results: dict) -> AvisoCatalog:
-    """Parses the response of AVISO's catalog to a fetching request.
+    """Parses the response of Aviso's catalog to a fetching request.
 
     Parameters
     ----------
@@ -19,8 +19,12 @@ def parse_catalog_response(results: dict) -> AvisoCatalog:
 
     Returns
     -------
-    AvisoCatalog
-        the object resulting from the parsing
+        The object resulting from the parsing
+
+    Raises
+    ------
+    RuntimeError
+        In case an exception happens when parsing catalog response
     """
     adapter = TypeAdapter(AvisoCatalogModel)
 
@@ -40,7 +44,7 @@ def parse_catalog_response(results: dict) -> AvisoCatalog:
     except ValidationError as e:
         for err in e.errors():
             logger.error(
-                "A validation error happened when parsing AVISO's catalog response: %e",
+                "A validation error happened when parsing Aviso's catalog response: %e",
                 err)
         raise RuntimeError(f'{e}')
 

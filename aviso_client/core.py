@@ -3,12 +3,13 @@ import pathlib as pl
 
 import numpy as np
 
+from .auth import AuthenticationError
 from .catalog_client.client import (
     fetch_catalog,
     get_details,
     search_granules,
 )
-from .catalog_client.geonetwork.models.dataclasses import AvisoCatalog, AvisoProduct
+from .catalog_client.geonetwork import AvisoCatalog, AvisoProduct
 from .tds_client import http_bulk_download
 
 logger = logging.getLogger(__name__)
@@ -19,8 +20,7 @@ def summary() -> AvisoCatalog:
 
     Returns
     -------
-    AvisoCatalog
-        the AVISO catalog object containing all the CDS-AVISO and SWOT products
+        The AVISO catalog object containing all the CDS-AVISO and SWOT products
     """
     return fetch_catalog()
 
@@ -35,8 +35,7 @@ def details(product_short_name: str) -> AvisoProduct:
 
     Returns
     -------
-    AvisoProduct
-        the product details
+        The description of product
     """
     return get_details(product_short_name)
 
@@ -66,8 +65,7 @@ def get(product_short_name: str,
 
     Returns
     -------
-    list[str]
-        the list of downloaded local file paths
+        The list of downloaded local file paths
     """
     filters = {}
     if not cycle_number is None:
@@ -82,6 +80,10 @@ def get(product_short_name: str,
     granule_paths = search_granules(product_short_name, **filters)
 
     logger.info('%d files to download.', len(granule_paths))
-    logger.info('Downloading granules: %s...', list(granule_paths))
+    logger.debug('Downloading granules: %s...', list(granule_paths))
 
-    return list(http_bulk_download(list(granule_paths), output_dir))
+    try:
+        return list(http_bulk_download(list(granule_paths), output_dir))
+
+    except AuthenticationError as e:
+        logging.error(e)

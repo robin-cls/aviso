@@ -13,7 +13,7 @@ from aviso_client.catalog_client.client import (
     InvalidProductError,
     search_granules,
 )
-from aviso_client.catalog_client.geonetwork.models.dataclasses import AvisoCatalog
+from aviso_client.catalog_client.geonetwork.models.model import AvisoCatalog
 
 
 def test_request_catalog(mock_post):
