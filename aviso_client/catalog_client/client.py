@@ -1,3 +1,4 @@
+import logging
 import os
 
 import requests
@@ -11,6 +12,8 @@ from .geonetwork import (
     parse_product_response,
 )
 from .granule_discoverer import filter_granules
+
+logger = logging.getLogger(__name__)
 
 AVISO_CATALOG_URL = 'https://sextant.ifremer.fr/geonetwork/srv/api'
 
@@ -27,6 +30,7 @@ def fetch_catalog() -> AvisoCatalog:
     AvisoCatalog
         the AVISO catalog object containing all the CDS-AVISO and SWOT products
     """
+    logger.info("Fetching products from Aviso's catalog...")
     resp = _request_catalog()
     catalog = parse_catalog_response(resp)
     return catalog
@@ -53,6 +57,8 @@ def get_details(product_short_name: str) -> AvisoProduct:
         In case an exception happens when requesting catalog
     """
     product = _get_product_from_short_name(product_short_name)
+    logger.info("Requesting '%s' product from Aviso's catalog...",
+                product_short_name)
     resp = _request_product(product.id)
     product = parse_product_response(resp, product)
     return product

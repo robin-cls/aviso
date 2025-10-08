@@ -145,7 +145,7 @@ def http_bulk_download(
     urls: list[str]
         the urls to download
     output_dir: str | pl.Path
-        existing directory to store the downloaded file
+        a directory to store the downloaded file (create it if doesn't exist)
     retries: int
         number of retries
     backoff: float
@@ -163,9 +163,7 @@ def http_bulk_download(
         (username, password) = ensure_credentials(TDS_HOST)
 
     output_dir = pl.Path(output_dir)
-    if not output_dir.exists():
-        msg = f"No such file or directory '{output_dir}'."
-        raise FileNotFoundError(msg)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     for url in urls:
         file = _download_one(url, output_dir, retries, backoff, username,
@@ -212,7 +210,15 @@ def http_bulk_download_parallel(
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_url = {
-            executor.submit(_download_one, url, output_dir, retries, backoff, username, password):
+            executor.submit(
+                _download_one,
+                url,
+                output_dir,
+                retries,
+                backoff,
+                username,
+                password,
+            ):
             url
             for url in urls
         }

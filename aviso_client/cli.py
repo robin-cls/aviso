@@ -11,16 +11,36 @@ from rich.table import Table
 import aviso_client.core as ac_core
 from aviso_client import InvalidProductError
 
+logging.basicConfig(level=logging.WARNING,
+                    handlers=[RichHandler()],
+                    format='%(message)s')
+logger = logging.getLogger('aviso_client')
+
+
+def setup_logging(verbose: bool):
+    level = logging.INFO if verbose else logging.WARNING
+    logger.setLevel(level)
+    for handler in logger.handlers:
+        handler.setLevel(level)
+
+
 app = typer.Typer()
 console = Console()
 
-logging.basicConfig(level=logging.WARNING, handlers=[RichHandler()])
-logger = logging.getLogger('aviso_client')
+
+@app.callback()
+def main(verbose: bool | None = typer.Option(
+    False,
+    '--verbose',
+    '-v',
+    help='Enable verbose/debug logging',
+), ):
+    setup_logging(verbose)
 
 
 @app.command()
 def summary():
-    """Lists available products in Aviso's catalog."""
+    """Lists products short names and titles available in Aviso's catalog."""
     catalog = ac_core.summary()
     table = Table(show_header=True,
                   header_style='bold magenta',
@@ -39,7 +59,10 @@ def summary():
 
 @app.command()
 def details(product: str = typer.Argument(..., help="Product's short name")):
-    """Details a product information from Aviso's catalog."""
+    """Details a product information from Aviso's catalog.
+
+    To get product's short name, use 'summary' command.
+    """
     try:
         product_info = ac_core.details(product)
 
@@ -54,8 +77,8 @@ def details(product: str = typer.Argument(..., help="Product's short name")):
             Panel(table, title=f'[green]Product: {product}[/]', expand=False))
 
     except InvalidProductError:
-        msg = (f"'{product}' doesn't exist in Aviso catalog. "
-               "Please use 'summary' command to list available products.")
+        msg = (f"'{product}' doesn't exist in Aviso catalog. " +
+               "Please use 'summary' command to get product's short name.")
         raise typer.BadParameter(msg)
 
 
@@ -73,7 +96,7 @@ def get(
     version: str = typer.Option(
         None,
         '--version',
-        '-v',
+        '-V',
         help="Product's version. By default, last version is selected",
     ),
 ):
@@ -82,13 +105,6 @@ def get(
     Example : get a_prod_short_name --output tmp_dir
     --cycle 7 --pass 12 --pass 13 --pass 14 --version 1.0
     """
-    if not output.exists():
-        msg = f"Directory '{output}' doesn't exist."
-        raise typer.BadParameter(msg)
-    if not output.is_dir():
-        msg = f"'{output}' is not a valid directory."
-        raise typer.BadParameter(msg)
-
     try:
         downloaded_files = ac_core.get(
             product_short_name=product,
@@ -106,6 +122,6 @@ def get(
             console.print(f'- {file}')
 
     except InvalidProductError:
-        msg = (f"'{product}' doesn't exist in Aviso catalog."
-               "Please use 'summary' command to list available products.")
+        msg = (f"'{product}' doesn't exist in Aviso catalog. "
+               "Please use 'summary' command to get product's short name.")
         raise typer.BadParameter(msg)

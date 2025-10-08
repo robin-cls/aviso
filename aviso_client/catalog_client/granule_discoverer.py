@@ -1,9 +1,9 @@
 import logging
-import os
 import typing as tp
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urljoin
 
 import ocean_tools.swath.io
 import yaml
@@ -91,12 +91,16 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     list[str]
         the urls of the granules corresponding to the provided filters
     """
+    filters_str = (lambda d: str(d))(filters)
+    logger.info('Filtering %s product with filters %s...', product.short_name,
+                filters_str)
     # Get TDS product layout
     product_layout_conf = _parse_tds_layout(product)
 
     # Build TDS catalog URL
-    tds_url = os.path.join(TDS_CATALOG_BASE_URL,
-                           product_layout_conf.catalog_path, 'catalog.xml')
+    tds_url = urljoin(
+        TDS_CATALOG_BASE_URL,
+        str(Path(product_layout_conf.catalog_path) / 'catalog.xml'))
 
     # Create the file discoverer for this TDS catalog
     file_discoverer = FileDiscoverer(

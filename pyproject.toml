@@ -7,9 +7,15 @@ name = "aviso_client"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
-    "pyyaml",
     "requests",
+    "numpy",
     "siphon",
+    "typer",
+    "rich",
+    "netrc",
+    "ocean_tools",
+    "pyyaml",
+    "pydantic"
 ]
 
 [project.scripts]
