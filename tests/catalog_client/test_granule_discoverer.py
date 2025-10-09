@@ -7,6 +7,7 @@ from aviso_client.catalog_client.granule_discoverer import (
     _parse_tds_layout,
     filter_granules,
     ProductLayoutConfig,
+    TDSIterable,
 )
 
 
@@ -95,6 +96,20 @@ class Test_TDSIterable:
 
         assert urls == exp_urls
 
+    def test_find_not_layout(self):
+        urls = TDSIterable().find('https://tds.mock/catalog.xml',
+                                  {'filter1': 12})
+
+        assert urls == [
+            'https://tds.mock/dataset_01.nc',
+            'https://tds.mock/productA_path/cycle_02/dataset_02.nc',
+            'https://tds.mock/productA_path/cycle_02/dataset_22.nc',
+            'https://tds.mock/productA_path/cycle_03/dataset_03.nc',
+            'https://tds.mock/productA_path/cycle_03/dataset_33.nc',
+            'https://tds.mock/productB_path/cycle_04/dataset_04.nc',
+            'https://tds.mock/productB_path/cycle_04/dataset_44.nc',
+        ]
+
     @pytest.mark.parametrize(
         'filter, exp_urls',
         [(
@@ -115,9 +130,8 @@ class Test_TDSIterable:
     def test_find_bad_filter(self, tds_iterable, filter, exp_urls):
         with pytest.warns(
                 UserWarning,
-                match=
-            ("Layout has been configured with unknown references '{'bad_filter'}'."
-             ' They will be ignored.')):
+                match=('Layout has been configured with unknown'
+                       " references '{'bad_filter'}'. They will be ignored.")):
             urls = tds_iterable.find('https://tds.mock/catalog.xml', **filter)
             assert urls == exp_urls
 
@@ -151,6 +165,10 @@ def test_load_convention_layout(patch_some, test_layout,
     conf = {
         'TEST_TYPE': ['FileNameConventionSwotL3', 'AVISO_L3_LR_SSH_LAYOUT']
     }
+    with pytest.raises(KeyError,
+                       match='The data type BAD_TYPE is missing from the '
+                       'tds_layout|granule_discovery configuration.'):
+        _load_convention_layout(conf, 'BAD_TYPE')
 
     conv, layout = _load_convention_layout(conf, 'TEST_TYPE')
     assert type(conv) is type(test_filename_convention)
@@ -173,3 +191,17 @@ def test_parse_tds_layout(patch_some, test_layout, test_filename_convention,
     assert pl_conf.short_name == short_name
     assert pl_conf.layout == test_layout
     assert type(pl_conf.convention) is type(test_filename_convention)
+
+
+def test_parse_tds_layout_no_filter(patch_some):
+    pl_conf = _parse_tds_layout(AvisoProduct(id='productC'))
+    assert isinstance(pl_conf, ProductLayoutConfig)
+
+    assert pl_conf.default_filters == {}
+
+
+def test_parse_tds_layout_bad_product():
+    with pytest.raises(KeyError,
+                       match='The product bad_product_id is missing from the '
+                       'tds_layout configuration file.'):
+        _parse_tds_layout(AvisoProduct(id='bad_product_id'))

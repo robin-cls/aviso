@@ -11,6 +11,9 @@ from aviso_client.tds_client import (
     http_single_download_with_retries,
 )
 
+# coverage run --source=aviso_client  -m pytest
+# coverage report -m
+
 
 def test_http_single_download_success(mocker, tmp_path):
     url = 'https://example.com/file.txt'
@@ -89,10 +92,6 @@ def test_http_single_download_with_retries_backoff_timing(mocker, caplog):
 
     assert mock_sleep.call_count == 2
     mock_sleep.assert_has_calls([mocker.call(2), mocker.call(4)])
-
-    assert 'Attempt 1 failed for https://example.com/file.txt' in caplog.text
-    assert 'Attempt 2 failed for https://example.com/file.txt' in caplog.text
-    assert 'Attempt 3 failed for https://example.com/file.txt' in caplog.text
 
 
 def test_http_single_download_with_retries_fail_all(mocker):

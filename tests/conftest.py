@@ -25,9 +25,41 @@ def catalog_response():
 
 
 @pytest.fixture
+def catalog_response2():
+    fixture_path = Path(
+        __file__).parent / 'resources' / 'catalog_response2.json'
+    with open(fixture_path, encoding='utf-8') as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def bad_catalog_response():
+    fixture_path = Path(
+        __file__).parent / 'resources' / 'bad_catalog_response.json'
+    with open(fixture_path, encoding='utf-8') as f:
+        return json.load(f)
+
+
+@pytest.fixture
 def product_response():
     fixture_path = Path(
         __file__).parent / 'resources' / 'product_response.json'
+    with open(fixture_path, encoding='utf-8') as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def product_response2():
+    fixture_path = Path(
+        __file__).parent / 'resources' / 'product_response2.json'
+    with open(fixture_path, encoding='utf-8') as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def bad_product_responses():
+    fixture_path = Path(
+        __file__).parent / 'resources' / 'bad_product_responses.json'
     with open(fixture_path, encoding='utf-8') as f:
         return json.load(f)
 

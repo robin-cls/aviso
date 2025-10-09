@@ -1,3 +1,5 @@
+import logging
+import netrc
 import os
 from datetime import datetime
 
@@ -54,6 +56,11 @@ def test_details():
         ('sample_product_a', {
             'pass_number': 3
         }, ['dataset_03.nc']),
+        ('sample_product_a', {
+            'time': ('2025-04-04', '2025-04-05'),
+            'version': '2.1.1'
+        },
+         ['dataset_02.nc', 'dataset_22.nc', 'dataset_03.nc', 'dataset_33.nc']),
         ('sample_product_b', {}, ['dataset_04.nc', 'dataset_44.nc']),
     ],
 )
@@ -61,6 +68,7 @@ def test_get(tmp_path, short_name, filters, files):
     local_files = get(product_short_name=short_name,
                       output_dir=tmp_path,
                       **filters)
+    print(local_files)
 
     assert local_files == [os.path.join(tmp_path, f) for f in files]
 
@@ -74,6 +82,18 @@ def test_get_error(tmp_path):
             output_dir=tmp_path,
             other_filter='bad',
         )
+
+
+def test_get_auth_error(mocker, tmp_path, caplog):
+    mocker.patch(
+        'aviso_client.auth.netrc.netrc',
+        side_effect=netrc.NetrcParseError('Invalid netrc'),
+    )
+
+    with caplog.at_level(logging.ERROR):
+        get(product_short_name='sample_product_a', output_dir=tmp_path)
+
+    assert 'Syntax error in .netrc file: Invalid netrc' in caplog.text
 
 
 @pytest.mark.parametrize(

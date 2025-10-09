@@ -14,5 +14,10 @@ products:
     filters:
       path_filter: B
 
+  productC:
+    short_name: sample_product_c
+    data_type: TEST_TYPE
+    catalog_path: productC_path
+
 granule_discovery:
   TEST_TYPE: [FileNameConventionSwotL3, AVISO_L3_LR_SSH_LAYOUT]

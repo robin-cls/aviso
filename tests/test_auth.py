@@ -63,6 +63,20 @@ def test_get_credentials_host_notexist(mocker):
         record[0].message)
 
 
+def test_get_credentials_rvalue_error(mocker):
+    mock_netrc_class = mocker.patch('aviso_client.auth.netrc.netrc')
+
+    mock_auth_data = mocker.Mock()
+    mock_auth_data.authenticators.side_effect = ValueError('Fake value error')
+    mock_netrc_class.return_value = mock_auth_data
+
+    with pytest.raises(AuthenticationError) as exc_info:
+        _get_credentials('example.com')
+
+    assert 'An error happened when authenticating Aviso client.' in str(
+        exc_info.value)
+
+
 def test_prompt_and_save_credentials(mocker):
     mocker.patch('builtins.input', return_value='user2')
     mocker.patch('getpass.getpass', return_value='pass2')

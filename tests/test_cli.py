@@ -1,11 +1,42 @@
+import logging
+
 import numpy as np
 import pytest
 from typer.testing import CliRunner
 
 import aviso_client.core as ac_core
-from aviso_client.cli import app
+from aviso_client.cli import _setup_logging, app, logger
 
 runner = CliRunner()
+
+
+def test_setup_logging(mocker):
+    handler1 = mocker.Mock()
+    handler2 = mocker.Mock()
+
+    mocker.patch.object(logger, 'handlers', [handler1, handler2])
+
+    mock_set_level = mocker.patch.object(logger, 'setLevel')
+
+    _setup_logging(verbose=True)
+
+    mock_set_level.assert_called_once_with(logging.INFO)
+
+    handler1.setLevel.assert_called_once_with(logging.INFO)
+    handler2.setLevel.assert_called_once_with(logging.INFO)
+
+
+def test_main_without_verbose_sets_warning_level():
+    logger.setLevel(logging.NOTSET)
+    for handler in logger.handlers:
+        handler.setLevel(logging.NOTSET)
+
+    result = runner.invoke(app, ['summary'])
+
+    assert result.exit_code == 0
+    assert logger.level == logging.WARNING
+    for handler in logger.handlers:
+        assert handler.level == logging.WARNING
 
 
 @pytest.fixture
@@ -55,6 +86,13 @@ def test_details(mocker, mock_product):
     assert 'keywords' in result.output
 
 
+def test_details_bad_product(tmp_path):
+    result = runner.invoke(app, ['details', 'bad_product'])
+    assert result.exit_code != 0
+    assert ("Invalid value: 'bad_product' doesn't exist "
+            'in Aviso catalog.') in result.output
+
+
 def test_get_simple_filters(mocker, tmp_path):
     mocked_get = mocker.patch.object(ac_core,
                                      'get',
@@ -74,7 +112,6 @@ def test_get_simple_filters(mocker, tmp_path):
             '2',
         ],
     )
-    print(result.output)
     assert result.exit_code == 0
     assert 'Downloaded files (2)' in result.output
     assert '- file_01.nc' in result.output
@@ -140,3 +177,12 @@ def test_get_bad_options(tmp_path):
     ])
     assert result.exit_code != 0
     assert 'No such option: --bad_filter' in result.output
+
+
+def test_get_bad_product(tmp_path):
+    result = runner.invoke(app,
+                           ['get', 'bad_product', '--output',
+                            str(tmp_path)])
+    assert result.exit_code != 0
+    assert ("Invalid value: 'bad_product' doesn't "
+            'exist in Aviso catalog.') in result.output

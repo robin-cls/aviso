@@ -1,6 +1,5 @@
 import logging
 import typing as tp
-import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urljoin
@@ -36,12 +35,6 @@ class TDSIterable(ITreeIterable):
              root: str,
              detail: bool = False,
              **filters: tp.Any) -> tp.Iterator[str | dict[str, str]]:
-
-        if len(filters) > 0 and self.layout is None:
-            msg = (f'Filters {filters.keys()} have been defined for the file '
-                   'system tree walk, but no layout is configured. These '
-                   'filters will be ignored')
-            warnings.warn(msg)
 
         if self.layout is not None:
             self.layout.set_filters(**filters)
@@ -155,9 +148,8 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
 
         products_tds_layout = tds_layout['products']
         if product.id not in products_tds_layout:
-            msg = (
-                f'The product {product.short_name} - {product.id} is missing from the '
-                'tds_layout configuration file.')
+            msg = (f'The product {product.id} is missing from the '
+                   'tds_layout configuration file.')
             raise KeyError(msg)
         product_layout = products_tds_layout[product.id]
 

@@ -43,11 +43,10 @@ def parse_catalog_response(results: dict) -> AvisoCatalog:
             ) for record in catalog.hits.hits
         ])
     except ValidationError as e:
-        for err in e.errors():
-            logger.error(
-                "A validation error happened when parsing Aviso's catalog response: %e",
-                err,
-            )
+        logger.error(
+            "A validation error happened when parsing Aviso's catalog response: %s",
+            str(e),
+        )
         raise RuntimeError(f'{e}')
 
 

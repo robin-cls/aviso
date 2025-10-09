@@ -23,6 +23,26 @@ def test_must_match_clause():
     }
 
 
+def test_not_match_clause():
+    builder = GeoNetworkQueryBuilder()
+    payload = builder.must_not_match(Field.PLATFORMS, 'SWOT').build()
+
+    assert 'must_not' in payload['query']['bool']
+    assert payload['query']['bool']['must_not'][0] == {
+        'match': {
+            'platforms': 'SWOT'
+        }
+    }
+
+
+def test_must_term_clause():
+    builder = GeoNetworkQueryBuilder()
+    payload = builder.must_term(Field.ID, 'some-id').build()
+
+    assert 'must' in payload['query']['bool']
+    assert payload['query']['bool']['must'][0] == {'term': {'_id': 'some-id'}}
+
+
 def test_must_not_term_clause():
     builder = GeoNetworkQueryBuilder()
     payload = builder.must_not_term(Field.ID, 'some-id').build()

@@ -28,14 +28,14 @@
     },
     "mdb:distributionInfo": {
         "mrd:MD_Distribution": {
-            "mrd:transferOptions": {
+            "mrd:transferOptions": [{
                 "mrd:MD_DigitalTransferOptions": {
-                    "mrd:onLine":
+                    "mrd:onLine":[
                         {
                             "cit:CI_OnlineResource": {
                                 "cit:description": {
                                     "gco:CharacterString": {
-                                        "#text": "THREDDS"
+                                        "#text": "OTHER"
                                     }
                                 },
                                 "cit:linkage": {
@@ -45,8 +45,10 @@
                                 }
                             }
                         }
+                    ]
                 }
             }
+        ]
         }
     },
     "mdb:contentInfo": {

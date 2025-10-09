@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.WARNING,
 logger = logging.getLogger('aviso_client')
 
 
-def setup_logging(verbose: bool):
+def _setup_logging(verbose: bool):
     level = logging.INFO if verbose else logging.WARNING
     logger.setLevel(level)
     for handler in logger.handlers:
@@ -35,7 +35,7 @@ def main(verbose: bool | None = typer.Option(
     '-v',
     help='Enable verbose/debug logging',
 ), ):
-    setup_logging(verbose)
+    _setup_logging(verbose)
 
 
 @app.command()

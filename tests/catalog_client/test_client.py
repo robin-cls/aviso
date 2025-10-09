@@ -76,6 +76,13 @@ def test_request_product_timeout(mocker):
         _request_product('fake-id', timeout=1.0)
 
 
+def test_request_product_requestexception(mocker):
+    mocker.patch('requests.get', side_effect=requests.RequestException)
+
+    with pytest.raises(RuntimeError, match='HTTP Error'):
+        _request_product('fake-id', )
+
+
 def test_get_details():
     with pytest.raises(InvalidProductError):
         get_details(product_short_name='bad_short_name')
