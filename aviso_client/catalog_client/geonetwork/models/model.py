@@ -21,15 +21,11 @@ class AvisoProduct:
     last_update: str | None = None
     last_version: str | None = None
     credit: str | None = None
-    # Not set
-    contact: str | None = None  # "aviso@altimetry.fr"
-    resolution: str | None = None  # "0.25"
-    geographical_extent: tuple[float, float, float, float] | None = (
-        None  # "-180.00, 180.00, -80.00, 90.00"
-    )
-    temporal_extent: tuple[np.datetime64, np.datetime64] | None = (
-        None  # "2023-03-29"/None
-    )
+    organisation: str | None = None
+    contact: str | None = None
+    resolution: str | None = None
+    temporal_extent: tuple[np.datetime64, np.datetime64] | None = (None)
+    geographic_extent: tuple[float, float, float, float] | None = (None)
 
 
 @dataclass

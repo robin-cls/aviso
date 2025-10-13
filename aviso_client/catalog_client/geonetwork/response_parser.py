@@ -76,6 +76,11 @@ def parse_product_response(meta: dict,
         aviso_product.processing_level = product.get_processing_level()
         aviso_product.abstract = product.get_abstract()
         aviso_product.credit = product.get_credit()
+        # aviso_product.organisation = product.get_organisation()
+        # aviso_product.contact = product.get_contact_info()
+        # aviso_product.resolution = product.get_resolution()
+        aviso_product.geographic_extent = product.get_geographic_extent()
+        aviso_product.temporal_extent = product.get_temporal_extent()
 
     except ValidationError as e:
         for err in e.errors():

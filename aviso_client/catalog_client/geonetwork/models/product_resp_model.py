@@ -1,8 +1,55 @@
+import numpy as np
 from pydantic import BaseModel, Field, model_validator
 
 
 class GcoCharacterString(BaseModel):
     text: str = Field(..., alias='#text')
+
+
+class CitEmail(BaseModel):
+    gco_CharacterString: GcoCharacterString = Field(
+        ..., alias='gco:CharacterString')
+
+
+class CitCIAddress(BaseModel):
+    cit_electronicMailAddress: CitEmail = Field(
+        ..., alias='cit:electronicMailAddress')
+
+
+class CitAddress(BaseModel):
+    cit_CI_Address: CitCIAddress = Field(..., alias='cit:CI_Address')
+
+
+class CitCIContact(BaseModel):
+    cit_address: CitAddress = Field(..., alias='cit:address')
+
+
+class CitContactInfo(BaseModel):
+    cit_CI_Contact: CitCIContact = Field(..., alias='cit:CI_Contact')
+
+
+class CitName(BaseModel):
+    gco_CharacterString: GcoCharacterString = Field(
+        ..., alias='gco:CharacterString')
+
+
+class CitCIOrganisation(BaseModel):
+    cit_name: CitName = Field(..., alias='cit:name')
+    cit_contactInfo: CitContactInfo = Field(..., alias='cit:contactInfo')
+
+
+class CitParty(BaseModel):
+    cit_CI_Organisation: CitCIOrganisation = Field(...,
+                                                   alias='cit:CI_Organisation')
+
+
+class CitCIResponsibility(BaseModel):
+    cit_party: CitParty = Field(..., alias='cit:party')
+
+
+class MdbContact(BaseModel):
+    cit_CI_Responsibility: CitCIResponsibility = Field(
+        ..., alias='cit:CI_Responsibility')
 
 
 class MccVersion(BaseModel):
@@ -35,6 +82,71 @@ class CitCICitation(BaseModel):
         return data
 
 
+class GcoDecimal(BaseModel):
+    text: str = Field(..., alias='#text')
+
+
+class GexWestBoundLongitude(BaseModel):
+    gco_Decimal: GcoDecimal = Field(..., alias='gco:Decimal')
+
+
+class GexEastBoundLongitude(BaseModel):
+    gco_Decimal: GcoDecimal = Field(..., alias='gco:Decimal')
+
+
+class GexSouthBoundLatitude(BaseModel):
+    gco_Decimal: GcoDecimal = Field(..., alias='gco:Decimal')
+
+
+class GexNorthBoundLatitude(BaseModel):
+    gco_Decimal: GcoDecimal = Field(..., alias='gco:Decimal')
+
+
+class GexExGeographicBoundingBox(BaseModel):
+    gex_westBoundLongitude: GexWestBoundLongitude = Field(
+        ..., alias='gex:westBoundLongitude')
+    gex_eastBoundLongitude: GexEastBoundLongitude = Field(
+        ..., alias='gex:eastBoundLongitude')
+    gex_southBoundLatitude: GexSouthBoundLatitude = Field(
+        ..., alias='gex:southBoundLatitude')
+    gex_northBoundLatitude: GexNorthBoundLatitude = Field(
+        ..., alias='gex:northBoundLatitude')
+
+
+class GexGeographicElement(BaseModel):
+    gex_Ex_GeographicBoundingBox: GexExGeographicBoundingBox = Field(
+        ..., alias='gex:EX_GeographicBoundingBox')
+
+
+class GmlTimePeriod(BaseModel):
+    gml_beginPosition: str = Field(..., alias='gml:beginPosition')
+    gml_endPosition: str | None = Field(None, alias='gml:endPosition')
+
+
+class GexExtent(BaseModel):
+    gml_TimePeriod: GmlTimePeriod = Field(..., alias='gml:TimePeriod')
+
+
+class GexExTemporalExtent(BaseModel):
+    gex_extent: GexExtent = Field(..., alias='gex:extent')
+
+
+class GexTemporalElement(BaseModel):
+    gex_Ex_TemporalExtent: GexExTemporalExtent = Field(
+        ..., alias='gex:EX_TemporalExtent')
+
+
+class GexExExtent(BaseModel):
+    gex_geographicElement: GexGeographicElement = Field(
+        ..., alias='gex:geographicElement')
+    gex_temporalElement: GexTemporalElement = Field(
+        ..., alias='gex:temporalElement')
+
+
+class MriExtent(BaseModel):
+    gex_EX_Extent: GexExExtent = Field(..., alias='gex:EX_Extent')
+
+
 class MriCitation(BaseModel):
     cit_CI_Citation: CitCICitation = Field(..., alias='cit:CI_Citation')
 
@@ -49,10 +161,31 @@ class MriCredit(BaseModel):
         ..., alias='gco:CharacterString')
 
 
+class GcoDistance(BaseModel):
+    uom: str = Field(..., alias='@uom')
+    text: str = Field(..., alias='#text')
+
+
+class MriDistance(BaseModel):
+    gco_Distance: GcoDistance = Field(..., alias='gco:Distance')
+
+
+class MriMDResolution(BaseModel):
+    mri_distance: MriDistance = Field(..., alias='mri:distance')
+
+
+class MriSpatialResolution(BaseModel):
+    mri_MD_resolution: MriMDResolution = Field(..., alias='mri:MD_Resolution')
+
+
 class MriMDDataIdentification(BaseModel):
+    mri_extent: MriExtent = Field(..., alias='mri:extent')
     mri_citation: MriCitation = Field(..., alias='mri:citation')
     mri_abstract: MriAbstract = Field(..., alias='mri:abstract')
     mri_credit: MriCredit = Field(..., alias='mri:credit')
+    # mri_spatialresolution: MriSpatialResolution =
+    # Field(..., alias='mri:spatialResolution')
+    # Not always a list. If list, take the indice 1
 
 
 class MdbIdentificationInfo(BaseModel):
@@ -163,6 +296,7 @@ class MdbContentInfo(BaseModel):
 
 
 class AvisoProductModel(BaseModel):
+    # mdb_contact: MdbContact = Field(..., alias='mdb:contact')
     mdb_identificationInfo: MdbIdentificationInfo = Field(
         ..., alias='mdb:identificationInfo')
     mdb_distributionInfo: MdbDistributionInfo = Field(
@@ -199,3 +333,36 @@ class AvisoProductModel(BaseModel):
     def get_credit(self) -> str:
         return (self.mdb_identificationInfo.mri_MD_DataIdentification.
                 mri_credit.gco_CharacterString.text)
+
+    def get_organisation(self) -> str:
+        return (self.mdb_contact.cit_CI_Responsibility.cit_party.
+                cit_CI_Organisation.cit_name.gco_CharacterString.text)
+
+    def get_contact_info(self) -> str:
+        return (
+            self.mdb_contact.cit_CI_Responsibility.cit_party.
+            cit_CI_Organisation.cit_contactInfo.cit_CI_Contact.cit_address.
+            cit_CI_Address.cit_electronicMailAddress.gco_CharacterString.text)
+
+    def get_resolution(self) -> str:
+        distance = (
+            self.mdb_identificationInfo.mri_MD_DataIdentification.
+            mri_spatialresolution.mri_MD_resolution.mri_distance.gco_Distance)
+        return f'{distance.text} {distance.uom}'
+
+    def get_geographic_extent(self) -> tuple[float, float, float, float]:
+        bbox = (
+            self.mdb_identificationInfo.mri_MD_DataIdentification.mri_extent.
+            gex_EX_Extent.gex_geographicElement.gex_Ex_GeographicBoundingBox)
+        return (float(bbox.gex_westBoundLongitude.gco_Decimal.text),
+                float(bbox.gex_eastBoundLongitude.gco_Decimal.text),
+                float(bbox.gex_southBoundLatitude.gco_Decimal.text),
+                float(bbox.gex_northBoundLatitude.gco_Decimal.text))
+
+    def get_temporal_extent(self) -> str:
+        period = (self.mdb_identificationInfo.mri_MD_DataIdentification.
+                  mri_extent.gex_EX_Extent.gex_temporalElement.
+                  gex_Ex_TemporalExtent.gex_extent.gml_TimePeriod)
+        return (np.datetime64(period.gml_beginPosition),
+                np.datetime64(period.gml_endPosition)
+                if period.gml_endPosition is not None else None)

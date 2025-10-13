@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+import numpy as np
 import pytest
 
 from aviso_client.catalog_client.geonetwork.models.model import (
@@ -74,6 +75,8 @@ def test_parse_product_response(product_response):
     assert product.processing_level == 'L2'
     assert product.abstract == 'This is an abstract.'
     assert product.credit == 'Data provided by AVISO'
+    assert product.geographic_extent == (-180.0, 180.0, -80.0, 80.0)
+    assert product.temporal_extent == (np.datetime64('2023-03-29'), None)
 
 
 def test_parse_product_response2(product_response2):
@@ -85,10 +88,14 @@ def test_parse_product_response2(product_response2):
     assert product.processing_level == 'L2'
     assert product.abstract == 'This is an abstract.'
     assert product.credit == 'Data provided by AVISO'
+    assert product.geographic_extent == (15.0, 50.0, -40.0, 0)
+    assert product.temporal_extent == (np.datetime64('2023-03-29'),
+                                       np.datetime64('2024-03-29'))
 
 
 def test_parse_bad_product_responses(bad_product_responses, caplog):
     for bad_product_response in bad_product_responses:
+        caplog.clear()
         with caplog.at_level(logging.ERROR):
             parse_product_response(bad_product_response,
                                    AvisoProduct(id='productA'))

@@ -63,7 +63,7 @@ def mock_product():
         credit='CNES',
         contact='aviso@altimetry.fr',
         resolution='0.25',
-        geographical_extent=(-180.0, 180.0, -80.0, 90.0),
+        geographic_extent=(-180.0, 180.0, -80.0, 90.0),
         temporal_extent=(np.datetime64('2023-01-01'),
                          np.datetime64('2023-12-31')),
     )
