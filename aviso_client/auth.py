@@ -50,12 +50,12 @@ def _get_credentials(host: str):
         msg = f"Host {host} doesn't exist in .netrc file."
         warnings.warn(msg)
         return None
-    except netrc.NetrcParseError as e:
-        msg = f'Syntax error in .netrc file: {e}'
-        raise AuthenticationError(msg)
-    except (AttributeError, ValueError):
+    except netrc.NetrcParseError as exc:
+        msg = f'Syntax error in .netrc file: {exc}'
+        raise AuthenticationError(msg) from exc
+    except (AttributeError, ValueError) as exc:
         msg = 'An error happened when authenticating Aviso client.'
-        raise AuthenticationError(msg)
+        raise AuthenticationError(msg) from exc
 
 
 def _prompt_and_save_credentials(host: str):

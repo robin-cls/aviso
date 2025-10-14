@@ -43,10 +43,10 @@ def details(product_short_name: str) -> AvisoProduct:
 def get(
     product_short_name: str,
     output_dir: str | pl.Path,
-    cycle_number: int | list[int] = None,
-    pass_number: int | list[int] = None,
-    time: tuple[np.datetime64, np.datetime64] = None,
-    version: str = None,
+    cycle_number: int | list[int] | None = None,
+    pass_number: int | list[int] | None = None,
+    time: tuple[np.datetime64, np.datetime64] | None = None,
+    version: str | None = None,
 ) -> list[str]:
     """Downloads a product from Aviso's Thredds Data Server.
 
@@ -89,3 +89,4 @@ def get(
 
     except AuthenticationError as e:
         logging.error(e)
+        return []

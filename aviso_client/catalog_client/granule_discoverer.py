@@ -108,7 +108,9 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     return granules.filename
 
 
-def _load_convention_layout(granule_discovery: dict, data_type: str):
+def _load_convention_layout(
+        granule_discovery: dict,
+        data_type: str) -> tuple[FileNameConvention, Layout]:
     if data_type not in granule_discovery:
         msg = (f'The data type {data_type} is missing from the '
                'tds_layout|granule_discovery configuration.')

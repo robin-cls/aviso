@@ -103,7 +103,7 @@ def http_single_download_with_retries(
             return http_single_download(url, output_dir, username, password)
 
         except requests.RequestException as e:
-            logger.debug('Attempt %d failed for %s: %s' % (attempt, url, e))
+            logger.debug('Attempt %d failed for %s: %s', attempt, url, e)
 
             last_exception = e
             if attempt < retries:
