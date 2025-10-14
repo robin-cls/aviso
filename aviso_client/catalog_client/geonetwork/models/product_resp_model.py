@@ -1,5 +1,7 @@
-import numpy as np
-from pydantic import BaseModel, Field, model_validator
+from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class GcoCharacterString(BaseModel):
@@ -119,8 +121,8 @@ class GexGeographicElement(BaseModel):
 
 
 class GmlTimePeriod(BaseModel):
-    gml_beginPosition: str = Field(..., alias='gml:beginPosition')
-    gml_endPosition: str | None = Field(None, alias='gml:endPosition')
+    gml_beginPosition: datetime = Field(..., alias='gml:beginPosition')
+    gml_endPosition: datetime | None = Field(None, alias='gml:endPosition')
 
 
 class GexExtent(BaseModel):
@@ -183,9 +185,18 @@ class MriMDDataIdentification(BaseModel):
     mri_citation: MriCitation = Field(..., alias='mri:citation')
     mri_abstract: MriAbstract = Field(..., alias='mri:abstract')
     mri_credit: MriCredit = Field(..., alias='mri:credit')
-    # mri_spatialresolution: MriSpatialResolution =
-    # Field(..., alias='mri:spatialResolution')
-    # Not always a list. If list, take the indice 1
+    mri_spatialresolution: MriSpatialResolution = Field(
+        ..., alias='mri:spatialResolution')
+
+    @field_validator('mri_spatialresolution', mode='before')
+    @classmethod
+    def filter_only_distance(cls, data: Any) -> Any:
+        if isinstance(data, list):
+            for item in data:
+                md_res = item.get('mri:MD_Resolution')
+                if md_res and 'mri:distance' in md_res:
+                    return item
+        return data
 
 
 class MdbIdentificationInfo(BaseModel):
@@ -283,20 +294,17 @@ class MdbContentInfo(BaseModel):
 
     @model_validator(mode='before')
     @classmethod
-    def handle_multiple_aliases(cls, data):
-        if isinstance(data, dict):
-            aliases = [
-                'mrc:MD_CoverageDescription', 'mrc:MI_CoverageDescription'
-            ]
-            for alias in aliases:
-                if alias in data:
-                    data['mrc:MD_CoverageDescription'] = data[alias]
-                    break
+    def handle_multiple_aliases(cls, data: dict[str, Any]) -> dict[str, Any]:
+        aliases = ['mrc:MD_CoverageDescription', 'mrc:MI_CoverageDescription']
+        for alias in aliases:
+            if alias in data:
+                data['mrc:MD_CoverageDescription'] = data[alias]
+                break
         return data
 
 
 class AvisoProductModel(BaseModel):
-    # mdb_contact: MdbContact = Field(..., alias='mdb:contact')
+    mdb_contact: MdbContact | None = Field(None, alias='mdb:contact')
     mdb_identificationInfo: MdbIdentificationInfo = Field(
         ..., alias='mdb:identificationInfo')
     mdb_distributionInfo: MdbDistributionInfo = Field(
@@ -308,18 +316,6 @@ class AvisoProductModel(BaseModel):
                   mri_citation.cit_CI_Citation.cit_identifier[0])
 
         return cit_id.mcc_MD_Identifier.mcc_version.gco_CharacterString.text
-
-    def get_tds_url(self) -> str:
-        transferOptions = (self.mdb_distributionInfo.mrd_MD_Distribution.
-                           mrd_transferOptions[0])
-        online = transferOptions.mrd_MD_DigitalTransferOptions.mrd_onLine
-
-        for online_resource in online:
-            if (online_resource.cit_CI_OnlineResource.cit_description.
-                    gco_CharacterString.text == 'THREDDS'):
-                return (online_resource.cit_CI_OnlineResource.cit_linkage.
-                        gco_CharacterString.text)
-        return ''
 
     def get_processing_level(self) -> str:
         return (self.mdb_contentInfo.mrc_MD_CoverageDescription.
@@ -335,10 +331,14 @@ class AvisoProductModel(BaseModel):
                 mri_credit.gco_CharacterString.text)
 
     def get_organisation(self) -> str:
+        if self.mdb_contact is None:
+            return ''
         return (self.mdb_contact.cit_CI_Responsibility.cit_party.
                 cit_CI_Organisation.cit_name.gco_CharacterString.text)
 
     def get_contact_info(self) -> str:
+        if self.mdb_contact is None:
+            return ''
         return (
             self.mdb_contact.cit_CI_Responsibility.cit_party.
             cit_CI_Organisation.cit_contactInfo.cit_CI_Contact.cit_address.
@@ -363,6 +363,4 @@ class AvisoProductModel(BaseModel):
         period = (self.mdb_identificationInfo.mri_MD_DataIdentification.
                   mri_extent.gex_EX_Extent.gex_temporalElement.
                   gex_Ex_TemporalExtent.gex_extent.gml_TimePeriod)
-        return (np.datetime64(period.gml_beginPosition),
-                np.datetime64(period.gml_endPosition)
-                if period.gml_endPosition is not None else None)
+        return (period.gml_beginPosition, period.gml_endPosition)

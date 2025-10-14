@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class ResourceTitleObject(BaseModel):
@@ -11,25 +12,6 @@ class ResourceAbstractObject(BaseModel):
     default: str
 
 
-class DescriptionObject(BaseModel):
-    default: str
-
-
-class UrlObject(BaseModel):
-    default: str
-
-
-class NameObject(BaseModel):
-    default: str
-
-
-class LinkItem(BaseModel):
-    descriptionObject: DescriptionObject | None = None
-    urlObject: UrlObject
-    nameObject: NameObject | None = None
-    protocol: str
-
-
 class ResourceDateItem(BaseModel):
     date: datetime
 
@@ -37,8 +19,26 @@ class ResourceDateItem(BaseModel):
 class FieldSource(BaseModel):
     resourceTitleObject: ResourceTitleObject
     resourceAbstractObject: ResourceAbstractObject
-    link: list[LinkItem]
     resourceDate: list[ResourceDateItem]
+    url: str | None = None
+    short_name: str | None = None
+    doi: str | None = None
+
+    @model_validator(mode='before')
+    @classmethod
+    def extract_from_links(cls, data: dict[str, Any]) -> dict[str, Any]:
+        links: list[dict[str, Any]] = data.pop('link', [])
+
+        for item in links:
+            if item.get('descriptionObject', {}).get('default') == 'THREDDS':
+                data['url'] = item.get('urlObject', {}).get('default')
+                if 'nameObject' in item:
+                    data['short_name'] = item.get('nameObject').get(
+                        'default').replace(' ', '_')
+            elif item.get('protocol') == 'DOI':
+                data['doi'] = item.get('urlObject', {}).get('default')
+
+        return data
 
 
 class Hit(BaseModel):
@@ -55,25 +55,13 @@ class Hit(BaseModel):
         return self.field_source.resourceAbstractObject.default
 
     def get_product_tds_catalog_url(self) -> str:
-        for link in self.field_source.link:
-            if (link.descriptionObject is not None
-                    and link.descriptionObject.default == 'THREDDS'):
-                return link.urlObject.default
-        return ''
+        return self.field_source.url
 
     def get_product_short_name(self) -> str:
-        for link in self.field_source.link:
-            if link.descriptionObject is not None:
-                if (link.descriptionObject.default == 'THREDDS'
-                        and link.nameObject is not None):
-                    return link.nameObject.default.replace(' ', '_')
-        return ''
+        return self.field_source.short_name
 
     def get_product_doi(self) -> str:
-        for link in self.field_source.link:
-            if link.protocol == 'DOI':
-                return link.urlObject.default
-        return ''
+        return self.field_source.doi
 
     def get_product_last_update(self) -> datetime:
         return self.field_source.resourceDate[-1].date

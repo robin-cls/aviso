@@ -1,5 +1,5 @@
 import logging
-from dataclasses import asdict
+from dataclasses import fields
 from pathlib import Path
 
 import typer
@@ -70,8 +70,15 @@ def details(product: str = typer.Argument(..., help="Product's short name")):
         table.add_column('Field', style='cyan', width=25)
         table.add_column('Value', style='white')
 
-        for key, value in asdict(product_info).items():
-            table.add_row(key, str(value))
+        for f in fields(product_info):
+            value = getattr(product_info, f.name)
+            label = f.metadata.get('label', f.name)
+
+            if isinstance(value, tuple):
+                formatted = ', '.join(str(x) for x in value)
+            else:
+                formatted = str(value)
+            table.add_row(label, formatted)
 
         console.print(
             Panel(table, title=f'[green]Product: {product}[/]', expand=False))

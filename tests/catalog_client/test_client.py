@@ -91,7 +91,7 @@ def test_get_details():
     assert product.title == 'Sample Product A'
     assert product.short_name == 'sample_product_a'
     assert product.id == 'productA'
-    assert product.tds_catalog_url == 'https://tds.mock/catalog.xml'
+    assert product.tds_catalog_url == 'https://tds.mock/productA_path/catalog.xml'
     assert product.abstract == 'This is an abstract.'
     assert product.last_version == '1.2.3'
     assert product.credit == 'Data provided by AVISO'

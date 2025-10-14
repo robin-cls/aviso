@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 
-import numpy as np
 import pytest
 
 from aviso_client.catalog_client.geonetwork.models.model import (
@@ -71,12 +70,14 @@ def test_parse_product_response(product_response):
 
     assert product.id == 'productA'
     assert product.last_version == '1.2.3'
-    assert product.tds_catalog_url == 'https://tds.mock/catalog.xml'
     assert product.processing_level == 'L2'
     assert product.abstract == 'This is an abstract.'
     assert product.credit == 'Data provided by AVISO'
     assert product.geographic_extent == (-180.0, 180.0, -80.0, 80.0)
-    assert product.temporal_extent == (np.datetime64('2023-03-29'), None)
+    assert product.temporal_extent == (datetime(2023, 3, 29, 0, 0), None)
+    assert product.resolution == '2 km'
+    assert product.contact == 'aviso@altimetry.fr'
+    assert product.organisation == 'AVISO'
 
 
 def test_parse_product_response2(product_response2):
@@ -84,13 +85,13 @@ def test_parse_product_response2(product_response2):
                                      AvisoProduct(id='productA'))
 
     assert product.id == 'productA'
-    assert product.tds_catalog_url == ''
     assert product.processing_level == 'L2'
     assert product.abstract == 'This is an abstract.'
     assert product.credit == 'Data provided by AVISO'
     assert product.geographic_extent == (15.0, 50.0, -40.0, 0)
-    assert product.temporal_extent == (np.datetime64('2023-03-29'),
-                                       np.datetime64('2024-03-29'))
+    assert product.temporal_extent == (datetime(2023, 3, 29, 0, 0),
+                                       datetime(2024, 3, 29, 0, 0))
+    assert product.resolution == '0.25 degree'
 
 
 def test_parse_bad_product_responses(bad_product_responses, caplog):

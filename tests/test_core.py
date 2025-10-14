@@ -26,13 +26,14 @@ def test_details():
     assert product.title == 'Sample Product A'
     assert product.short_name == 'sample_product_a'
     assert product.id == 'productA'
-    assert product.tds_catalog_url == 'https://tds.mock/catalog.xml'
+    assert product.tds_catalog_url == 'https://tds.mock/productA_path/catalog.xml'
     assert product.abstract == 'This is an abstract.'
     assert product.last_version == '1.2.3'
     assert product.credit == 'Data provided by AVISO'
     assert product.processing_level == 'L2'
     assert product.doi == 'https://doi.org/10.1234/productA'
     assert product.last_update == datetime(2023, 6, 15, 0, 0)
+    assert product.resolution == '2 km'
 
 
 @pytest.mark.parametrize(

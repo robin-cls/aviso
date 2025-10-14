@@ -83,7 +83,7 @@ def test_details(mocker, mock_product):
     assert result.exit_code == 0
     assert 'prod1' in result.output
     assert 'Product: prod1' in result.output
-    assert 'keywords' in result.output
+    assert 'Keywords' in result.output
 
 
 def test_details_bad_product(tmp_path):

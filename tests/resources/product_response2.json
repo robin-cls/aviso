@@ -61,7 +61,31 @@
               }
             }
           }
-        }
+        },
+        "mri:spatialResolution": [
+          {
+            "mri:MD_Resolution": {
+              "mri:equivalentScale": {
+                "mri:MD_RepresentativeFraction": {
+                  "mri:denominator": {
+                    "gco:Integer": null
+                  }
+                }
+              }
+            }
+          },
+          {
+            "mri:MD_Resolution": {
+              "mri:distance": {
+                "gco:Distance": {
+                  "@xmlns:gco": "http://standards.iso.org/iso/19115/-3/gco/1.0",
+                  "@uom": "degree",
+                  "#text": "0.25"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "mdb:distributionInfo": {
