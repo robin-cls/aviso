@@ -7,8 +7,42 @@ class AvisoProduct:
     """Product of the catalog.
 
     Contains the product metadata.
-    """
 
+    Attributes
+    ----------
+    id: str
+        Product ID.
+    title: str
+        Full title of the product.
+    short_name: str
+        Short name (used as identifier).
+    keywords: str
+        Comma-separated list of keywords.
+    abstract: str
+        Description or summary of the product.
+    processing_level: str
+        Processing level (e.g., L2, L3).
+    tds_catalog_url: str
+        URL to the THREDDS catalog.
+    doi: str
+        Digital Object Identifier of the product.
+    last_update: datetime
+        Last update of the product.
+    last_version: str
+        Version identifier of the product.
+    credit: str
+        Data provider or credit information.
+    organisation: str
+        Responsible organisation.
+    contact: str
+        Contact email or name.
+    resolution: str
+        Spatial resolution of the dataset.
+    temporal_extent: tuple[datetime, datetime]
+        Start and end dates of the data coverage.
+    geographic_extent: tuple[float, float, float, float]
+        Bounding box as (west, east, south, north).
+    """
     id: str = field(metadata={'label': 'Id'})
     title: str | None = field(default=None, metadata={'label': 'Title'})
     short_name: str | None = field(default=None,
@@ -39,6 +73,13 @@ class AvisoProduct:
 
 @dataclass
 class AvisoCatalog:
-    """Catalog of the AVISO/ODATIS service."""
+    """Catalog of the AVISO/ODATIS service.
 
+    Contains a list of available products parsed from the metadata catalog.
+
+    Attributes
+    ----------
+    products : list[AvisoProduct]
+        List of available products in the catalog.
+    """
     products: list[AvisoProduct]

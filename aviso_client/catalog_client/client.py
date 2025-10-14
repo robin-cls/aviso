@@ -19,7 +19,7 @@ AVISO_CATALOG_URL = 'https://sextant.ifremer.fr/geonetwork/srv/api'
 
 
 class InvalidProductError(Exception):
-    pass
+    """Exception raised when a product doesn't exist in the catalog."""
 
 
 def fetch_catalog() -> AvisoCatalog:
@@ -27,7 +27,6 @@ def fetch_catalog() -> AvisoCatalog:
 
     Returns
     -------
-    AvisoCatalog
         the AVISO catalog object containing all the CDS-AVISO and SWOT products
     """
     logger.info("Fetching products from Aviso's catalog...")
@@ -41,12 +40,11 @@ def get_details(product_short_name: str) -> AvisoProduct:
 
     Parameters
     ----------
-    product_short_name
+    product_short_name: str
         the short name of the product
 
     Returns
     -------
-    AvisoProduct
         the product details
 
     Raises
@@ -69,14 +67,13 @@ def search_granules(product_short_name: str, **filters) -> list[str]:
 
     Parameters
     ----------
-    product_short_name
+    product_short_name: str
         the short name of the product
     **filters
         filters for files selection
 
     Returns
     -------
-    list[str]
         the urls of the granules corresponding to the provided filters
 
     Raises

@@ -111,6 +111,7 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
 def _load_convention_layout(
         granule_discovery: dict,
         data_type: str) -> tuple[FileNameConvention, Layout]:
+    """Load the ocean_tools convention and layout objects from a data type."""
     if data_type not in granule_discovery:
         msg = (f'The data type {data_type} is missing from the '
                'tds_layout|granule_discovery configuration.')
@@ -127,9 +128,23 @@ def _load_convention_layout(
 class ProductLayoutConfig:
     """Configuration of a product layout.
 
-    Contains the product metadata.
-    """
+    Defines how a product is named, organized, and stored in the catalog.
 
+    Attributes
+    ----------
+    id: str
+        Unique identifier of the product layout.
+    short_name: str
+        Short name of the product (used as reference in CLI or metadata).
+    convention: FileNameConvention
+        Convention used for naming files related to the product.
+    layout: Layout
+        Layout structure used to organize the product files and directories.
+    catalog_path: str
+        Relative or absolute path to the product catalog location.
+    default_filters: dict
+        Default filters applied when querying or displaying the product.
+    """
     id: str
     short_name: str
     convention: FileNameConvention

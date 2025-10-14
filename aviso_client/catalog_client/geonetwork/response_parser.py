@@ -63,7 +63,6 @@ def parse_product_response(meta: dict,
 
     Returns
     -------
-    AvisoProduct
         the object resulting from the parsing
     """
     adapter = TypeAdapter(AvisoProductModel)

@@ -9,7 +9,7 @@ NETRC_PATH = Path.home() / '.netrc'
 
 
 class AuthenticationError(Exception):
-    pass
+    """Exception raised when a problem happened when reading credentials."""
 
 
 def ensure_credentials(host: str):
