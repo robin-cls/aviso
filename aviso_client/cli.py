@@ -33,7 +33,7 @@ def main(verbose: bool | None = typer.Option(
     False,
     '--verbose',
     '-v',
-    help='Enable verbose/debug logging',
+    help='Enable verbose logging',
 ), ):
     _setup_logging(verbose)
 

@@ -8,52 +8,6 @@ class GcoCharacterString(BaseModel):
     text: str = Field(..., alias='#text')
 
 
-class CitEmail(BaseModel):
-    gco_CharacterString: GcoCharacterString = Field(
-        ..., alias='gco:CharacterString')
-
-
-class CitCIAddress(BaseModel):
-    cit_electronicMailAddress: CitEmail = Field(
-        ..., alias='cit:electronicMailAddress')
-
-
-class CitAddress(BaseModel):
-    cit_CI_Address: CitCIAddress = Field(..., alias='cit:CI_Address')
-
-
-class CitCIContact(BaseModel):
-    cit_address: CitAddress = Field(..., alias='cit:address')
-
-
-class CitContactInfo(BaseModel):
-    cit_CI_Contact: CitCIContact = Field(..., alias='cit:CI_Contact')
-
-
-class CitName(BaseModel):
-    gco_CharacterString: GcoCharacterString = Field(
-        ..., alias='gco:CharacterString')
-
-
-class CitCIOrganisation(BaseModel):
-    cit_name: CitName = Field(..., alias='cit:name')
-    cit_contactInfo: CitContactInfo = Field(..., alias='cit:contactInfo')
-
-
-class CitParty(BaseModel):
-    cit_CI_Organisation: CitCIOrganisation = Field(...,
-                                                   alias='cit:CI_Organisation')
-
-
-class CitCIResponsibility(BaseModel):
-    cit_party: CitParty = Field(..., alias='cit:party')
-
-
-class MdbContact(BaseModel):
-    cit_CI_Responsibility: CitCIResponsibility = Field(
-        ..., alias='cit:CI_Responsibility')
-
-
 class MccVersion(BaseModel):
     gco_CharacterString: GcoCharacterString = Field(
         ..., alias='gco:CharacterString')
@@ -180,6 +134,57 @@ class MriSpatialResolution(BaseModel):
     mri_MD_resolution: MriMDResolution = Field(..., alias='mri:MD_Resolution')
 
 
+class CitElectronicMailAddress(BaseModel):
+    gco_CharacterString: GcoCharacterString | None = Field(
+        None, alias='gco:CharacterString')
+
+
+class CitElecMailAddress(BaseModel):
+    cit_electronicMailAddress: CitElectronicMailAddress = Field(
+        ..., alias='cit:electronicMailAddress')
+
+
+class CitAddress(BaseModel):
+    cit_ci_address: CitElecMailAddress = Field(..., alias='cit:CI_Address')
+
+
+class CitCIContact(BaseModel):
+    cit_address: CitAddress = Field(..., alias='cit:address')
+
+
+class CitContactInfo(BaseModel):
+    cit_CI_Contact: CitCIContact = Field(..., alias='cit:CI_Contact')
+
+
+class CitName(BaseModel):
+    gco_CharacterString: GcoCharacterString = Field(
+        ..., alias='gco:CharacterString')
+
+
+class CitCIOrganisation(BaseModel):
+    cit_name: CitName = Field(..., alias='cit:name')
+    cit_contactInfo: CitContactInfo | None = Field(None,
+                                                   alias='cit:contactInfo')
+
+
+class CitParty(BaseModel):
+    cit_CI_Organisation: CitCIOrganisation = Field(...,
+                                                   alias='cit:CI_Organisation')
+
+
+class CitRoleCode(BaseModel):
+    codeListValue: str = Field(..., alias='@codeListValue')
+
+
+class CitRole(BaseModel):
+    cit_CI_RoleCode: CitRoleCode = Field(..., alias='cit:CI_RoleCode')
+
+
+class CitCIResponsibility(BaseModel):
+    cit_role: CitRole = Field(..., alias='cit:role')
+    cit_party: CitParty = Field(..., alias='cit:party')
+
+
 class MriMDDataIdentification(BaseModel):
     mri_extent: MriExtent = Field(..., alias='mri:extent')
     mri_citation: MriCitation = Field(..., alias='mri:citation')
@@ -187,6 +192,8 @@ class MriMDDataIdentification(BaseModel):
     mri_credit: MriCredit = Field(..., alias='mri:credit')
     mri_spatialresolution: MriSpatialResolution = Field(
         ..., alias='mri:spatialResolution')
+    email_address: CitCIResponsibility | None = Field(None)
+    organisation: CitCIResponsibility | None = Field(None)
 
     @field_validator('mri_spatialresolution', mode='before')
     @classmethod
@@ -196,6 +203,28 @@ class MriMDDataIdentification(BaseModel):
                 md_res = item.get('mri:MD_Resolution')
                 if md_res and 'mri:distance' in md_res:
                     return item
+        return data
+
+    @model_validator(mode='before')
+    @classmethod
+    def select_point_of_contact(cls, data: dict[str, Any]) -> dict[str, Any]:
+        contacts = data.pop('mri:pointOfContact', None)
+        if contacts is None:
+            return data
+
+        if isinstance(contacts, dict):
+            contacts = [contacts]
+
+        for contact in contacts:
+            cit_resp = contact.get('cit:CI_Responsibility', {})
+            role_value = (cit_resp.get('cit:role',
+                                       {}).get('cit:CI_RoleCode',
+                                               {}).get('@codeListValue'))
+            if role_value == 'pointOfContact':
+                data['email_address'] = cit_resp
+            elif role_value == 'originator':
+                data['organisation'] = cit_resp
+
         return data
 
 
@@ -304,7 +333,6 @@ class MdbContentInfo(BaseModel):
 
 
 class AvisoProductModel(BaseModel):
-    mdb_contact: MdbContact | None = Field(None, alias='mdb:contact')
     mdb_identificationInfo: MdbIdentificationInfo = Field(
         ..., alias='mdb:identificationInfo')
     mdb_distributionInfo: MdbDistributionInfo = Field(
@@ -331,18 +359,19 @@ class AvisoProductModel(BaseModel):
                 mri_credit.gco_CharacterString.text)
 
     def get_organisation(self) -> str:
-        if self.mdb_contact is None:
+        org = self.mdb_identificationInfo.mri_MD_DataIdentification.organisation
+        if org is None:
             return ''
-        return (self.mdb_contact.cit_CI_Responsibility.cit_party.
-                cit_CI_Organisation.cit_name.gco_CharacterString.text)
+        return (org.cit_party.cit_CI_Organisation.cit_name.gco_CharacterString.
+                text)
 
     def get_contact_info(self) -> str:
-        if self.mdb_contact is None:
+        email = self.mdb_identificationInfo.mri_MD_DataIdentification.email_address
+        if email is None:
             return ''
-        return (
-            self.mdb_contact.cit_CI_Responsibility.cit_party.
-            cit_CI_Organisation.cit_contactInfo.cit_CI_Contact.cit_address.
-            cit_CI_Address.cit_electronicMailAddress.gco_CharacterString.text)
+        return (email.cit_party.cit_CI_Organisation.cit_contactInfo.
+                cit_CI_Contact.cit_address.cit_ci_address.
+                cit_electronicMailAddress.gco_CharacterString.text)
 
     def get_resolution(self) -> str:
         distance = (

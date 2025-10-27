@@ -77,7 +77,7 @@ def test_parse_product_response(product_response):
     assert product.temporal_extent == (datetime(2023, 3, 29, 0, 0), None)
     assert product.resolution == '2 km'
     assert product.contact == 'aviso@altimetry.fr'
-    assert product.organisation == 'AVISO'
+    assert product.organisation == 'CNES/CLS'
 
 
 def test_parse_product_response2(product_response2):
@@ -92,6 +92,8 @@ def test_parse_product_response2(product_response2):
     assert product.temporal_extent == (datetime(2023, 3, 29, 0, 0),
                                        datetime(2024, 3, 29, 0, 0))
     assert product.resolution == '0.25 degree'
+    assert product.contact == ''
+    assert product.organisation == ''
 
 
 def test_parse_bad_product_responses(bad_product_responses, caplog):
