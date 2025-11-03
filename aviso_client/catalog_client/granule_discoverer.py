@@ -39,6 +39,8 @@ class TDSIterable(ITreeIterable):
         if self.layout is not None:
             self.layout.set_filters(**filters)
 
+        logger.debug('Browsing TDS layout with filters: %s', filters)
+
         return self._find(root, **filters)
 
     def _find(self, url: str, level: int = 0, **filters):
@@ -84,9 +86,9 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     list[str]
         the urls of the granules corresponding to the provided filters
     """
-    filters_str = (lambda d: str(d))(filters)
     logger.info('Filtering %s product with filters %s...', product.short_name,
-                filters_str)
+                (lambda d: str(d))(filters))
+
     # Get TDS product layout
     product_layout_conf = _parse_tds_layout(product)
 

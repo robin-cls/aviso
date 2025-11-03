@@ -2,6 +2,7 @@ import logging
 
 import numpy as np
 import pytest
+from typer import BadParameter
 from typer.testing import CliRunner
 
 import aviso_client.core as ac_core
@@ -19,17 +20,36 @@ runner = CliRunner()
 def test_setup_logging(mocker):
     handler1 = mocker.Mock()
     handler2 = mocker.Mock()
-
     mocker.patch.object(logger, 'handlers', [handler1, handler2])
+    mock_set_level = mocker.patch.object(logger, 'setLevel')
 
+    _setup_logging(quiet=True)
+
+    mock_set_level.assert_called_once_with(logging.WARNING)
+
+    handler1.setLevel.assert_called_once_with(logging.WARNING)
+    handler2.setLevel.assert_called_once_with(logging.WARNING)
+
+    handler1 = mocker.Mock()
+    handler2 = mocker.Mock()
+    mocker.patch.object(logger, 'handlers', [handler1, handler2])
     mock_set_level = mocker.patch.object(logger, 'setLevel')
 
     _setup_logging(verbose=True)
 
-    mock_set_level.assert_called_once_with(logging.INFO)
+    mock_set_level.assert_called_once_with(logging.DEBUG)
 
-    handler1.setLevel.assert_called_once_with(logging.INFO)
-    handler2.setLevel.assert_called_once_with(logging.INFO)
+    handler1.setLevel.assert_called_once_with(logging.DEBUG)
+    handler2.setLevel.assert_called_once_with(logging.DEBUG)
+
+
+def test_setup_logging_mutually_exclusive():
+    with pytest.raises(BadParameter) as exc_info:
+        _setup_logging(quiet=True, verbose=True)
+
+    # Vérifie le message d'erreur
+    assert "Cannot use both '--quiet' and '--verbose' options together." in str(
+        exc_info.value)
 
 
 def test_main_without_verbose_sets_warning_level():
@@ -40,9 +60,9 @@ def test_main_without_verbose_sets_warning_level():
     result = runner.invoke(app, ['summary'])
 
     assert result.exit_code == 0
-    assert logger.level == logging.WARNING
+    assert logger.level == logging.INFO
     for handler in logger.handlers:
-        assert handler.level == logging.WARNING
+        assert handler.level == logging.INFO
 
 
 @pytest.fixture
