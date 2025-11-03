@@ -47,7 +47,6 @@ def test_setup_logging_mutually_exclusive():
     with pytest.raises(BadParameter) as exc_info:
         _setup_logging(quiet=True, verbose=True)
 
-    # Vérifie le message d'erreur
     assert "Cannot use both '--quiet' and '--verbose' options together." in str(
         exc_info.value)
 
@@ -187,6 +186,7 @@ def test_get_simple_filters(mocker, tmp_path):
         cycle_number=[1, 2],
         pass_number=None,
         time=(None, None),
+        overwrite=False,
     )
 
 

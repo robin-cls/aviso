@@ -122,6 +122,12 @@ def get(
     product: str = typer.Argument(..., help="Product's short name"),
     output: Path = typer.Option(..., '--output', '-o',
                                 help='Output directory'),
+    overwrite: bool = typer.Option(
+        False,
+        '--overwrite',
+        '-O',
+        help='Overwrite files if they already exist',
+    ),
     cycle_number: list = typer.Option(
         None,
         '--cycle',
@@ -139,7 +145,7 @@ def get(
     version: str = typer.Option(
         None,
         '--version',
-        '-V',
+        '-v',
         help="Product's version. By default, last version is selected",
     ),
 ):
@@ -156,7 +162,7 @@ def get(
             pass_number=pass_number if pass_number else None,
             time=(start, end),
             version=version,
-        )
+            overwrite=overwrite)
 
         console.print(
             f'[green]Downloaded files ({len(downloaded_files)}) :[/]')
