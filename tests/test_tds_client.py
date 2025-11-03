@@ -37,6 +37,14 @@ def test_http_single_download_success(mocker, tmp_path):
     with open(result_path, 'rb') as f:
         assert f.read() == fake_data
 
+    result_path = http_single_download(url, tmp_path)
+    assert not result_path
+
+    result_path = http_single_download(url, tmp_path, overwrite=True)
+    assert result_path == str(expected_path)
+    with open(result_path, 'rb') as f:
+        assert f.read() == fake_data
+
 
 def test_http_single_download_error(mocker):
     bad_url = 'https://bad_url.com/file.txt'

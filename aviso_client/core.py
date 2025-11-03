@@ -47,6 +47,7 @@ def get(
     pass_number: int | list[int] | None = None,
     time: tuple[np.datetime64, np.datetime64] | None = None,
     version: str | None = None,
+    overwrite: bool = False,
 ) -> list[str]:
     """Downloads a product from Aviso's Thredds Data Server.
 
@@ -64,6 +65,8 @@ def get(
         the period for files/folders selection
     version
         the version for files/folders selection
+    overwrite: bool
+        whether to overwrite files if they already exist
 
     Returns
     -------
@@ -85,7 +88,10 @@ def get(
     logger.debug('Downloading granules: %s...', list(granule_paths))
 
     try:
-        return list(http_bulk_download(list(granule_paths), output_dir))
+        return list(
+            http_bulk_download(urls=list(granule_paths),
+                               output_dir=output_dir,
+                               overwrite=overwrite))
 
     except AuthenticationError as e:
         logging.error(e)
