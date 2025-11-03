@@ -17,8 +17,11 @@ logging.basicConfig(level=logging.WARNING,
 logger = logging.getLogger('aviso_client')
 
 
-def _setup_logging(verbose: bool):
-    level = logging.INFO if verbose else logging.WARNING
+def _setup_logging(quiet: bool = False, verbose: bool = False):
+    if quiet and verbose:
+        raise typer.BadParameter(
+            "Cannot use both '--quiet' and '--verbose' options together.")
+    level = logging.DEBUG if verbose else logging.WARNING if quiet else logging.INFO
     logger.setLevel(level)
     for handler in logger.handlers:
         handler.setLevel(level)
@@ -29,13 +32,21 @@ console = Console()
 
 
 @app.callback()
-def main(verbose: bool | None = typer.Option(
-    False,
-    '--verbose',
-    '-v',
-    help='Enable verbose/debug logging',
-), ):
-    _setup_logging(verbose)
+def main(
+    quiet: bool | None = typer.Option(
+        False,
+        '--quiet',
+        '-q',
+        help='No logging',
+    ),
+    verbose: bool | None = typer.Option(
+        False,
+        '--verbose',
+        '-v',
+        help='Enable verbose logging',
+    ),
+):
+    _setup_logging(quiet=quiet, verbose=verbose)
 
 
 @app.command()
