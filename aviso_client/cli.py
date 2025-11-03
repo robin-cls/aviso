@@ -89,15 +89,40 @@ def details(product: str = typer.Argument(..., help="Product's short name")):
         raise typer.BadParameter(msg)
 
 
+def comma_separated_ints(value: str) -> list[int]:
+    return sorted({
+        n
+        for part in value.split(',') if part.strip()
+        for n in _parse_ranges(part.strip())
+    })
+
+
+def _parse_ranges(expr: str) -> list[int]:
+    if '-' not in expr:
+        return [int(expr)]
+    start, end = expr.split('-', 1)
+    if start <= end:
+        return range(int(start), int(end) + 1)
+    return range(int(end), int(start) + 1)
+
+
 @app.command()
 def get(
     product: str = typer.Argument(..., help="Product's short name"),
     output: Path = typer.Option(..., '--output', '-o',
                                 help='Output directory'),
-    cycle_number: list[int] = typer.Option(
-        None, '--cycle', '-c', help='Cycle number (option can be repeated)'),
-    pass_number: list[int] = typer.Option(
-        None, '--pass', '-p', help='Pass number (option can be repeated)'),
+    cycle_number: list = typer.Option(
+        None,
+        '--cycle',
+        '-c',
+        help='Cycle number(s). Comma separated values or ranges accepted.',
+        parser=comma_separated_ints),
+    pass_number: list = typer.Option(
+        None,
+        '--pass',
+        '-p',
+        help='Pass number(s). Comma separated values or ranges accepted.',
+        parser=comma_separated_ints),
     start: str = typer.Option(None, '--start', help='Start date (YYYY-MM-DD)'),
     end: str = typer.Option(None, '--end', help='End date (YYYY-MM-DD)'),
     version: str = typer.Option(
@@ -110,7 +135,7 @@ def get(
     """Downloads a product from Aviso's Thredds Data Server.
 
     Example : get a_prod_short_name --output tmp_dir
-    --cycle 7 --pass 12 --pass 13 --pass 14 --version 1.0
+    --cycle 7,8 --pass 12-14,21 --version 1.0
     """
     try:
         downloaded_files = ac_core.get(
