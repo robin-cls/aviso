@@ -5,7 +5,13 @@ import pytest
 from typer.testing import CliRunner
 
 import aviso_client.core as ac_core
-from aviso_client.cli import _setup_logging, app, logger
+from aviso_client.cli import (
+    _parse_ranges,
+    _setup_logging,
+    app,
+    comma_separated_ints,
+    logger,
+)
 
 runner = CliRunner()
 
@@ -93,6 +99,45 @@ def test_details_bad_product(tmp_path):
             'in Aviso catalog.') in result.output
 
 
+@pytest.mark.parametrize(
+    'expr,expected',
+    [
+        ('1', [1]),
+        ('5', [5]),
+        ('1-3', [1, 2, 3]),
+        ('3-1', [1, 2, 3]),
+        ('10-12', [10, 11, 12]),
+    ],
+)
+def test_parse_ranges(expr, expected):
+    assert list(_parse_ranges(expr)) == expected
+
+
+def test_parse_ranges_invalid():
+    with pytest.raises(ValueError):
+        _ = _parse_ranges('a-b')
+
+
+@pytest.mark.parametrize(
+    'value,expected',
+    [
+        ('1', [1]),
+        ('3,1,2', [1, 2, 3]),
+        ('1-3', [1, 2, 3]),
+        ('3-1', [1, 2, 3]),
+        ('1,2-4', [1, 2, 3, 4]),
+        ('1-2,4-5', [1, 2, 4, 5]),
+        ('1,2,2,1,3', [1, 2, 3]),
+        ('1-2,2-5,4,5', [1, 2, 3, 4, 5]),
+        ('', []),
+        (',,,', []),
+        ('1, 2 ,3', [1, 2, 3]),
+    ],
+)
+def test_comma_separated_ints(value, expected):
+    assert comma_separated_ints(value) == expected
+
+
 def test_get_simple_filters(mocker, tmp_path):
     mocked_get = mocker.patch.object(ac_core,
                                      'get',
@@ -107,9 +152,7 @@ def test_get_simple_filters(mocker, tmp_path):
             '--version',
             '1.0',
             '--cycle',
-            '1',
-            '--cycle',
-            '2',
+            '1,2',
         ],
     )
     assert result.exit_code == 0
