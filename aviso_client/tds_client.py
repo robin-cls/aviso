@@ -18,7 +18,8 @@ TDS_HOST = 'tds-odatis.aviso.altimetry.fr'
 def http_single_download(url: str,
                          output_dir: str | pl.Path,
                          username: str = None,
-                         password: str = None) -> str:
+                         password: str = None,
+                         overwrite: bool = False) -> str:
     """Download a granule from AVISO's Thredds Data Server using HTTPS
     protocol.
 
@@ -32,6 +33,8 @@ def http_single_download(url: str,
         username for authentication. Retrieved from .netrc file if not provided
     password: str
         password for authentication. Retrieved from .netrc file if not provided
+    overwrite: bool
+        whether to overwrite the file if it already exists
 
     Returns
     -------
@@ -43,9 +46,13 @@ def http_single_download(url: str,
     logger.debug('Downloading %s...', url)
 
     filename = os.path.basename(url)
-    if isinstance(output_dir, str):
-        output_dir = pl.Path(output_dir)
+    output_dir = pl.Path(output_dir) if isinstance(output_dir,
+                                                   str) else output_dir
     local_filepath = output_dir / filename
+
+    if not overwrite and local_filepath.exists():
+        logger.debug('File %s already exist. Ignore download.', local_filepath)
+        return None
 
     response = requests.get(url, auth=(username, password))
     response.raise_for_status()
@@ -65,6 +72,7 @@ def http_single_download_with_retries(
     backoff: float = 1.0,
     username: str = None,
     password: str = None,
+    overwrite: bool = False,
 ) -> str:
     """Download a granule from AVISO's Thredds Data Server using HTTPS
     protocol. Retries if the download fails.
@@ -83,6 +91,8 @@ def http_single_download_with_retries(
         username for authentication. Retrieved from .netrc file if not provided
     password: str
         password for authentication. Retrieved from .netrc file if not provided
+    overwrite: bool
+        whether to overwrite the file if it already exists
 
     Returns
     -------
@@ -100,7 +110,8 @@ def http_single_download_with_retries(
 
     for attempt in range(1, retries + 1):
         try:
-            return http_single_download(url, output_dir, username, password)
+            return http_single_download(url, output_dir, username, password,
+                                        overwrite)
 
         except requests.RequestException as e:
             logger.debug('Attempt %d failed for %s: %s', attempt, url, e)
@@ -119,10 +130,12 @@ def _download_one(
     backoff: float = 1.0,
     username: str = None,
     password: str = None,
+    overwrite: bool = False,
 ):
     try:
         return http_single_download_with_retries(url, output_dir, retries,
-                                                 backoff, username, password)
+                                                 backoff, username, password,
+                                                 overwrite)
     except requests.RequestException as e:
         msg = f'Failed to download {url}. An error happened: {e}'
         warnings.warn(msg)
@@ -136,6 +149,7 @@ def http_bulk_download(
     backoff: float = 1.0,
     username: str = None,
     password: str = None,
+    overwrite: bool = False,
 ) -> Generator[str, None, None]:
     """Loop on a list of urls to download each granule from AVISO's Thredds
     Data Server using HTTPS protocol. Each download as retries if it fails.
@@ -154,6 +168,8 @@ def http_bulk_download(
         username for authentication. Retrieved from .netrc file if not provided
     password: str
         password for authentication. Retrieved from .netrc file if not provided
+    overwrite: bool
+        whether to overwrite the file if it already exists
 
     Returns
     -------
@@ -167,7 +183,7 @@ def http_bulk_download(
 
     for url in urls:
         file = _download_one(url, output_dir, retries, backoff, username,
-                             password)
+                             password, overwrite)
         if file:
             yield file
 
@@ -180,6 +196,7 @@ def http_bulk_download_parallel(
     max_workers: int = 4,
     username: str = None,
     password: str = None,
+    overwrite: bool = False,
 ) -> Generator[str, None, None]:
     """Parallel download of granules from AVISO's Thredds Data Server using
     HTTPS protocol.
@@ -200,6 +217,8 @@ def http_bulk_download_parallel(
         username for authentication. Retrieved from .netrc file if not provided
     password: str
         password for authentication. Retrieved from .netrc file if not provided
+    overwrite: bool
+        whether to overwrite the file if it already exists
 
     Returns
     -------
@@ -218,6 +237,7 @@ def http_bulk_download_parallel(
                 backoff,
                 username,
                 password,
+                overwrite,
             ):
             url
             for url in urls
