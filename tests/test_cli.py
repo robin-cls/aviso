@@ -124,7 +124,7 @@ def test_details_bad_product(tmp_path):
         ('1', [1]),
         ('5', [5]),
         ('1-3', [1, 2, 3]),
-        ('3-1', [1, 2, 3]),
+        ('8-10', [8, 9, 10]),
         ('10-12', [10, 11, 12]),
     ],
 )
@@ -132,9 +132,12 @@ def test_parse_ranges(expr, expected):
     assert list(_parse_ranges(expr)) == expected
 
 
-def test_parse_ranges_invalid():
+def test_parse_ranges_error():
     with pytest.raises(ValueError):
         _ = _parse_ranges('a-b')
+
+    with pytest.raises(BadParameter):
+        _ = _parse_ranges('3-1')
 
 
 @pytest.mark.parametrize(
@@ -143,7 +146,6 @@ def test_parse_ranges_invalid():
         ('1', [1]),
         ('3,1,2', [1, 2, 3]),
         ('1-3', [1, 2, 3]),
-        ('3-1', [1, 2, 3]),
         ('1,2-4', [1, 2, 3, 4]),
         ('1-2,4-5', [1, 2, 4, 5]),
         ('1,2,2,1,3', [1, 2, 3]),
@@ -155,6 +157,11 @@ def test_parse_ranges_invalid():
 )
 def test_comma_separated_ints(value, expected):
     assert comma_separated_ints(value) == expected
+
+
+def test_comma_separated_ints_error():
+    with pytest.raises(BadParameter):
+        _ = comma_separated_ints('1,2,10-8,15')
 
 
 def test_get_simple_filters(mocker, tmp_path):
