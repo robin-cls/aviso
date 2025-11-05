@@ -31,27 +31,23 @@ app = typer.Typer()
 console = Console()
 
 
-@app.callback()
-def main(
-    quiet: bool | None = typer.Option(
-        False,
-        '--quiet',
-        '-q',
-        help='No logging',
-    ),
-    verbose: bool | None = typer.Option(
-        False,
-        '--verbose',
-        '-v',
-        help='Enable verbose logging',
-    ),
-):
+@app.command()
+def summary(quiet: bool = typer.Option(
+    False,
+    '--quiet',
+    '-q',
+    help='No logging',
+),
+            verbose: bool = typer.Option(
+                False,
+                '--verbose',
+                '-v',
+                help='Enable verbose logging',
+            )):
+    """Lists products short names and titles available in Aviso's catalog."""
+
     _setup_logging(quiet=quiet, verbose=verbose)
 
-
-@app.command()
-def summary():
-    """Lists products short names and titles available in Aviso's catalog."""
     catalog = ac_core.summary()
     table = Table(show_header=True,
                   header_style='bold magenta',
@@ -69,11 +65,26 @@ def summary():
 
 
 @app.command()
-def details(product: str = typer.Argument(..., help="Product's short name")):
+def details(product: str = typer.Argument(..., help="Product's short name"),
+            quiet: bool = typer.Option(
+                False,
+                '--quiet',
+                '-q',
+                help='No logging',
+            ),
+            verbose: bool = typer.Option(
+                False,
+                '--verbose',
+                '-v',
+                help='Enable verbose logging',
+            )):
     """Details a product information from Aviso's catalog.
 
     To get product's short name, use 'summary' command.
     """
+
+    _setup_logging(quiet=quiet, verbose=verbose)
+
     try:
         product_info = ac_core.details(product)
 
@@ -111,49 +122,70 @@ def comma_separated_ints(value: str) -> list[int]:
 def _parse_ranges(expr: str) -> list[int]:
     if '-' not in expr:
         return [int(expr)]
-    start, end = expr.split('-', 1)
+    start, end = expr.split('-')
+    start, end = int(start), int(end)
     if start <= end:
-        return range(int(start), int(end) + 1)
-    return range(int(end), int(start) + 1)
+        return range(start, end + 1)
+    msg = (
+        f"Invalid range '{expr}': start '{start}' must be less than end '{end}'."
+    )
+    raise typer.BadParameter(msg)
 
 
 @app.command()
-def get(
-    product: str = typer.Argument(..., help="Product's short name"),
-    output: Path = typer.Option(..., '--output', '-o',
-                                help='Output directory'),
-    overwrite: bool = typer.Option(
-        False,
-        '--overwrite',
-        '-O',
-        help='Overwrite files if they already exist',
-    ),
-    cycle_number: list = typer.Option(
-        None,
-        '--cycle',
-        '-c',
-        help='Cycle number(s). Comma separated values or ranges accepted.',
-        parser=comma_separated_ints),
-    pass_number: list = typer.Option(
-        None,
-        '--pass',
-        '-p',
-        help='Pass number(s). Comma separated values or ranges accepted.',
-        parser=comma_separated_ints),
-    start: str = typer.Option(None, '--start', help='Start date (YYYY-MM-DD)'),
-    end: str = typer.Option(None, '--end', help='End date (YYYY-MM-DD)'),
-    version: str = typer.Option(
-        None,
-        '--version',
-        '-v',
-        help="Product's version. By default, last version is selected",
-    ),
-):
+def get(product: str = typer.Argument(..., help="Product's short name"),
+        output: Path = typer.Option(...,
+                                    '--output',
+                                    '-o',
+                                    help='Output directory'),
+        overwrite: bool = typer.Option(
+            False,
+            '--overwrite',
+            '-O',
+            help='Overwrite files if they already exist',
+        ),
+        cycle_number: list = typer.Option(
+            None,
+            '--cycle',
+            '-c',
+            help='Cycle number(s). Comma separated values or ranges accepted.',
+            parser=comma_separated_ints),
+        pass_number: list = typer.Option(
+            None,
+            '--pass',
+            '-p',
+            help='Pass number(s). Comma separated values or ranges accepted.',
+            parser=comma_separated_ints),
+        start: str = typer.Option(None,
+                                  '--start',
+                                  help='Start date (YYYY-MM-DD)'),
+        end: str = typer.Option(None, '--end', help='End date (YYYY-MM-DD)'),
+        version: str = typer.Option(
+            None,
+            '--version',
+            '-v',
+            help="Product's version. By default, last version is selected",
+        ),
+        quiet: bool = typer.Option(
+            False,
+            '--quiet',
+            '-q',
+            help='No logging',
+        ),
+        verbose: bool = typer.Option(
+            False,
+            '--verbose',
+            '-v',
+            help='Enable verbose logging',
+        )):
     """Downloads a product from Aviso's Thredds Data Server.
 
     Example : get a_prod_short_name --output tmp_dir
     --cycle 7,8 --pass 12-14,21 --version 1.0
     """
+
+    _setup_logging(quiet=quiet, verbose=verbose)
+
     try:
         downloaded_files = ac_core.get(
             product_short_name=product,
