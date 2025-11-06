@@ -88,13 +88,14 @@ The first version of the client is set up to download Swot products.
 
 ```python
 
->>> aviso_client get SWOT_L3_LR_SSH_Basic --output tmp_dir --cycle 7 --pass 12,13
+>>> aviso_client get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12,13
 
 Downloaded files (2) :
-- tmp_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc
-- tmp_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc
+- aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc
+- aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc
 
+```
 
 # More information
 
-For more install options and to use xsar, see [documentation](https://cyclobs.ifremer.fr/static/sarwing_datarmor/xsar/)
+For more information on how to to use aviso_client, see [documentation](https://aviso_client.readthedocs.io/en/latest/?badge=latest)
