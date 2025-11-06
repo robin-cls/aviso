@@ -17,7 +17,7 @@ pip install aviso_client
 >>> import aviso_client
 ```
 
-### Lists products available in Aviso's catalog
+### List products available in Aviso's catalog
 
 The first version of the client is set up to download Swot products.
 
@@ -84,7 +84,7 @@ The first version of the client is set up to download Swot products.
 ```
 
 
-### Downloads a product
+### Download a product
 
 ```python
 
