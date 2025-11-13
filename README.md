@@ -4,17 +4,23 @@ A client to download data available on Aviso.
 
 ## Install
 
+### Conda
+
+```bash
+conda install -c conda-forge altimetry-downloader-aviso
+```
+
 ### Pypi
 
 ```bash
-pip install aviso_client
+pip install altimetry-downloader-aviso
 ```
 
 ## Use
 
 ```python
 
->>> import aviso_client
+>>> import altimetry-downloader-aviso
 ```
 
 ### List products available in Aviso's catalog
@@ -23,7 +29,7 @@ The first version of the client is set up to download Swot products.
 
 ```python
 
->>> aviso_client summary
+>>> altimetry-downloader-aviso summary
 
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Short Name                    ┃ Title                                                                                              ┃
@@ -46,7 +52,7 @@ The first version of the client is set up to download Swot products.
 
 ```python
 
->>> aviso_client details SWOT_L3_LR_SSH_Basic
+>>> altimetry-downloader-aviso details SWOT_L3_LR_SSH_Basic
 
 ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── Product: SWOT_L3_LR_SSH_Basic ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
@@ -88,7 +94,7 @@ The first version of the client is set up to download Swot products.
 
 ```python
 
->>> aviso_client get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12,13
+>>> altimetry-downloader-aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12,13
 
 Downloaded files (2) :
 - aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc
@@ -98,4 +104,4 @@ Downloaded files (2) :
 
 # More information
 
-For more information on how to to use aviso_client, see [documentation](https://aviso_client.readthedocs.io/en/latest/?badge=latest)
+For more information on how to to use altimetry-downloader-aviso, see [documentation](https://altimetry_downloader_aviso.readthedocs.io/en/latest/?badge=latest)

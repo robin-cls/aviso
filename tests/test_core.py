@@ -5,7 +5,7 @@ from datetime import datetime
 
 import pytest
 
-from aviso_client import InvalidProductError
+from aviso_client.catalog_client.client import InvalidProductError
 from aviso_client.core import details, get, summary
 
 

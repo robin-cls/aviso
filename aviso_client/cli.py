@@ -9,7 +9,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 import aviso_client.core as ac_core
-from aviso_client import InvalidProductError
+from aviso_client.catalog_client.client import InvalidProductError
 
 logging.basicConfig(level=logging.WARNING,
                     handlers=[RichHandler()],
