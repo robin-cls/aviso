@@ -18,10 +18,6 @@ pip install altimetry-downloader-aviso
 
 ## Use
 
-```python
-
->>> import altimetry-downloader-aviso
-```
 
 ### List products available in Aviso's catalog
 
