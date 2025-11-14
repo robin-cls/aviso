@@ -43,7 +43,7 @@ Temporal filters
 
 .. caution::
 
-    - A request with only ``time`` filter will take more time to compute, since it needs to browse all files to find ones included in the date range. Please provide a ``cycle_number`` filter when possible.
+    A request with only ``time`` filter will take more time to compute, since it needs to browse all files to find ones included in the date range. Please provide a ``cycle_number`` filter when possible.
 
 
 .. code-block:: pycon

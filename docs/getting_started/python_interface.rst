@@ -61,7 +61,7 @@ Download a product using :func:`aviso_client.get()` function.
 
 .. caution::
 
-    - By default, already existing files are not re-downloaded. Use ``--overwrite`` option to force re-download.
+    By default, already existing files are not re-downloaded. Use ``--overwrite`` option to force re-download.
     
 
 Further Reading
