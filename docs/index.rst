@@ -28,7 +28,7 @@ offering these capabilities:
    :caption: USER GUIDE
 
    basic_usage/authentication
-   basic_usage/api_usage
+   basic_usage/advanced_usage
 
 .. toctree::
    :maxdepth: 1

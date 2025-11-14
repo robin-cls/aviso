@@ -1,7 +1,7 @@
-API Usage
-=========
+Advanced Usage
+==============
 
-Here are more detailed examples of how to use the Python API of the ``altimetry_downloader_aviso`` package.
+Here are more detailed examples of how to use the Python Interface of the ``altimetry_downloader_aviso`` package.
 
 Download Usage
 --------------

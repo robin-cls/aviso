@@ -1,5 +1,5 @@
-Using the Python Interface
-==========================
+Python Interface
+================
 
 The ``altimetry_downloader_aviso`` tool provides a simple Python API to programmatically interact
 with the Aviso catalog.
@@ -67,4 +67,4 @@ Download a product using :func:`aviso_client.get()` function.
 Further Reading
 ---------------
 
-- :doc:`../basic_usage/api_usage`
+- :doc:`../basic_usage/advanced_usage`

@@ -1,5 +1,5 @@
-Use the Command Line Interface
-==============================
+Command Line Interface
+======================
 
 The ``altimetry_downloader_aviso`` command line interface allows you to interact easily with the Aviso catalog
 to explore, inspect and download products.
@@ -10,21 +10,30 @@ After installation, the ``altimetry_downloader_aviso`` command becomes available
 
     altimetry_downloader_aviso --help
 
+.. note::
+
+    This CLI relies on the Python Interface operations. Please refer to :doc:`python_interface` for more information about these operations.
+
 
 Available Commands
 ------------------
 
 The command line interface provides three main commands:
 
-1. **summary**
-2. **details**
-3. **get**
+1. **summary** to list available products in the catalog;
+2. **details** to view detailed metadata for a specific product;
+3. **get** to download a given product applying filters.
 
+.. tip::
 
-``summary``
-~~~~~~~~~~~
+    - Use ``--help`` with any command to see available options.
+    - Use ``--verbose`` or ``--quiet`` options to adjust logging verbosity.
+        
 
-Display a summary of the available Aviso products in the catalog.
+List available products
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Display a summary of the available Aviso products in the catalog using ``summary`` command.
 
 **Usage:**
 
@@ -47,10 +56,10 @@ This will print a concise overview of the products (short names and titles).
     └───────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 
-``details``
-~~~~~~~~~~~~
+View product details
+~~~~~~~~~~~~~~~~~~~~
 
-Retrieve detailed metadata for a specific Aviso product.
+Retrieve detailed metadata for a specific Aviso product using ``details`` command.
 
 **Usage:**
 
@@ -96,10 +105,10 @@ Retrieve detailed metadata for a specific Aviso product.
     │ └───────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ │
     ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
-``get``
-~~~~~~~
+Download a product
+~~~~~~~~~~~~~~~~~~
 
-Download a given Aviso product.
+Download a given Aviso product using ``get`` command.
 
 **Usage:**
 
@@ -107,7 +116,9 @@ Download a given Aviso product.
 
    altimetry_downloader_aviso get <product_short_name> --output <directory> [--cycle <comma separated values/ranges>>] [--pass <comma separated values/ranges>] [--start <YYYY-MM-DD>] [--end <YYYY-MM-DD>] [--version <product version>]
 
-**Example:**
+**Example cycle/pass filter:**
+
+Use ``--cycle`` and ``--pass`` options to select mission cycle(s) and half-orbit(s) number(s). 
 
 This command downloads Swot LR L3 Basic, cycle number 7, half-orbits 12-13, and stores the requested files to /aviso_dir.
 
@@ -118,8 +129,13 @@ This command downloads Swot LR L3 Basic, cycle number 7, half-orbits 12-13, and 
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc
 
+.. note::
 
-**Example:**
+    You can provide multiple values/ranges for ``--cycle`` and ``--pass`` options, separated by commas (e.g., ``--cycle 5,7-9,12``).
+
+**Example with time filter:**
+
+Use ``--start`` and ``--end`` options to filter files by date range. 
 
 This command downloads Swot LR L3 Basic, in the period from 2025-01-01 to 2025-01-02, cycle number 26, and stores the requested files to /aviso_dir.
 
@@ -131,20 +147,24 @@ This command downloads Swot LR L3 Basic, in the period from 2025-01-01 to 2025-0
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc
 
 
-.. note::
+.. caution::
 
-    - ``--cycle`` and ``--pass`` options refer to mission cycle and pass numbers. You can provide multiple values/ranges for ``--cycle`` and ``--pass`` options, separated by commas (e.g., ``--cycle 5,7-9,12``).
-    - By default, the latest version of the product is downloaded. Use ``--version`` option to specify a different version.
-    - Use ``--start`` and ``--end`` options to filter files by date range. A request with only ``start`` / ``--end`` filters will take more time to compute, since it needs to browse all files to find ones included in the date range. Please provide a ``--cycle`` filter when possible.
+    A request with only ``start`` / ``--end`` filters will take more time to compute, since it needs to browse all files to find ones included in the date range. Please provide a ``--cycle`` filter when possible.
 
-.. tip::
+**Example with version filter:**
 
-    - Use ``--help`` with any command to see available options.
-    - Use ``--verbose`` or ``--quiet`` options to adjust logging verbosity.
-    - For scripting, use the Python client instead (see :doc:`python_interface`).
-        
+By default, the latest version of the product is downloaded. Use ``--version`` option to specify a different version.
+
+This command downloads Swot LR L3 Basic, cycle number 7, half-orbit 12, version 1.0.2, and stores the requested files to /aviso_dir.
+
+.. code-block:: console
+
+    $ altimetry_downloader_aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12 --version 1.0.2
+    Downloaded files (1) :
+    - aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v1.0.2.nc
+    
 
 Further Reading
 ----------------
 
-- :doc:`../basic_usage/api_usage`
+- :doc:`../basic_usage/advanced_usage`

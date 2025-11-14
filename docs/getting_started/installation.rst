@@ -11,7 +11,7 @@ To install it using ``conda``:
 
 .. code-block:: bash
 
-   conda install -c conda-forge altimetry-downloader-aviso
+   conda install altimetry-downloader-aviso -c conda-forge
 
 
 Installing with pip
