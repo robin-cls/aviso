@@ -4,14 +4,14 @@ import os
 import pytest
 import requests
 
-from aviso_client.tds_client import (
+from altimetry_downloader_aviso.tds_client import (
     http_bulk_download,
     http_bulk_download_parallel,
     http_single_download,
     http_single_download_with_retries,
 )
 
-# coverage run --source=aviso_client  -m pytest
+# coverage run --source=altimetry_downloader_aviso  -m pytest
 # coverage report -m
 
 
@@ -27,7 +27,7 @@ def test_http_single_download_success(mocker, tmp_path):
 
     mocker.patch('requests.get', return_value=mock_response)
 
-    mocker.patch('aviso_client.auth.ensure_credentials',
+    mocker.patch('altimetry_downloader_aviso.auth.ensure_credentials',
                  return_value=('user', 'pass'))
 
     result_path = http_single_download(url, tmp_path)
@@ -54,7 +54,7 @@ def test_http_single_download_error(mocker):
         '404 Client Error')
 
     mocker.patch('requests.get', return_value=fake_response)
-    mocker.patch('aviso_client.auth.ensure_credentials',
+    mocker.patch('altimetry_downloader_aviso.auth.ensure_credentials',
                  return_value=('user', 'pass'))
 
     with pytest.raises(requests.exceptions.HTTPError):
@@ -68,7 +68,7 @@ def test_http_single_download_with_retries_success(mocker):
     filename = os.path.basename(url)
     expected_path = os.path.join(tmp_path, filename)
     mock_download = mocker.patch(
-        'aviso_client.tds_client.http_single_download')
+        'altimetry_downloader_aviso.tds_client.http_single_download')
     mock_download.side_effect = [
         requests.exceptions.RequestException('fail'),
         str(expected_path),
@@ -86,10 +86,11 @@ def test_http_single_download_with_retries_success(mocker):
 def test_http_single_download_with_retries_backoff_timing(mocker, caplog):
     url = 'https://example.com/file.txt'
     mock_download = mocker.patch(
-        'aviso_client.tds_client.http_single_download')
+        'altimetry_downloader_aviso.tds_client.http_single_download')
     mock_download.side_effect = requests.exceptions.RequestException('fail')
 
-    mock_sleep = mocker.patch('aviso_client.tds_client.time.sleep')
+    mock_sleep = mocker.patch(
+        'altimetry_downloader_aviso.tds_client.time.sleep')
 
     with pytest.raises(requests.exceptions.RequestException):
         with caplog.at_level(logging.DEBUG):
@@ -106,7 +107,7 @@ def test_http_single_download_with_retries_fail_all(mocker):
     bad_url = 'https://bad_url.com/file.txt'
 
     mocker.patch(
-        'aviso_client.tds_client.http_single_download',
+        'altimetry_downloader_aviso.tds_client.http_single_download',
         side_effect=requests.exceptions.RequestException('Network fail'),
     )
     with pytest.raises(requests.exceptions.RequestException):
@@ -118,7 +119,8 @@ def test_http_single_download_with_retries_fail_all(mocker):
 
 def test_http_bulk_download_success_and_skip_fail(mocker):
     mock_retry = mocker.patch(
-        'aviso_client.tds_client.http_single_download_with_retries')
+        'altimetry_downloader_aviso.tds_client.http_single_download_with_retries'
+    )
     mock_retry.side_effect = [
         '/tmp/file1.txt',
         requests.exceptions.RequestException('fail'),
@@ -140,7 +142,7 @@ def test_http_bulk_download_success_and_skip_fail(mocker):
 
 def test_http_bulk_download_all_fail(mocker):
     mocker.patch(
-        'aviso_client.tds_client.http_single_download_with_retries',
+        'altimetry_downloader_aviso.tds_client.http_single_download_with_retries',
         side_effect=requests.exceptions.RequestException('boom'),
     )
     urls = ['https://fail.com/1', 'https://fail.com/2']
@@ -157,7 +159,8 @@ def test_http_bulk_download_all_fail(mocker):
 
 def test_http_bulk_download_parallel_success(mocker):
     mock_retry = mocker.patch(
-        'aviso_client.tds_client.http_single_download_with_retries')
+        'altimetry_downloader_aviso.tds_client.http_single_download_with_retries'
+    )
     mock_retry.side_effect = lambda url, *_: f"/tmp/{url.split('/')[-1]}"
 
     urls = ['https://x.com/a.txt', 'https://x.com/b.txt']
@@ -180,7 +183,7 @@ def test_http_bulk_download_parallel_partial_fail(mocker):
         return f"/tmp/{url.split('/')[-1]}"
 
     mocker.patch(
-        'aviso_client.tds_client.http_single_download_with_retries',
+        'altimetry_downloader_aviso.tds_client.http_single_download_with_retries',
         side_effect=fake_retry,
     )
     urls = [

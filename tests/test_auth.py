@@ -4,8 +4,8 @@ from unittest.mock import mock_open
 
 import pytest
 
-import aviso_client.auth
-from aviso_client.auth import (
+import altimetry_downloader_aviso.auth
+from altimetry_downloader_aviso.auth import (
     _get_credentials,
     _prompt_and_save_credentials,
     AuthenticationError,
@@ -16,7 +16,7 @@ from aviso_client.auth import (
 @pytest.fixture
 def fake_netrc_path(tmp_path, mocker):
     path = tmp_path / '.netrc'
-    mocker.patch.object(aviso_client.auth, 'NETRC_PATH', path)
+    mocker.patch.object(altimetry_downloader_aviso.auth, 'NETRC_PATH', path)
     return path
 
 
@@ -24,7 +24,7 @@ def test_get_credentials(fake_netrc_path, mocker):
     fake_netrc_path.write_text("""
         machine example.com login testuser password testpass
     """)
-    mock_netrc = mocker.patch('aviso_client.auth.netrc.netrc')
+    mock_netrc = mocker.patch('altimetry_downloader_aviso.auth.netrc.netrc')
     mock_netrc.return_value.authenticators.return_value = ('testuser', None,
                                                            'testpass')
 
@@ -41,7 +41,7 @@ def test_get_credentials_netrc_not_exist(mocker):
 
 def test_get_credentials_netrc_invalid(mocker):
     mocker.patch(
-        'aviso_client.auth.netrc.netrc',
+        'altimetry_downloader_aviso.auth.netrc.netrc',
         side_effect=netrc.NetrcParseError('Invalid netrc'),
     )
 
@@ -51,7 +51,7 @@ def test_get_credentials_netrc_invalid(mocker):
 
 def test_get_credentials_host_notexist(mocker):
     mocker.patch(
-        'aviso_client.auth.netrc.netrc',
+        'altimetry_downloader_aviso.auth.netrc.netrc',
         side_effect=TypeError("Host doesn't exist in .netrc file."),
     )
 
@@ -64,7 +64,8 @@ def test_get_credentials_host_notexist(mocker):
 
 
 def test_get_credentials_rvalue_error(mocker):
-    mock_netrc_class = mocker.patch('aviso_client.auth.netrc.netrc')
+    mock_netrc_class = mocker.patch(
+        'altimetry_downloader_aviso.auth.netrc.netrc')
 
     mock_auth_data = mocker.Mock()
     mock_auth_data.authenticators.side_effect = ValueError('Fake value error')
@@ -91,7 +92,7 @@ def test_prompt_and_save_credentials(mocker):
 
 
 def test_ensure_credentials_from_netrc(mocker):
-    mock_get = mocker.patch('aviso_client.auth._get_credentials',
+    mock_get = mocker.patch('altimetry_downloader_aviso.auth._get_credentials',
                             return_value=('user3', 'pass3'))
 
     creds = ensure_credentials('example.com')
@@ -100,10 +101,10 @@ def test_ensure_credentials_from_netrc(mocker):
 
 
 def test_ensure_credentials_prompt(mocker):
-    mock_get = mocker.patch('aviso_client.auth._get_credentials',
+    mock_get = mocker.patch('altimetry_downloader_aviso.auth._get_credentials',
                             return_value=None)
     mock_prompt = mocker.patch(
-        'aviso_client.auth._prompt_and_save_credentials',
+        'altimetry_downloader_aviso.auth._prompt_and_save_credentials',
         return_value=('user4', 'pass4'),
     )
 

@@ -16,7 +16,7 @@ Basic Usage
 List available products
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Retrieve a summary of the available products in Aviso catalog using :func:`aviso_client.summary()` function. Retrieve an :class:`aviso_client.AvisoCatalog` object.
+Retrieve a summary of the available products in Aviso catalog using :func:`altimetry_downloader_aviso.summary()` function. Retrieve an :class:`altimetry_downloader_aviso.AvisoCatalog` object.
 
 .. code-block:: pycon
 
@@ -24,7 +24,7 @@ Retrieve a summary of the available products in Aviso catalog using :func:`aviso
     >>> catalog
     AvisoCatalog(products=[AvisoProduct(id='d1f06620-d11c-4945-b53d-6769e909be01', title='Wind & Wave product SWOT Level-3 WindWave - Extended'), ...])
 
-To list available products in the catalog, use the :attr:`aviso_client.AvisoCatalog.products` attribute, that is a list of :class:`aviso_client.AvisoProduct` objects.
+To list available products in the catalog, use the :attr:`altimetry_downloader_aviso.AvisoCatalog.products` attribute, that is a list of :class:`altimetry_downloader_aviso.AvisoProduct` objects.
 
 .. code-block:: pycon
 
@@ -38,11 +38,11 @@ To list available products in the catalog, use the :attr:`aviso_client.AvisoCata
 View product details
 ~~~~~~~~~~~~~~~~~~~~
 
-Get detailed metadata for a given product using :func:`aviso_client.details()` function. It returns an :class:`aviso_client.AvisoProduct` object.
+Get detailed metadata for a given product using :func:`altimetry_downloader_aviso.details()` function. It returns an :class:`altimetry_downloader_aviso.AvisoProduct` object.
 
 .. code-block:: pycon
 
-    >>> product = aviso_client.details("SWOT_L3_LR_SSH_Basic")
+    >>> product = altimetry_downloader_aviso.details("SWOT_L3_LR_SSH_Basic")
     >>> print(product.abstract)
     The SWOT L3_LR_SSH product provides ocean topography measurements obtained from the SWOT KaRIn and nadir altimeter instruments,...
 
@@ -50,7 +50,7 @@ Get detailed metadata for a given product using :func:`aviso_client.details()` f
 Download a product
 ~~~~~~~~~~~~~~~~~~
 
-Download a product using :func:`aviso_client.get()` function.
+Download a product using :func:`altimetry_downloader_aviso.get()` function.
 
 .. code-block:: pycon
 
@@ -62,7 +62,7 @@ Download a product using :func:`aviso_client.get()` function.
 .. caution::
 
     By default, already existing files are not re-downloaded. Use ``--overwrite`` option to force re-download.
-    
+
 
 Further Reading
 ---------------

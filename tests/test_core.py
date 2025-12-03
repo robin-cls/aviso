@@ -5,8 +5,8 @@ from datetime import datetime
 
 import pytest
 
-from aviso_client.catalog_client.client import InvalidProductError
-from aviso_client.core import details, get, summary
+from altimetry_downloader_aviso.catalog_client.client import InvalidProductError
+from altimetry_downloader_aviso.core import details, get, summary
 
 
 def test_summary():
@@ -109,7 +109,7 @@ def test_get_error(tmp_path):
 
 def test_get_auth_error(mocker, tmp_path, caplog):
     mocker.patch(
-        'aviso_client.auth.netrc.netrc',
+        'altimetry_downloader_aviso.auth.netrc.netrc',
         side_effect=netrc.NetrcParseError('Invalid netrc'),
     )
 

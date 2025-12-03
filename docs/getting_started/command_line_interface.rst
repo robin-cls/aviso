@@ -1,14 +1,14 @@
 Command Line Interface
 ======================
 
-The ``altimetry_downloader_aviso`` command line interface allows you to interact easily with the Aviso catalog
+The ``altimetry-downloader-aviso`` command line interface allows you to interact easily with the Aviso catalog
 to explore, inspect and download products.
 
-After installation, the ``altimetry_downloader_aviso`` command becomes available in your terminal.
+After installation, the ``altimetry-downloader-aviso`` command becomes available in your terminal.
 
 .. code-block:: bash
 
-    altimetry_downloader_aviso --help
+    altimetry-downloader-aviso --help
 
 .. note::
 
@@ -28,7 +28,7 @@ The command line interface provides three main commands:
 
     - Use ``--help`` with any command to see available options.
     - Use ``--verbose`` or ``--quiet`` options to adjust logging verbosity.
-        
+
 
 List available products
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,7 +39,7 @@ Display a summary of the available Aviso products in the catalog using ``summary
 
 .. code-block:: bash
 
-    altimetry_downloader_aviso summary
+    altimetry-downloader-aviso summary
 
 This will print a concise overview of the products (short names and titles).
 
@@ -47,7 +47,7 @@ This will print a concise overview of the products (short names and titles).
 
 .. code-block:: console
 
-    $ altimetry_downloader_aviso summary
+    $ altimetry-downloader-aviso summary
     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
     ┃ Short Name                    ┃ Title                                                                                              ┃
     ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
@@ -65,13 +65,13 @@ Retrieve detailed metadata for a specific Aviso product using ``details`` comman
 
 .. code-block:: bash
 
-    altimetry_downloader_aviso details <product_short_name>
+    altimetry-downloader-aviso details <product_short_name>
 
 **Example:**
 
 .. code-block:: console
 
-    $ altimetry_downloader_aviso details SWOT_L3_LR_SSH_Basic
+    $ altimetry-downloader-aviso details SWOT_L3_LR_SSH_Basic
     ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── Product: SWOT_L3_LR_SSH_Basic ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
     │ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
     │ ┃ Field                     ┃ Value                                                                                                                                                                                                                                                                            ┃ │
@@ -114,17 +114,17 @@ Download a given Aviso product using ``get`` command.
 
 .. code-block:: bash
 
-   altimetry_downloader_aviso get <product_short_name> --output <directory> [--cycle <comma separated values/ranges>>] [--pass <comma separated values/ranges>] [--start <YYYY-MM-DD>] [--end <YYYY-MM-DD>] [--version <product version>]
+   altimetry-downloader-aviso get <product_short_name> --output <directory> [--cycle <comma separated values/ranges>>] [--pass <comma separated values/ranges>] [--start <YYYY-MM-DD>] [--end <YYYY-MM-DD>] [--version <product version>]
 
 **Example cycle/pass filter:**
 
-Use ``--cycle`` and ``--pass`` options to select mission cycle(s) and half-orbit(s) number(s). 
+Use ``--cycle`` and ``--pass`` options to select mission cycle(s) and half-orbit(s) number(s).
 
 This command downloads Swot LR L3 Basic, cycle number 7, half-orbits 12-13, and stores the requested files to /aviso_dir.
 
 .. code-block:: console
 
-    $ altimetry_downloader_aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12,13
+    $ altimetry-downloader-aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12,13
     Downloaded files (2) :
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc
@@ -135,13 +135,13 @@ This command downloads Swot LR L3 Basic, cycle number 7, half-orbits 12-13, and 
 
 **Example with time filter:**
 
-Use ``--start`` and ``--end`` options to filter files by date range. 
+Use ``--start`` and ``--end`` options to filter files by date range.
 
 This command downloads Swot LR L3 Basic, in the period from 2025-01-01 to 2025-01-02, cycle number 26, and stores the requested files to /aviso_dir.
 
 .. code-block:: console
 
-    $ altimetry_downloader_aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --start 2025-01-01 --end 2025-01-02 --cycle 26
+    $ altimetry-downloader-aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --start 2025-01-01 --end 2025-01-02 --cycle 26
     Downloaded files (2) :
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc
@@ -159,10 +159,10 @@ This command downloads Swot LR L3 Basic, cycle number 7, half-orbit 12, version 
 
 .. code-block:: console
 
-    $ altimetry_downloader_aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12 --version 1.0.2
+    $ altimetry-downloader-aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12 --version 1.0.2
     Downloaded files (1) :
     - aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v1.0.2.nc
-    
+
 
 Further Reading
 ----------------

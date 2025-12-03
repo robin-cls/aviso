@@ -3,11 +3,11 @@ from datetime import datetime
 
 import pytest
 
-from aviso_client.catalog_client.geonetwork.models.model import (
+from altimetry_downloader_aviso.catalog_client.geonetwork.models.model import (
     AvisoCatalog,
     AvisoProduct,
 )
-from aviso_client.catalog_client.geonetwork.response_parser import (
+from altimetry_downloader_aviso.catalog_client.geonetwork.response_parser import (
     parse_catalog_response,
     parse_product_response,
 )

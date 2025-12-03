@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 import requests
 
-from aviso_client.catalog_client.client import (
+from altimetry_downloader_aviso.catalog_client.client import (
     _get_product_from_short_name,
     _request_catalog,
     _request_product,
@@ -13,7 +13,8 @@ from aviso_client.catalog_client.client import (
     InvalidProductError,
     search_granules,
 )
-from aviso_client.catalog_client.geonetwork.models.model import AvisoCatalog
+from altimetry_downloader_aviso.catalog_client.geonetwork.models.model import (
+    AvisoCatalog, )
 
 
 def test_request_catalog(mock_post):

@@ -1,6 +1,6 @@
 import pytest
 
-from aviso_client.catalog_client.geonetwork.query_builder import (
+from altimetry_downloader_aviso.catalog_client.geonetwork.query_builder import (
     ClauseType,
     Field,
     GeoNetworkQueryBuilder,
