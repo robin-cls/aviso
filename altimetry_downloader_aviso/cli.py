@@ -8,13 +8,13 @@ from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.table import Table
 
-import aviso_client.core as ac_core
-from aviso_client import InvalidProductError
+import altimetry_downloader_aviso.core as ac_core
+from altimetry_downloader_aviso.catalog_client.client import InvalidProductError
 
 logging.basicConfig(level=logging.WARNING,
                     handlers=[RichHandler()],
                     format='%(message)s')
-logger = logging.getLogger('aviso_client')
+logger = logging.getLogger('altimetry_downloader_aviso')
 
 
 def _setup_logging(quiet: bool = False, verbose: bool = False):

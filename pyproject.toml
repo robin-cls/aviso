@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "aviso_client"
+name = "altimetry-downloader-aviso"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
@@ -12,14 +12,13 @@ dependencies = [
     "siphon",
     "typer",
     "rich",
-    "netrc",
     "ocean_tools",
     "pyyaml",
     "pydantic"
 ]
 
 [project.scripts]
-aviso_client = "aviso_client.cli:app"
+altimetry-downloader-aviso = "altimetry_downloader_aviso.cli:app"
 
 [project.optional-dependencies]
 tests = [
@@ -50,7 +49,7 @@ combine_as_imports = true
 combine_star = true
 order_by_type = false
 skip_gitignore = true
-known_first_party = ["aviso_client"]
+known_first_party = ["altimetry_downloader_aviso"]
 
 [tool.pytest.ini_options]
 addopts=["--import-mode=importlib"]

@@ -5,8 +5,8 @@ import pytest
 from typer import BadParameter
 from typer.testing import CliRunner
 
-import aviso_client.core as ac_core
-from aviso_client.cli import (
+import altimetry_downloader_aviso.core as ac_core
+from altimetry_downloader_aviso.cli import (
     _parse_ranges,
     _setup_logging,
     app,

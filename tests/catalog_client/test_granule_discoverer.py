@@ -1,8 +1,9 @@
 import pytest
 from requests.exceptions import ProxyError
 
-from aviso_client.catalog_client.geonetwork.models.model import AvisoProduct
-from aviso_client.catalog_client.granule_discoverer import (
+from altimetry_downloader_aviso.catalog_client.geonetwork.models.model import (
+    AvisoProduct, )
+from altimetry_downloader_aviso.catalog_client.granule_discoverer import (
     _load_convention_layout,
     _parse_tds_layout,
     filter_granules,
