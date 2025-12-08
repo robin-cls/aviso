@@ -73,7 +73,7 @@ The first version of the client is set up to download Swot products.
 │ │ URL                       │ https://tds%40odatis-ocean.fr:odatis@tds-odatis.aviso.altimetry.fr/thredds/catalog/L3/SWOT_KARIN-L3_LR_SSH.html                                                                                                                                                                  │ │
 │ │ DOI                       │ https://doi.org/10.24400/527896/A01-2023.017                                                                                                                                                                                                                                     │ │
 │ │ Last Update               │ 2025-03-14 23:00:00+00:00                                                                                                                                                                                                                                                        │ │
-│ │ Last Version              │ v2.0.1                                                                                                                                                                                                                                                                           │ │
+│ │ Last Version              │ v3.0                                                                                                                                                                                                                                                                           │ │
 │ │ Credit                    │ CDS-AVISO                                                                                                                                                                                                                                                                        │ │
 │ │ Organisation              │ AVISO                                                                                                                                                                                                                                                                            │ │
 │ │ Contact                   │ aviso@altimetry.fr                                                                                                                                                                                                                                                               │ │
@@ -93,8 +93,8 @@ The first version of the client is set up to download Swot products.
 >>> altimetry-downloader-aviso get SWOT_L3_LR_SSH_Basic --output aviso_dir --cycle 7 --pass 12,13
 
 Downloaded files (2) :
-- aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc
-- aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc
+- aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v3.0.nc
+- aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v3.0.nc
 
 ```
 
