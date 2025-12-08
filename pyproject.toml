@@ -12,9 +12,9 @@ dependencies = [
     "siphon",
     "typer",
     "rich",
-    "ocean_tools",
     "pyyaml",
-    "pydantic"
+    "pydantic",
+    "files-collections"
 ]
 
 [project.scripts]

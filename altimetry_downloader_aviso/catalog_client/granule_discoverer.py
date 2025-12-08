@@ -1,12 +1,12 @@
 import logging
-import yaml
 import typing as tp
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urljoin
 
-import ocean_tools.swath.io
-from ocean_tools.io import FileDiscoverer, FileNameConvention, ITreeIterable, Layout
+import fcollections.implementations
+import yaml
+from fcollections.core import FileDiscoverer, FileNameConvention, ITreeIterable, Layout
 from siphon.catalog import TDSCatalog
 
 from .geonetwork import AvisoProduct
@@ -113,16 +113,17 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
 def _load_convention_layout(
         granule_discovery: dict,
         data_type: str) -> tuple[FileNameConvention, Layout]:
-    """Load the ocean_tools convention and layout objects from a data type."""
+    """Load the fcollections convention and layout objects from a data type."""
     if data_type not in granule_discovery:
         msg = (f'The data type {data_type} is missing from the '
                'tds_layout|granule_discovery configuration.')
         raise KeyError(msg)
     convention, layout = granule_discovery[data_type]
 
-    convention_obj, layout_obj = getattr(ocean_tools.swath.io,
+    convention_obj, layout_obj = getattr(fcollections.implementations,
                                          convention)(), getattr(
-                                             ocean_tools.swath.io, layout)
+                                             fcollections.implementations,
+                                             layout)
     return convention_obj, layout_obj
 
 
