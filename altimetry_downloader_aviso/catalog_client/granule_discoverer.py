@@ -1,11 +1,11 @@
 import logging
-import yaml
 import typing as tp
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urljoin
 
 import ocean_tools.swath.io
+import yaml
 from ocean_tools.io import FileDiscoverer, FileNameConvention, ITreeIterable, Layout
 from siphon.catalog import TDSCatalog
 
