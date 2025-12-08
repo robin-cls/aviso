@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 import pytest
-from ocean_tools.io import (
+from fcollections.core import (
     FileNameConvention,
     FileNameFieldInteger,
     FileNameFieldString,
@@ -175,15 +175,15 @@ def tds_iterable(test_layout):
 
 @pytest.fixture()
 def patch_some(mocker):
-    mocker.patch('ocean_tools.swath.io.AVISO_L3_LR_SSH_LAYOUT', TEST_LAYOUT)
+    mocker.patch('fcollections.implementations.AVISO_L3_LR_SSH_LAYOUT', TEST_LAYOUT)
 
 
 @pytest.fixture(autouse=True)
 def patch_all(mocker):
-    mocker.patch('ocean_tools.swath.io.FileNameConventionSwotL3',
+    mocker.patch('fcollections.implementations.FileNameConventionSwotL3',
                  FileNameConventionTest)
 
-    mocker.patch('ocean_tools.swath.io.AVISO_L3_LR_SSH_LAYOUT',
+    mocker.patch('fcollections.implementations.AVISO_L3_LR_SSH_LAYOUT',
                  TEST_PRODUCT_LAYOUT)
 
     mocker.patch(

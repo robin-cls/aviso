@@ -5,7 +5,7 @@ products:
     data_type: SWOT_L3_LR_SSH
     catalog_path: dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/
     filters:
-      version: 2.0.1
+      version: '3.0'
       subset: Basic
 
   8c961685-cecb-41d9-b2d9-2a22cdd3d0c2:
@@ -13,7 +13,7 @@ products:
     data_type: SWOT_L3_LR_SSH
     catalog_path: dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/
     filters:
-      version: 2.0.1
+      version: '3.0'
       subset: Expert
 
   de48c5b5-18f7-4829-ba0e-78f3dff047ac:
@@ -21,7 +21,7 @@ products:
     data_type: SWOT_L3_LR_SSH
     catalog_path: dataset-l3-swot-karin-nadir-validated/l3_lr_ssh/
     filters:
-      version: 2.0.1
+      version: '3.0'
       subset: Unsmoothed
 
   2652e825-9ade-435c-afdd-eb920d01b018:

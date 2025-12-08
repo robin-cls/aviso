@@ -24,15 +24,15 @@ Cycle / Pass filters
     INFO:altimetry_downloader_aviso.catalog_client.client:Fetching products from Aviso's catalog...
     INFO:altimetry_downloader_aviso.catalog_client.granule_discoverer:Filtering SWOT_L3_LR_SSH_Basic product with filters {'cycle_number': [7, 8], 'pass_number': [12, 13]}...
     INFO:altimetry_downloader_aviso.core:4 files to download.
-    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc downloaded.
-    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc downloaded.
-    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_008_012_20231214T161515_20231214T170641_v2.0.1.nc downloaded.
-    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_008_013_20231214T170641_20231214T175808_v2.0.1.nc downloaded.
+    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v3.0.nc downloaded.
+    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v3.0.nc downloaded.
+    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_008_012_20231214T161515_20231214T170641_v3.0.nc downloaded.
+    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_008_013_20231214T170641_20231214T175808_v3.0.nc downloaded.
     >>> print(local_files)
-    ['aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc',
-     'aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v2.0.1.nc',
-     'aviso_dir/SWOT_L3_LR_SSH_Basic_008_012_20231214T161515_20231214T170641_v2.0.1.nc',
-     'aviso_dir/SWOT_L3_LR_SSH_Basic_008_013_20231214T170641_20231214T175808_v2.0.1.nc']
+    ['aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v3.0.nc',
+     'aviso_dir/SWOT_L3_LR_SSH_Basic_007_013_20231123T202138_20231123T211304_v3.0.nc',
+     'aviso_dir/SWOT_L3_LR_SSH_Basic_008_012_20231214T161515_20231214T170641_v3.0.nc',
+     'aviso_dir/SWOT_L3_LR_SSH_Basic_008_013_20231214T170641_20231214T175808_v3.0.nc']
 
 
 
@@ -86,6 +86,6 @@ By default, already existing files are not re-downloaded. Use ``overwrite=True``
     INFO:altimetry_downloader_aviso.catalog_client.client:Fetching products from Aviso's catalog...
     INFO:altimetry_downloader_aviso.catalog_client.granule_discoverer:Filtering SWOT_L3_LR_SSH_Basic product with filters {'cycle_number': 7, 'pass_number': 12}...
     INFO:altimetry_downloader_aviso.core:1 files to download.
-    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc downloaded.
+    INFO:altimetry_downloader_aviso.tds_client:File aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v3.0.nc downloaded.
     >>> print(local_files)
-    ['aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v2.0.1.nc']
+    ['aviso_dir/SWOT_L3_LR_SSH_Basic_007_012_20231123T193011_20231123T202137_v3.0.nc']
