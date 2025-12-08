@@ -175,7 +175,8 @@ def tds_iterable(test_layout):
 
 @pytest.fixture()
 def patch_some(mocker):
-    mocker.patch('fcollections.implementations.AVISO_L3_LR_SSH_LAYOUT', TEST_LAYOUT)
+    mocker.patch('fcollections.implementations.AVISO_L3_LR_SSH_LAYOUT',
+                 TEST_LAYOUT)
 
 
 @pytest.fixture(autouse=True)

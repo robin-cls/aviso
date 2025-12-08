@@ -1,11 +1,11 @@
 import logging
-import yaml
 import typing as tp
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urljoin
 
 import fcollections.implementations
+import yaml
 from fcollections.core import FileDiscoverer, FileNameConvention, ITreeIterable, Layout
 from siphon.catalog import TDSCatalog
 
@@ -122,7 +122,8 @@ def _load_convention_layout(
 
     convention_obj, layout_obj = getattr(fcollections.implementations,
                                          convention)(), getattr(
-                                             fcollections.implementations, layout)
+                                             fcollections.implementations,
+                                             layout)
     return convention_obj, layout_obj
 
 
