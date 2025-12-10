@@ -3,7 +3,7 @@ import os
 import pathlib as pl
 import time
 import warnings
-from concurrent.futures import as_completed, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Generator, Iterable
 
 import requests
@@ -12,14 +12,16 @@ from .auth import ensure_credentials
 
 logger = logging.getLogger(__name__)
 
-TDS_HOST = 'tds-odatis.aviso.altimetry.fr'
+TDS_HOST = "tds-odatis.aviso.altimetry.fr"
 
 
-def http_single_download(url: str,
-                         output_dir: str | pl.Path,
-                         username: str = None,
-                         password: str = None,
-                         overwrite: bool = False) -> str:
+def http_single_download(
+    url: str,
+    output_dir: str | pl.Path,
+    username: str = None,
+    password: str = None,
+    overwrite: bool = False,
+) -> str:
     """Download a granule from AVISO's Thredds Data Server using HTTPS
     protocol.
 
@@ -43,24 +45,23 @@ def http_single_download(url: str,
     if username is None or password is None:
         (username, password) = ensure_credentials(TDS_HOST)
 
-    logger.debug('Downloading %s...', url)
+    logger.debug("Downloading %s...", url)
 
     filename = os.path.basename(url)
-    output_dir = pl.Path(output_dir) if isinstance(output_dir,
-                                                   str) else output_dir
+    output_dir = pl.Path(output_dir) if isinstance(output_dir, str) else output_dir
     local_filepath = output_dir / filename
 
     if not overwrite and local_filepath.exists():
-        logger.debug('File %s already exist. Ignore download.', local_filepath)
+        logger.debug("File %s already exist. Ignore download.", local_filepath)
         return None
 
     response = requests.get(url, auth=(username, password))
     response.raise_for_status()
 
-    with open(local_filepath, 'wb') as f:
+    with open(local_filepath, "wb") as f:
         f.write(response.content)
 
-    logger.info('File %s downloaded.', local_filepath)
+    logger.info("File %s downloaded.", local_filepath)
 
     return str(local_filepath)
 
@@ -110,15 +111,14 @@ def http_single_download_with_retries(
 
     for attempt in range(1, retries + 1):
         try:
-            return http_single_download(url, output_dir, username, password,
-                                        overwrite)
+            return http_single_download(url, output_dir, username, password, overwrite)
 
         except requests.RequestException as e:
-            logger.debug('Attempt %d failed for %s: %s', attempt, url, e)
+            logger.debug("Attempt %d failed for %s: %s", attempt, url, e)
 
             last_exception = e
             if attempt < retries:
-                time.sleep(backoff * (2**(attempt - 1)))
+                time.sleep(backoff * (2 ** (attempt - 1)))
 
     raise last_exception
 
@@ -133,11 +133,11 @@ def _download_one(
     overwrite: bool = False,
 ):
     try:
-        return http_single_download_with_retries(url, output_dir, retries,
-                                                 backoff, username, password,
-                                                 overwrite)
+        return http_single_download_with_retries(
+            url, output_dir, retries, backoff, username, password, overwrite
+        )
     except requests.RequestException as e:
-        msg = f'Failed to download {url}. An error happened: {e}'
+        msg = f"Failed to download {url}. An error happened: {e}"
         warnings.warn(msg)
     return
 
@@ -182,8 +182,9 @@ def http_bulk_download(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for url in urls:
-        file = _download_one(url, output_dir, retries, backoff, username,
-                             password, overwrite)
+        file = _download_one(
+            url, output_dir, retries, backoff, username, password, overwrite
+        )
         if file:
             yield file
 
@@ -238,8 +239,7 @@ def http_bulk_download_parallel(
                 username,
                 password,
                 overwrite,
-            ):
-            url
+            ): url
             for url in urls
         }
 

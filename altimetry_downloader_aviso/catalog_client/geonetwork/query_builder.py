@@ -5,33 +5,37 @@ from typing import Any
 
 class Operator(Enum):
     """Type of query operator used in GeoNetwork queries."""
-    MATCH = 'match'
-    TERM = 'term'
-    RANGE = 'range'
+
+    MATCH = "match"
+    TERM = "term"
+    RANGE = "range"
 
 
 class Field(Enum):
     """Fields available for querying the GeoNetwork catalog."""
-    DATA_CENTER = 'th_odatis_centre_donnees.default'
-    PLATFORMS = 'platforms'
-    ID = '_id'
-    TITLE = 'title'
-    ABSTRACT = 'abstract'
-    KEYWORDS = 'keywords'
-    DATE = 'date'
+
+    DATA_CENTER = "th_odatis_centre_donnees.default"
+    PLATFORMS = "platforms"
+    ID = "_id"
+    TITLE = "title"
+    ABSTRACT = "abstract"
+    KEYWORDS = "keywords"
+    DATE = "date"
 
 
 class ClauseType(Enum):
     """Logical clause types used in boolean queries."""
-    MUST = 'must'
-    MUST_NOT = 'must_not'
-    SHOULD = 'should'
-    FILTER = 'filter'
+
+    MUST = "must"
+    MUST_NOT = "must_not"
+    SHOULD = "should"
+    FILTER = "filter"
 
 
 @dataclass
 class Clause:
     """Represents a single clause in a GeoNetwork query."""
+
     clause_type: ClauseType
     operator: Operator
     field: Field
@@ -53,12 +57,12 @@ class GeoNetworkQueryBuilder:
         self._from = 0
         self._size = 20
         self.clauses: dict[ClauseType, list[dict[str, Any]]] = {
-            ct: []
-            for ct in ClauseType
+            ct: [] for ct in ClauseType
         }
 
-    def _add_clause(self, clause_type: ClauseType, operator: Operator,
-                    field: Field, value: Any):
+    def _add_clause(
+        self, clause_type: ClauseType, operator: Operator, field: Field, value: Any
+    ):
         """Adds a clause to the query.
 
         Parameters
@@ -76,10 +80,7 @@ class GeoNetworkQueryBuilder:
         -------
             The builder instance (for chaining).
         """
-        self.clauses[clause_type].append(
-            {operator.value: {
-                field.value: value
-            }})
+        self.clauses[clause_type].append({operator.value: {field.value: value}})
         return self
 
     def must_match(self, field: Field, value: Any):
@@ -92,18 +93,15 @@ class GeoNetworkQueryBuilder:
 
     def must_not_match(self, field: Field, value: Any):
         """Adds a `must_not` clause with `match` operator."""
-        return self._add_clause(ClauseType.MUST_NOT, Operator.MATCH, field,
-                                value)
+        return self._add_clause(ClauseType.MUST_NOT, Operator.MATCH, field, value)
 
     def must_not_term(self, field: Field, value: Any):
         """Adds a `must_not` clause with `term` operator."""
-        return self._add_clause(ClauseType.MUST_NOT, Operator.TERM, field,
-                                value)
+        return self._add_clause(ClauseType.MUST_NOT, Operator.TERM, field, value)
 
     def should_match(self, field: Field, value: Any):
         """Adds a `should` clause with `match` operator."""
-        return self._add_clause(ClauseType.SHOULD, Operator.MATCH, field,
-                                value)
+        return self._add_clause(ClauseType.SHOULD, Operator.MATCH, field, value)
 
     def should_term(self, field: Field, value: Any):
         """Adds a `should` clause with `term` operator."""
@@ -127,8 +125,7 @@ class GeoNetworkQueryBuilder:
         -------
             The builder instance (for chaining).
         """
-        return self._add_clause(ClauseType.FILTER, Operator.RANGE, field,
-                                range_query)
+        return self._add_clause(ClauseType.FILTER, Operator.RANGE, field, range_query)
 
     def build(self) -> dict[str, Any]:
         """Builds and returns the final Elasticsearch query.
@@ -139,13 +136,8 @@ class GeoNetworkQueryBuilder:
         """
         bool_query = {
             clause_type.value: clauses
-            for clause_type, clauses in self.clauses.items() if clauses
+            for clause_type, clauses in self.clauses.items()
+            if clauses
         }
 
-        return {
-            'from': self._from,
-            'size': self._size,
-            'query': {
-                'bool': bool_query
-            }
-        }
+        return {"from": self._from, "size": self._size, "query": {"bool": bool_query}}

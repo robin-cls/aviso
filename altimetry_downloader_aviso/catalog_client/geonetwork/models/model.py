@@ -8,7 +8,7 @@ class AvisoProduct:
 
     Contains the product metadata.
 
-    Attributes
+    Parameters
     ----------
     id: str
         Product ID.
@@ -43,32 +43,29 @@ class AvisoProduct:
     geographic_extent: tuple[float, float, float, float]
         Bounding box as (west, east, south, north).
     """
-    id: str = field(metadata={'label': 'Id'})
-    title: str | None = field(default=None, metadata={'label': 'Title'})
-    short_name: str | None = field(default=None,
-                                   metadata={'label': 'Short Name'})
-    keywords: str | None = field(default=None, metadata={'label': 'Keywords'})
-    abstract: str | None = field(default=None, metadata={'label': 'Abstract'})
-    processing_level: str | None = field(default=None,
-                                         metadata={'label': 'Level'})
-    tds_catalog_url: str | None = field(default=None,
-                                        metadata={'label': 'URL'})
-    doi: str | None = field(default=None, metadata={'label': 'DOI'})
-    last_update: datetime | None = field(default=None,
-                                         metadata={'label': 'Last Update'})
-    last_version: str | None = field(default=None,
-                                     metadata={'label': 'Last Version'})
-    credit: str | None = field(default=None, metadata={'label': 'Credit'})
-    organisation: str | None = field(default=None,
-                                     metadata={'label': 'Organisation'})
-    contact: str | None = field(default=None, metadata={'label': 'Contact'})
-    resolution: str | None = field(default=None,
-                                   metadata={'label': 'Resolution'})
+
+    id: str = field(metadata={"label": "Id"})
+    title: str | None = field(default=None, metadata={"label": "Title"})
+    short_name: str | None = field(default=None, metadata={"label": "Short Name"})
+    keywords: str | None = field(default=None, metadata={"label": "Keywords"})
+    abstract: str | None = field(default=None, metadata={"label": "Abstract"})
+    processing_level: str | None = field(default=None, metadata={"label": "Level"})
+    tds_catalog_url: str | None = field(default=None, metadata={"label": "URL"})
+    doi: str | None = field(default=None, metadata={"label": "DOI"})
+    last_update: datetime | None = field(
+        default=None, metadata={"label": "Last Update"}
+    )
+    last_version: str | None = field(default=None, metadata={"label": "Last Version"})
+    credit: str | None = field(default=None, metadata={"label": "Credit"})
+    organisation: str | None = field(default=None, metadata={"label": "Organisation"})
+    contact: str | None = field(default=None, metadata={"label": "Contact"})
+    resolution: str | None = field(default=None, metadata={"label": "Resolution"})
     temporal_extent: tuple[datetime, datetime] | None = field(
-        default=(None, None), metadata={'label': 'Temporal extent'})
+        default=(None, None), metadata={"label": "Temporal extent"}
+    )
     geographic_extent: tuple[float, float, float, float] | None = field(
-        default=(None, None, None, None),
-        metadata={'label': 'Geographic extent'})
+        default=(None, None, None, None), metadata={"label": "Geographic extent"}
+    )
 
 
 @dataclass
@@ -77,9 +74,10 @@ class AvisoCatalog:
 
     Contains a list of available products parsed from the metadata catalog.
 
-    Attributes
+    Parameters
     ----------
     products : list[AvisoProduct]
         List of available products in the catalog.
     """
+
     products: list[AvisoProduct]

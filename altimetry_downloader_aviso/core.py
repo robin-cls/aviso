@@ -75,41 +75,44 @@ def get(
     """
     filters = {}
     if cycle_number is not None:
-        filters['cycle_number'] = cycle_number
+        filters["cycle_number"] = cycle_number
     if pass_number is not None:
-        filters['pass_number'] = pass_number
+        filters["pass_number"] = pass_number
     if time is not None:
-        filters['time'] = time
+        filters["time"] = time
     if version is not None:
-        filters['version'] = version
+        filters["version"] = version
 
     granule_paths = search_granules(product_short_name, **filters)
 
     if overwrite:
-        logger.info('%d files to download.', len(granule_paths))
+        logger.info("%d files to download.", len(granule_paths))
     else:
         files_to_download = [
             pl.Path(output_dir) / os.path.basename(p) for p in granule_paths
         ]
         non_existing_files = [
-            p for p, f in zip(granule_paths, files_to_download)
-            if not f.exists()
+            p for p, f in zip(granule_paths, files_to_download) if not f.exists()
         ]
-        logger.info('%d files to download. %d files already exist.',
-                    len(non_existing_files),
-                    len(granule_paths) - len(non_existing_files))
+        logger.info(
+            "%d files to download. %d files already exist.",
+            len(non_existing_files),
+            len(granule_paths) - len(non_existing_files),
+        )
         logger.debug(
-            'Existing files: %s',
-            [str(f) for f in files_to_download if f not in non_existing_files])
+            "Existing files: %s",
+            [str(f) for f in files_to_download if f not in non_existing_files],
+        )
         granule_paths = non_existing_files
 
-    logger.debug('Downloading granules: %s...', list(granule_paths))
+    logger.debug("Downloading granules: %s...", list(granule_paths))
 
     try:
         return list(
-            http_bulk_download(urls=list(granule_paths),
-                               output_dir=output_dir,
-                               overwrite=overwrite))
+            http_bulk_download(
+                urls=list(granule_paths), output_dir=output_dir, overwrite=overwrite
+            )
+        )
 
     except AuthenticationError as e:
         logging.error(e)
