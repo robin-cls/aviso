@@ -5,7 +5,7 @@ import os
 import warnings
 from pathlib import Path
 
-NETRC_PATH = Path.home() / '.netrc'
+NETRC_PATH = Path.home() / ".netrc"
 
 
 class AuthenticationError(Exception):
@@ -51,21 +51,21 @@ def _get_credentials(host: str):
         warnings.warn(msg)
         return None
     except netrc.NetrcParseError as exc:
-        msg = f'Syntax error in .netrc file: {exc}'
+        msg = f"Syntax error in .netrc file: {exc}"
         raise AuthenticationError(msg) from exc
     except (AttributeError, ValueError) as exc:
-        msg = 'An error happened when authenticating Aviso client.'
+        msg = "An error happened when authenticating Aviso client."
         raise AuthenticationError(msg) from exc
 
 
 def _prompt_and_save_credentials(host: str):
     """Prompt and save credentials."""
-    logging.info('Credentials required for %s', host)
-    login = input('Username : ')
-    password = getpass.getpass('Password : ')
+    logging.info("Credentials required for %s", host)
+    login = input("Username : ")
+    password = getpass.getpass("Password : ")
 
-    with open(NETRC_PATH, 'a') as f:
-        f.write(f'\nmachine {host} login {login} password {password}\n')
+    with open(NETRC_PATH, "a") as f:
+        f.write(f"\nmachine {host} login {login} password {password}\n")
 
     os.chmod(NETRC_PATH, 0o600)
 

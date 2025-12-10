@@ -31,27 +31,29 @@ def parse_catalog_response(results: dict) -> AvisoCatalog:
     try:
         catalog = adapter.validate_python(results)
 
-        return AvisoCatalog(products=[
-            AvisoProduct(
-                id=record.get_product_id(),
-                title=record.get_product_title(),
-                keywords=record.get_product_keywords(),
-                tds_catalog_url=record.get_product_tds_catalog_url(),
-                short_name=record.get_product_short_name(),
-                doi=record.get_product_doi(),
-                last_update=record.get_product_last_update(),
-            ) for record in catalog.hits.hits
-        ])
+        return AvisoCatalog(
+            products=[
+                AvisoProduct(
+                    id=record.get_product_id(),
+                    title=record.get_product_title(),
+                    keywords=record.get_product_keywords(),
+                    tds_catalog_url=record.get_product_tds_catalog_url(),
+                    short_name=record.get_product_short_name(),
+                    doi=record.get_product_doi(),
+                    last_update=record.get_product_last_update(),
+                )
+                for record in catalog.hits.hits
+            ]
+        )
     except ValidationError as e:
         logger.error(
             "A validation error happened when parsing Aviso's catalog response: %s",
             str(e),
         )
-        raise RuntimeError(f'{e}')
+        raise RuntimeError(f"{e}")
 
 
-def parse_product_response(meta: dict,
-                           aviso_product: AvisoProduct) -> AvisoProduct:
+def parse_product_response(meta: dict, aviso_product: AvisoProduct) -> AvisoProduct:
     """Parses the response of AVISO's catalog to a product request.
 
     Parameters
@@ -84,7 +86,7 @@ def parse_product_response(meta: dict,
         for err in e.errors():
             logger.error(
                 "A validation error happened when parsing Aviso's"
-                ' catalog response for product: %s.\n%s',
+                " catalog response for product: %s.\n%s",
                 aviso_product.id,
                 err,
             )

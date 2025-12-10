@@ -24,26 +24,27 @@ class FieldSource(BaseModel):
     short_name: str | None = None
     doi: str | None = None
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     @classmethod
     def extract_from_links(cls, data: dict[str, Any]) -> dict[str, Any]:
-        links: list[dict[str, Any]] = data.pop('link', [])
+        links: list[dict[str, Any]] = data.pop("link", [])
 
         for item in links:
-            if item.get('descriptionObject', {}).get('default') == 'THREDDS':
-                data['url'] = item.get('urlObject', {}).get('default')
-                if 'nameObject' in item:
-                    data['short_name'] = item.get('nameObject').get(
-                        'default').replace(' ', '_')
-            elif item.get('protocol') == 'DOI':
-                data['doi'] = item.get('urlObject', {}).get('default')
+            if item.get("descriptionObject", {}).get("default") == "THREDDS":
+                data["url"] = item.get("urlObject", {}).get("default")
+                if "nameObject" in item:
+                    data["short_name"] = (
+                        item.get("nameObject").get("default").replace(" ", "_")
+                    )
+            elif item.get("protocol") == "DOI":
+                data["doi"] = item.get("urlObject", {}).get("default")
 
         return data
 
 
 class Hit(BaseModel):
-    field_id: str = Field(..., alias='_id')
-    field_source: FieldSource = Field(..., alias='_source')
+    field_id: str = Field(..., alias="_id")
+    field_source: FieldSource = Field(..., alias="_source")
 
     def get_product_id(self) -> str:
         return self.field_id

@@ -15,7 +15,7 @@ from .granule_discoverer import filter_granules
 
 logger = logging.getLogger(__name__)
 
-AVISO_CATALOG_URL = 'https://sextant.ifremer.fr/geonetwork/srv/api'
+AVISO_CATALOG_URL = "https://sextant.ifremer.fr/geonetwork/srv/api"
 
 
 class InvalidProductError(Exception):
@@ -55,8 +55,7 @@ def get_details(product_short_name: str) -> AvisoProduct:
         In case an exception happens when requesting catalog
     """
     product = _get_product_from_short_name(product_short_name)
-    logger.info("Requesting '%s' product from Aviso's catalog...",
-                product_short_name)
+    logger.info("Requesting '%s' product from Aviso's catalog...", product_short_name)
     resp = _request_product(product.id)
     product = parse_product_response(resp, product)
     return product
@@ -97,17 +96,18 @@ def _get_product_from_short_name(product_short_name: str) -> AvisoProduct:
 
 def _request_catalog() -> dict:
     """Request AVISO's catalog products: filters on CDS-AVISO and SWOT."""
-    url = os.path.join(AVISO_CATALOG_URL, 'search/records/_search')
+    url = os.path.join(AVISO_CATALOG_URL, "search/records/_search")
 
     builder = GeoNetworkQueryBuilder()
-    payload = (builder.must_match(Field.DATA_CENTER, 'CDS-AVISO').must_match(
-        Field.PLATFORMS, 'SWOT').must_not_term(
-            Field.ID, '94cd8b08-bf24-4f59-8ce5-bc27c6bd9c17').must_not_term(
-                Field.ID, 'a57da16f-330a-4927-b532-ca013b6c83da').build())
+    payload = (
+        builder.must_match(Field.DATA_CENTER, "CDS-AVISO")
+        .must_match(Field.PLATFORMS, "SWOT")
+        .must_not_term(Field.ID, "94cd8b08-bf24-4f59-8ce5-bc27c6bd9c17")
+        .must_not_term(Field.ID, "a57da16f-330a-4927-b532-ca013b6c83da")
+        .build()
+    )
 
-    resp = requests.post(url,
-                         json=payload,
-                         headers={'Accept': 'application/json'})
+    resp = requests.post(url, json=payload, headers={"Accept": "application/json"})
     resp.raise_for_status()
 
     return resp.json()
@@ -115,20 +115,20 @@ def _request_catalog() -> dict:
 
 def _request_product(product_id: str, timeout: float = 10.0):
     """Request AVISO's catalog product details."""
-    url = os.path.join(AVISO_CATALOG_URL, 'records', product_id)
+    url = os.path.join(AVISO_CATALOG_URL, "records", product_id)
 
     try:
-        resp = requests.get(url,
-                            headers={'Accept': 'application/json'},
-                            timeout=timeout)
+        resp = requests.get(
+            url, headers={"Accept": "application/json"}, timeout=timeout
+        )
         resp.raise_for_status()
 
     except requests.Timeout:
-        msg = f'Timeout after {timeout} seconds when requesting {url}'
+        msg = f"Timeout after {timeout} seconds when requesting {url}"
         raise RuntimeError(msg)
 
     except requests.RequestException as e:
-        msg = f'HTTP Error : {e}'
+        msg = f"HTTP Error : {e}"
         raise RuntimeError(msg)
 
     return resp.json()

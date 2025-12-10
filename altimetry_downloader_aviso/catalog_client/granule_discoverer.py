@@ -13,9 +13,9 @@ from .geonetwork import AvisoProduct
 
 logger = logging.getLogger(__name__)
 
-TDS_CATALOG_BASE_URL = 'https://tds-odatis.aviso.altimetry.fr/thredds/catalog/'
+TDS_CATALOG_BASE_URL = "https://tds-odatis.aviso.altimetry.fr/thredds/catalog/"
 
-TDS_LAYOUT_CONFIG = Path(__file__).parent / 'resources' / 'tds_layout.yaml'
+TDS_LAYOUT_CONFIG = Path(__file__).parent / "resources" / "tds_layout.yaml"
 
 
 class TDSIterable(ITreeIterable):
@@ -31,27 +31,26 @@ class TDSIterable(ITreeIterable):
     def __init__(self, layout: Layout | None = None):
         super().__init__(layout)
 
-    def find(self,
-             root: str,
-             detail: bool = False,
-             **filters: tp.Any) -> tp.Iterator[str | dict[str, str]]:
+    def find(
+        self, root: str, detail: bool = False, **filters: tp.Any
+    ) -> tp.Iterator[str | dict[str, str]]:
 
         if self.layout is not None:
             self.layout.set_filters(**filters)
 
-        logger.debug('Browsing TDS layout with filters: %s', filters)
+        logger.debug("Browsing TDS layout with filters: %s", filters)
 
         return self._find(root, **filters)
 
     def _find(self, url: str, level: int = 0, **filters):
         cat = TDSCatalog(url)
 
-        results = [d.access_urls['HTTPServer'] for d in cat.datasets.values()]
+        results = [d.access_urls["HTTPServer"] for d in cat.datasets.values()]
 
         for folder, ref in cat.catalog_refs.items():
             # If name doesn't correspond to filters, continue
             if self.layout is not None and not self.layout.test(level, folder):
-                logger.debug('Ignore folder %s', folder)
+                logger.debug("Ignore folder %s", folder)
                 continue
 
             next_level = level + 1
@@ -86,8 +85,11 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     list[str]
         the urls of the granules corresponding to the provided filters
     """
-    logger.info('Filtering %s product with filters %s...', product.short_name,
-                (lambda d: str(d))(filters))
+    logger.info(
+        "Filtering %s product with filters %s...",
+        product.short_name,
+        (lambda d: str(d))(filters),
+    )
 
     # Get TDS product layout
     product_layout_conf = _parse_tds_layout(product)
@@ -95,7 +97,8 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
     # Build TDS catalog URL
     tds_url = urljoin(
         TDS_CATALOG_BASE_URL,
-        str(Path(product_layout_conf.catalog_path) / 'catalog.xml'))
+        str(Path(product_layout_conf.catalog_path) / "catalog.xml"),
+    )
 
     # Create the file discoverer for this TDS catalog
     file_discoverer = FileDiscoverer(
@@ -111,19 +114,20 @@ def filter_granules(product: AvisoProduct, **filters) -> list[str]:
 
 
 def _load_convention_layout(
-        granule_discovery: dict,
-        data_type: str) -> tuple[FileNameConvention, Layout]:
+    granule_discovery: dict, data_type: str
+) -> tuple[FileNameConvention, Layout]:
     """Load the fcollections convention and layout objects from a data type."""
     if data_type not in granule_discovery:
-        msg = (f'The data type {data_type} is missing from the '
-               'tds_layout|granule_discovery configuration.')
+        msg = (
+            f"The data type {data_type} is missing from the "
+            "tds_layout|granule_discovery configuration."
+        )
         raise KeyError(msg)
     convention, layout = granule_discovery[data_type]
 
-    convention_obj, layout_obj = getattr(fcollections.implementations,
-                                         convention)(), getattr(
-                                             fcollections.implementations,
-                                             layout)
+    convention_obj, layout_obj = getattr(
+        fcollections.implementations, convention
+    )(), getattr(fcollections.implementations, layout)
     return convention_obj, layout_obj
 
 
@@ -148,6 +152,7 @@ class ProductLayoutConfig:
     default_filters: dict
         Default filters applied when querying or displaying the product.
     """
+
     id: str
     short_name: str
     convention: FileNameConvention
@@ -166,26 +171,29 @@ def _parse_tds_layout(product: AvisoProduct) -> ProductLayoutConfig:
 
         tds_layout = yaml.safe_load(f)
 
-        products_tds_layout = tds_layout['products']
+        products_tds_layout = tds_layout["products"]
         if product.id not in products_tds_layout:
-            msg = (f'The product {product.id} is missing from the '
-                   'tds_layout configuration file.')
+            msg = (
+                f"The product {product.id} is missing from the "
+                "tds_layout configuration file."
+            )
             raise KeyError(msg)
         product_layout = products_tds_layout[product.id]
 
-        granule_discovery = tds_layout['granule_discovery']
-        data_type = product_layout['data_type']
+        granule_discovery = tds_layout["granule_discovery"]
+        data_type = product_layout["data_type"]
         convention_obj, layout_obj = _load_convention_layout(
-            granule_discovery, data_type)
+            granule_discovery, data_type
+        )
 
-        if 'filters' not in product_layout:
-            product_layout['filters'] = {}
+        if "filters" not in product_layout:
+            product_layout["filters"] = {}
 
         return ProductLayoutConfig(
             id=product.id,
-            short_name=product_layout['short_name'],
+            short_name=product_layout["short_name"],
             convention=convention_obj,
             layout=layout_obj,
-            catalog_path=product_layout['catalog_path'],
-            default_filters=product_layout['filters'],
+            catalog_path=product_layout["catalog_path"],
+            default_filters=product_layout["filters"],
         )

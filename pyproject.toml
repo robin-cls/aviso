@@ -47,12 +47,6 @@ exclude_also = [
 
 [tool.isort]
 profile = "black"
-line_length = 88
-atomic = true
-combine_as_imports = true
-combine_star = true
-order_by_type = false
-skip_gitignore = true
 known_first_party = ["altimetry_downloader_aviso"]
 
 [tool.pytest.ini_options]
