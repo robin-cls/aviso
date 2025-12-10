@@ -56,7 +56,7 @@ addopts=["--import-mode=importlib"]
 filterwarnings = [
     # Can be safely ignored according to
     # https://github.com/Unidata/netcdf4-python/issues/1354
-    "ignore:numpy.ndarray size changed",
+    "ignore:numpy\\.ndarray size changed",
     # Turn all other warnings into errors
     "error"
 ]

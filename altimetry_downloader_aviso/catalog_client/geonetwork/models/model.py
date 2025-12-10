@@ -8,7 +8,7 @@ class AvisoProduct:
 
     Contains the product metadata.
 
-    Attributes
+    Parameters
     ----------
     id: str
         Product ID.
@@ -74,7 +74,7 @@ class AvisoCatalog:
 
     Contains a list of available products parsed from the metadata catalog.
 
-    Attributes
+    Parameters
     ----------
     products : list[AvisoProduct]
         List of available products in the catalog.
