@@ -4,7 +4,6 @@ from unittest.mock import mock_open
 
 import pytest
 
-import altimetry_downloader_aviso.auth
 from altimetry_downloader_aviso.auth import (
     AuthenticationError,
     _get_credentials,
@@ -13,19 +12,8 @@ from altimetry_downloader_aviso.auth import (
 )
 
 
-@pytest.fixture
-def fake_netrc_path(tmp_path, mocker):
-    path = tmp_path / ".netrc"
-    mocker.patch.object(altimetry_downloader_aviso.auth, "NETRC_PATH", path)
-    return path
+def test_get_credentials(mocker):
 
-
-def test_get_credentials(fake_netrc_path, mocker):
-    fake_netrc_path.write_text(
-        """
-        machine example.com login testuser password testpass
-    """
-    )
     mock_netrc = mocker.patch("altimetry_downloader_aviso.auth.netrc.netrc")
     mock_netrc.return_value.authenticators.return_value = ("testuser", None, "testpass")
 

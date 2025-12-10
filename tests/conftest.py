@@ -11,6 +11,7 @@ from fcollections.core import (
 )
 from requests.exceptions import ProxyError
 
+import altimetry_downloader_aviso.auth
 from altimetry_downloader_aviso.catalog_client.granule_discoverer import TDSIterable
 
 # PATCH GEONETWORK CATALOG RESPONSES
@@ -316,3 +317,16 @@ def mock_tds_catalog(mocker):
         "altimetry_downloader_aviso.catalog_client.granule_discoverer.TDSCatalog",
         side_effect=tds_catalog_side_effect,
     )
+
+
+@pytest.fixture(autouse=True)
+def fake_netrc_path(tmp_path, mocker):
+    path = tmp_path / ".netrc"
+    mocker.patch.object(altimetry_downloader_aviso.auth, "NETRC_PATH", path)
+    path.write_text(
+        """
+        machine example.com login testuser password testpass
+        machine tds-odatis.aviso.altimetry.fr login testuser password testpass
+    """
+    )
+    return path
