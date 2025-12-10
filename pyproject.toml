@@ -23,9 +23,11 @@ altimetry-downloader-aviso = "altimetry_downloader_aviso.cli:app"
 [project.optional-dependencies]
 tests = [
     "pytest",
+    "pytest-cov",
     "pyyaml",
 ]
-doc = ["sphinx", "sphinx-autodoc-typehints", "sphinx_rtd_theme"]
+# Unpin sphinx<9 when RTD theme is compatible
+doc = ["sphinx<9", "sphinx-autodoc-typehints", "sphinx_rtd_theme"]
 
 [tool.setuptools.package-data]
 "*" = ["*.yaml", "*.yml"]
@@ -51,3 +53,10 @@ known_first_party = ["altimetry_downloader_aviso"]
 
 [tool.pytest.ini_options]
 addopts=["--import-mode=importlib"]
+filterwarnings = [
+    # Can be safely ignored according to
+    # https://github.com/Unidata/netcdf4-python/issues/1354
+    "ignore:numpy.ndarray size changed",
+    # Turn all other warnings into errors
+    "error"
+]
