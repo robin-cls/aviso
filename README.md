@@ -100,4 +100,4 @@ Downloaded files (2) :
 
 # More information
 
-For more information on how to to use altimetry-downloader-aviso, see [documentation](https://altimetry_downloader_aviso.readthedocs.io/en/latest/?badge=latest)
+For more information on how to to use altimetry-downloader-aviso, see [documentation](https://robin-cls.github.io/aviso/)

@@ -46,5 +46,3 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           artifact_name: docs
-          target_branch: gh-pages
-          folder: stable
