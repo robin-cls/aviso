@@ -20,8 +20,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[tests]"
       - name: Run unit tests
+        # Specify environment for cli runner: simplest terminal possible to properly get
+        # the error messages in the CI setup
         run: |
-          NO_COLOR=1 TERM=dumb pytest tests --cov=altimetry_downloader_aviso --cov-report=xml:coverage.xml --cov-report=term
+          NO_COLOR=1 TERM=dumb pytest tests --cov=altimetry_downloader_aviso --cov-report=xml:coverage.xml --cov-report=term --cov-fail-under=100
       - name: Upload unit test coverage artifacts
         uses: actions/upload-artifact@v4
         with:
