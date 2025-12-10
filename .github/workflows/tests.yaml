@@ -21,7 +21,7 @@ jobs:
           pip install -e ".[tests]"
       - name: Run unit tests
         run: |
-          pytest tests --cov=altimetry_downloader_aviso --cov-report=xml:coverage.xml --cov-report=term
+          NO_COLOR=1 TERM=dumb pytest tests --cov=altimetry_downloader_aviso --cov-report=xml:coverage.xml --cov-report=term
       - name: Upload unit test coverage artifacts
         uses: actions/upload-artifact@v4
         with:
