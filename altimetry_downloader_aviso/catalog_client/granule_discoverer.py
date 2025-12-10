@@ -1,15 +1,21 @@
 import logging
 import typing as tp
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urljoin
 
-import fcollections.implementations
 import yaml
 from fcollections.core import FileDiscoverer, FileNameConvention, ITreeIterable, Layout
 from siphon.catalog import TDSCatalog
 
 from .geonetwork import AvisoProduct
+
+with warnings.catch_warnings():
+    # ImportWarning is raised when the geographical functionalities are disabled. We do
+    # not need these functionalities, so we can ignore this warning
+    warnings.simplefilter("ignore", category=ImportWarning)
+    import fcollections.implementations
 
 logger = logging.getLogger(__name__)
 

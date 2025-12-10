@@ -166,7 +166,7 @@ def get(
     version: str = typer.Option(
         None,
         "--version",
-        "-v",
+        "-V",
         help="Product's version. By default, last version is selected",
     ),
     quiet: bool = typer.Option(
